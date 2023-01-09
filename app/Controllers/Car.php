@@ -73,14 +73,27 @@ class Car extends BaseController
                 return json_encode($response);
             }
 
+            // License number validation
+            $licenseNumber = $this->formatLicenseNumber(strtoupper($input['license_number']));
+            if ($licenseNumber == false) {
+                $response = [
+                    'error' => [
+                        'license_number' => 'Plat nomor tidak valid'
+                    ],
+                    'errorMsg' => 'Gagal Menyimpan mobil',
+                ];
+                return json_encode($response);
+            }
+
             // Convert Image To String
             $receipt = $this->blobImage($input['receipt']);
             $carImage = $this->blobImage($input['car_image']);
 
+
             //Save
             $data = [
                 'car_name' => ucwords(strtolower($input['car_name'])),
-                'license_number' => $this->formatLicenseNumber(strtoupper($input['license_number'])),
+                'license_number' => $licenseNumber,
                 'car_color' => ucwords(strtolower($input['car_color'])),
                 'car_year' => $input['car_year'],
                 'brand_id' => $input['car_brand'],
@@ -124,9 +137,14 @@ class Car extends BaseController
         $realNumber = implode('', $realNumber);
         $convertNumber = implode('', $convertNumber);
 
-        $licenseNumber = str_replace($realNumber, $convertNumber, $licenseNumber);
 
-        return $licenseNumber;
+        if (str_contains($licenseNumber, $realNumber)) {
+            $licenseNumber = str_replace($realNumber, $convertNumber, $licenseNumber);
+
+            return $licenseNumber;
+        }
+
+        return false;
     }
 
     public function getCar()
