@@ -39,6 +39,8 @@ $routes->get('/', 'Home::index');
 
 $routes->get('/mobil', 'Car::index');
 $routes->post('/mobil/getcar', 'Car::getCar');
+$routes->post('/mobil/alertDelete', 'Car::alertCarDelete');
+$routes->post('/mobil/delete', 'Car::deleteCar');
 
 $routes->get('/mobil/tambah', 'Car::pageSetCar');
 $routes->post('/mobil/tambah/temp/save', 'Car::setTempAdditionalCost');
@@ -46,7 +48,7 @@ $routes->post('/mobil/tambah/temp', 'Car::getTempAdditionalCost');
 $routes->post('/mobil/save', 'Car::setCar');
 $routes->post('/mobil/download/additionalreceipt', 'Car::downloadAdditionalReceipt');
 $routes->post('/mobil/tambah/temp/totalAdditionalCost', 'Car::getTotalTempAdditionalCost');
-$routes->post('/mobil/tambah/temp/alertTempDelete', 'Car::alertTempDelete');
+$routes->post('/mobil/tambah/temp/alertTempDelete', 'Car::alertTempAdditionalCostDelete');
 $routes->post('/mobil/tambah/temp/delete', 'Car::deleteTempAdditionalCost');
 $routes->post('/mobil/tambah/temp/reset', 'Car::resetTempAdditionalCost');
 

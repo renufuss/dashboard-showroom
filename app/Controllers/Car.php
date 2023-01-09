@@ -80,7 +80,7 @@ class Car extends BaseController
             //Save
             $data = [
                 'car_name' => ucwords(strtolower($input['car_name'])),
-                'license_number' => strtoupper($input['license_number']),
+                'license_number' => $this->formatLicenseNumber(strtoupper($input['license_number'])),
                 'car_color' => ucwords(strtolower($input['car_color'])),
                 'car_year' => $input['car_year'],
                 'brand_id' => $input['car_brand'],
@@ -101,6 +101,32 @@ class Car extends BaseController
             $response['success'] = 'Berhasil menyimpan mobil';
             return json_encode($response);
         }
+    }
+
+    public function formatLicenseNumber($licenseNumber)
+    {
+        $licenseNumber = $licenseNumber;
+        $realNumber = [];
+        $convertNumber = [];
+        for ($i = 0; $i < strlen($licenseNumber); $i++) {
+            $char = $licenseNumber[$i];
+            if (is_numeric($char)) {
+                array_push($realNumber, $char);
+                array_push($convertNumber, $char);
+            }
+        }
+
+        // add space to convert number;
+        array_unshift($convertNumber, ' ');
+        array_push($convertNumber, ' ');
+
+        // Array To String
+        $realNumber = implode('', $realNumber);
+        $convertNumber = implode('', $convertNumber);
+
+        $licenseNumber = str_replace($realNumber, $convertNumber, $licenseNumber);
+
+        return $licenseNumber;
     }
 
     public function getCar()
@@ -156,7 +182,7 @@ class Car extends BaseController
                     </span>
                     <!--end::Svg Icon-->
                 </a>
-                <button class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm\" onclick=\"confirmDelete('$car->id')\">
+                <button class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm\" onclick=\"alertCarDelete('$car->id')\">
                     <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
                     <span class=\"svg-icon svg-icon-3\">
                         <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
@@ -185,6 +211,49 @@ class Car extends BaseController
                 "data" => $data
             ];
             echo json_encode($output);
+        }
+    }
+
+    public function alertCarDelete()
+    {
+        if ($this->request->isAJAX()) {
+            $carId = $this->request->getPost('carId');
+            $car = $this->CarModel->find($carId);
+
+            $isEmpty = ($car == null);
+            if ($isEmpty) {
+                $response = [
+                    'error' => 'Data tidak ditemukan',
+                ];
+                return json_encode($response);
+            }
+
+            $response = [
+                'carName' => $car->car_name,
+            ];
+
+            return json_encode($response);
+        }
+    }
+
+    public function deleteCar()
+    {
+        if ($this->request->isAJAX()) {
+            $carId = $this->request->getPost('carId');
+            $car = $this->CarModel->find($carId);
+
+            $isEmpty = ($car == null);
+            if ($isEmpty) {
+                $response = [
+                    'error' => 'Data tidak ditemukan',
+                ];
+                return json_encode($response);
+            }
+
+            $this->CarModel->delete($car->id);
+
+            $response['success'] = 'Berhasil menghapus mobil';
+            return json_encode($response);
         }
     }
 
@@ -318,7 +387,7 @@ class Car extends BaseController
         }
     }
 
-    public function alertTempDelete()
+    public function alertTempAdditionalCostDelete()
     {
         if ($this->request->isAJAX()) {
             $tempId = $this->request->getPost('tempId');
