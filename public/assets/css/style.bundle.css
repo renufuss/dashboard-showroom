@@ -53076,18 +53076,16 @@ html:not([data-theme="dark"]) {
 }
 
 .sidebar-brand {
-    height: 4.375rem;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 800;
-    padding: 1.5rem 1rem;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: .05rem;
-    z-index: 1
+  height: 4.375rem;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  z-index: 1;
 }
-
-
 
 .pl {
   width: 6em;
@@ -53119,7 +53117,8 @@ html:not([data-theme="dark"]) {
 
 /* Animations */
 @keyframes ringA {
-  from, 4% {
+  from,
+  4% {
     stroke-dasharray: 0 660;
     stroke-width: 20;
     stroke-dashoffset: -330;
@@ -53137,7 +53136,8 @@ html:not([data-theme="dark"]) {
     stroke-dashoffset: -595;
   }
 
-  40%, 54% {
+  40%,
+  54% {
     stroke-dasharray: 0 660;
     stroke-width: 20;
     stroke-dashoffset: -660;
@@ -53155,7 +53155,8 @@ html:not([data-theme="dark"]) {
     stroke-dashoffset: -925;
   }
 
-  90%, to {
+  90%,
+  to {
     stroke-dasharray: 0 660;
     stroke-width: 20;
     stroke-dashoffset: -990;
@@ -53163,7 +53164,8 @@ html:not([data-theme="dark"]) {
 }
 
 @keyframes ringB {
-  from, 12% {
+  from,
+  12% {
     stroke-dasharray: 0 220;
     stroke-width: 20;
     stroke-dashoffset: -110;
@@ -53181,7 +53183,8 @@ html:not([data-theme="dark"]) {
     stroke-dashoffset: -195;
   }
 
-  48%, 62% {
+  48%,
+  62% {
     stroke-dasharray: 0 220;
     stroke-width: 20;
     stroke-dashoffset: -220;
@@ -53199,7 +53202,8 @@ html:not([data-theme="dark"]) {
     stroke-dashoffset: -305;
   }
 
-  98%, to {
+  98%,
+  to {
     stroke-dasharray: 0 220;
     stroke-width: 20;
     stroke-dashoffset: -330;
@@ -53225,7 +53229,8 @@ html:not([data-theme="dark"]) {
     stroke-dashoffset: -175;
   }
 
-  36%, 58% {
+  36%,
+  58% {
     stroke-dasharray: 0 440;
     stroke-width: 20;
     stroke-dashoffset: -220;
@@ -53243,7 +53248,8 @@ html:not([data-theme="dark"]) {
     stroke-dashoffset: -395;
   }
 
-  94%, to {
+  94%,
+  to {
     stroke-dasharray: 0 440;
     stroke-width: 20;
     stroke-dashoffset: -440;
@@ -53251,7 +53257,8 @@ html:not([data-theme="dark"]) {
 }
 
 @keyframes ringD {
-  from, 8% {
+  from,
+  8% {
     stroke-dasharray: 0 440;
     stroke-width: 20;
     stroke-dashoffset: 0;
@@ -53269,7 +53276,8 @@ html:not([data-theme="dark"]) {
     stroke-dashoffset: -175;
   }
 
-  44%, 50% {
+  44%,
+  50% {
     stroke-dasharray: 0 440;
     stroke-width: 20;
     stroke-dashoffset: -220;
@@ -53287,16 +53295,13 @@ html:not([data-theme="dark"]) {
     stroke-dashoffset: -395;
   }
 
-  86%, to {
+  86%,
+  to {
     stroke-dasharray: 0 440;
     stroke-width: 20;
     stroke-dashoffset: -440;
   }
 }
-
-
-
-
 
 /*  */
 .loader {
@@ -53308,7 +53313,7 @@ html:not([data-theme="dark"]) {
   display: inline-block;
   width: 3px;
   height: 20px;
-  background-color: rgba(255, 255, 255, .5);
+  background-color: rgba(255, 255, 255, 0.5);
   border-radius: 10px;
   animation: scale-up4 1s linear infinite;
 }
@@ -53316,11 +53321,11 @@ html:not([data-theme="dark"]) {
 .bar:nth-child(2) {
   height: 35px;
   margin: 0 5px;
-  animation-delay: .25s;
+  animation-delay: 0.25s;
 }
 
 .bar:nth-child(3) {
-  animation-delay: .5s;
+  animation-delay: 0.5s;
 }
 
 @keyframes scale-up4 {
@@ -53335,28 +53340,25 @@ html:not([data-theme="dark"]) {
 }
 
 /* desktop only */
-@media (min-width: 769px)  {
-  .mobile-only{
-      display: none;
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none;
   }
 }
-
 
 /*tablet  */
 @media (min-width: 481px) and (max-width: 768px) {
-  .mobile-only{
-      display: none;
+  .mobile-only {
+    display: none;
   }
 }
-
 
 /* mobile only */
 @media (max-width: 480px) {
-  .desktop-only{
-      display: none;
+  .desktop-only {
+    display: none;
   }
 }
-
 
 /* Loader */
 .loader {
@@ -53368,7 +53370,7 @@ html:not([data-theme="dark"]) {
   display: inline-block;
   width: 3px;
   height: 20px;
-  background-color: rgba(255, 255, 255, .5);
+  background-color: rgba(255, 255, 255, 0.5);
   border-radius: 10px;
   animation: scale-up4 1s linear infinite;
 }
@@ -53376,11 +53378,11 @@ html:not([data-theme="dark"]) {
 .bar:nth-child(2) {
   height: 35px;
   margin: 0 5px;
-  animation-delay: .25s;
+  animation-delay: 0.25s;
 }
 
 .bar:nth-child(3) {
-  animation-delay: .5s;
+  animation-delay: 0.5s;
 }
 
 @keyframes scale-up4 {

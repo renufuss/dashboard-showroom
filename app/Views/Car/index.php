@@ -40,15 +40,6 @@
                     <!--end::Card title-->
                     <!--begin::Card toolbar-->
                     <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
-                        <div class="w-100 mw-150px">
-                            <!--begin::Select2-->
-                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="true">
-                                <option value="">Semua Status</option>
-                                <option value="0">Ready</option>
-                                <option value="1">Terjual</option>
-                            </select>
-                            <!--end::Select2-->
-                        </div>
                         <!--begin::Add product-->
                         <a href="<?= base_url('mobil/tambah'); ?>" class="btn btn-primary">Tambah Mobil</a>
                         <!--end::Add product-->
@@ -59,6 +50,7 @@
                 <!--begin::Card body-->
                 <div class="card-body pt-0">
                     <!--begin::Table-->
+                    <div class="carTable"></div>
                     <?php include('Table/carTable.php'); ?>
                     <!--end::Table-->
                 </div>
@@ -72,7 +64,7 @@
 </div>
 
 <script>
-        function toastConfig() {
+    function toastConfig() {
         toastr.options = {
             "closeButton": true,
             "debug": false,

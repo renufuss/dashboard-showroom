@@ -7,7 +7,7 @@
     }
 </style>
 
-<table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_ecommerce_products_table" style="width: 100%;">
+<table class="table align-middle table-row-dashed fs-6 gy-5" id="additionalCostTable" style="width: 100%;">
     <!--begin::Table head-->
     <thead>
         <!--begin::Table row-->
@@ -94,3 +94,36 @@
     </tbody>
     <!--end::Table body-->
 </table>
+
+<script>
+    function getImage(tempId) {
+        $.ajax({
+            type: "post",
+            url: "/mobil/tambah/temp/download/additionalreceipt",
+            data: {
+                tempId : tempId,
+                temp_session : sessionStorage.tab,
+            },
+            dataType: "json",
+            success: function (response) {
+                if (response.error) {
+                    toastr.error(response.error, "Error");
+                }
+
+                if (response.success) {
+                    downloadImage(response.blobBase64, response.fileName);
+                }
+            }
+        });
+
+        function downloadImage(blobBase64, fileName) {
+            linkSource = `data:image/png;base64,${blobBase64}`;
+            downloadLink = document.createElement('a');
+            fileName = `${fileName}.png`;
+            downloadLink.href = linkSource;
+            downloadLink.download = fileName;
+            downloadLink.click();
+        }
+
+    }
+</script>

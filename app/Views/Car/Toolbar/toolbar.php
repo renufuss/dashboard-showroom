@@ -59,66 +59,35 @@
                         <!--begin::Input group-->
                         <div class="mb-10">
                             <!--begin::Label-->
-                            <label class="form-label fw-semibold">Status:</label>
+                            <label class="form-label fw-semibold">Brand Mobil</label>
                             <!--end::Label-->
                             <!--begin::Input-->
                             <div>
-                                <select class="form-select form-select-solid" data-kt-select2="true"
-                                    data-placeholder="Select option" data-dropdown-parent="#kt_menu_62cfa7acb0611"
-                                    data-allow-clear="true">
+                                <select class="form-select form-select-solid" data-control="select2" data-placeholder="Semua Brand" id="car_brand" data-hide-search="true" data-allow-clear="true">
                                     <option></option>
-                                    <option value="1">Approved</option>
-                                    <option value="2">Pending</option>
-                                    <option value="2">In Process</option>
-                                    <option value="2">Rejected</option>
+                                    <?php foreach($brands as $brand) : ?>
+                                    <option value="<?= $brand->id; ?>"><?= $brand->brand_name; ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->
-                        <!--begin::Input group-->
                         <div class="mb-10">
-                            <!--begin::Label-->
-                            <label class="form-label fw-semibold">Member Type:</label>
+                             <!--begin::Label-->
+                             <label class="form-label fw-semibold">Status</label>
                             <!--end::Label-->
-                            <!--begin::Options-->
-                            <div class="d-flex">
-                                <!--begin::Options-->
-                                <label class="form-check form-check-sm form-check-custom form-check-solid me-5">
-                                    <input class="form-check-input" type="checkbox" value="1" />
-                                    <span class="form-check-label">Author</span>
-                                </label>
-                                <!--end::Options-->
-                                <!--begin::Options-->
-                                <label class="form-check form-check-sm form-check-custom form-check-solid">
-                                    <input class="form-check-input" type="checkbox" value="2" checked="checked" />
-                                    <span class="form-check-label">Customer</span>
-                                </label>
-                                <!--end::Options-->
-                            </div>
-                            <!--end::Options-->
+                             <!--begin::Select2-->
+                             <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" id="status" data-allow-clear="true" data-placeholder="Semua Status" >
+                                <option></option>
+                                <option value="0">Ready</option>
+                                <option value="1">Terjual</option>
+                            </select>
+                            <!--end::Select2-->
                         </div>
-                        <!--end::Input group-->
-                        <!--begin::Input group-->
-                        <div class="mb-10">
-                            <!--begin::Label-->
-                            <label class="form-label fw-semibold">Notifications:</label>
-                            <!--end::Label-->
-                            <!--begin::Switch-->
-                            <div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" value="" name="notifications"
-                                    checked="checked" />
-                                <label class="form-check-label">Enabled</label>
-                            </div>
-                            <!--end::Switch-->
-                        </div>
-                        <!--end::Input group-->
                         <!--begin::Actions-->
                         <div class="d-flex justify-content-end">
-                            <button type="reset" class="btn btn-sm btn-light btn-active-light-primary me-2"
-                                data-kt-menu-dismiss="true">Reset</button>
-                            <button type="submit" class="btn btn-sm btn-primary"
-                                data-kt-menu-dismiss="true">Apply</button>
+                            <button type="button" class="btn btn-sm btn-primary" id="btnApplyFilter" data-kt-menu-dismiss="true">Apply</button>
                         </div>
                         <!--end::Actions-->
                     </div>

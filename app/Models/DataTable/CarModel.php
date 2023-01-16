@@ -21,9 +21,18 @@ class CarModel extends Model
         $this->db = db_connect();
         $this->request = $request;
     }
-    private function _get_datatables_query()
+    private function _get_datatables_query($status = null, $brandId = null)
     {
         $this->dt = $this->db->table($this->table)->select('car.*, brand_name')->join('car_brand', 'car.brand_id=car_brand.id')->where('car.deleted_at', null);
+
+        if ($status != null) {
+            $this->dt->where('car.status', $status);
+        }
+
+        if ($brandId != null) {
+            $this->dt->where('car.brand_id', $brandId);
+        }
+
         $i = 0;
         foreach ($this->column_search as $item) {
             if ($this->request->getPost('search')['value']) {
@@ -47,9 +56,9 @@ class CarModel extends Model
             $this->dt->orderBy(key($order), $order[key($order)]);
         }
     }
-    public function get_datatables()
+    public function get_datatables($status = null, $brandId = null)
     {
-        $this->_get_datatables_query();
+        $this->_get_datatables_query($status, $brandId);
         if ($this->request->getPost('length') != -1) {
             $this->dt->limit($this->request->getPost('length'), $this->request->getPost('start'));
         }
@@ -61,9 +70,18 @@ class CarModel extends Model
         $this->_get_datatables_query();
         return $this->dt->countAllResults();
     }
-    public function count_all()
+    public function count_all($status = null, $brandId = null)
     {
         $tbl_storage = $this->db->table($this->table)->select('car.*, brand_name')->join('car_brand', 'car.brand_id=car_brand.id')->where('car.deleted_at', null);
+
+        if ($status != null) {
+            $tbl_storage->where('car.status', $status);
+        }
+
+        if ($brandId != null) {
+            $tbl_storage->where('car.brand_id', $brandId);
+        }
+
         return $tbl_storage->countAllResults();
     }
 }

@@ -109,7 +109,7 @@ class CarModel extends Model
         $brand = $query->get()->getFirstRow();
 
         if ($brand != null) {
-            return true;
+            return $brand->brand_name;
         }
         return false;
     }
@@ -178,6 +178,22 @@ class CarModel extends Model
 
         $table = $this->db->table('car_additional_cost');
         return $table->insertBatch($data);
+    }
+
+    public function getAdditionalCost($carId = null, $additionalId = null)
+    {
+        $table = $this->db->table('car_additional_cost');
+        $query = $table->select('*');
+        if ($carId != null) {
+            $query->where('car_id', $carId);
+        }
+
+        if ($additionalId != null) {
+            $query->where('id', $additionalId);
+            return $query->get()->getFirstRow();
+        }
+
+        return $query->get()->getResultObject();
     }
 
     public function getTotalAdditionalCost($carId = null)

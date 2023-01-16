@@ -18,6 +18,11 @@ class ComposerStaticInit89f86e42d38e6e641815e3069cf90373
         array (
             'Tests\\Support\\' => 14,
         ),
+        'S' => 
+        array (
+            'Svg\\' => 4,
+            'Sabberworm\\CSS\\' => 15,
+        ),
         'P' => 
         array (
             'Psr\\Log\\' => 8,
@@ -27,6 +32,7 @@ class ComposerStaticInit89f86e42d38e6e641815e3069cf90373
         'M' => 
         array (
             'Myth\\Auth\\' => 10,
+            'Masterminds\\' => 12,
         ),
         'L' => 
         array (
@@ -38,10 +44,12 @@ class ComposerStaticInit89f86e42d38e6e641815e3069cf90373
         ),
         'F' => 
         array (
+            'FontLib\\' => 8,
             'Faker\\' => 6,
         ),
         'D' => 
         array (
+            'Dompdf\\' => 7,
             'Doctrine\\Instantiator\\' => 22,
             'DeepCopy\\' => 9,
         ),
@@ -55,6 +63,14 @@ class ComposerStaticInit89f86e42d38e6e641815e3069cf90373
         'Tests\\Support\\' => 
         array (
             0 => __DIR__ . '/../..' . '/tests/_support',
+        ),
+        'Svg\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phenx/php-svg-lib/src/Svg',
+        ),
+        'Sabberworm\\CSS\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/src',
         ),
         'Psr\\Log\\' => 
         array (
@@ -72,6 +88,10 @@ class ComposerStaticInit89f86e42d38e6e641815e3069cf90373
         array (
             0 => __DIR__ . '/..' . '/myth/auth/src',
         ),
+        'Masterminds\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/masterminds/html5/src',
+        ),
         'Laminas\\Escaper\\' => 
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-escaper/src',
@@ -80,9 +100,17 @@ class ComposerStaticInit89f86e42d38e6e641815e3069cf90373
         array (
             0 => __DIR__ . '/..' . '/kint-php/kint/src',
         ),
+        'FontLib\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib',
+        ),
         'Faker\\' => 
         array (
             0 => __DIR__ . '/..' . '/fakerphp/faker/src/Faker',
+        ),
+        'Dompdf\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
         ),
         'Doctrine\\Instantiator\\' => 
         array (
@@ -110,6 +138,7 @@ class ComposerStaticInit89f86e42d38e6e641815e3069cf90373
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Dompdf\\Cpdf' => __DIR__ . '/..' . '/dompdf/dompdf/lib/Cpdf.php',
         'PHPUnit\\Exception' => __DIR__ . '/..' . '/phpunit/phpunit/src/Exception.php',
         'PHPUnit\\Framework\\ActualValueIsNotAnObjectException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Exception/ActualValueIsNotAnObjectException.php',
         'PHPUnit\\Framework\\Assert' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert.php',

@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\CarModel;
 use App\Models\DataTable\CarModel as DataTableCarModel;
 use Config\Services;
+use Dompdf\Dompdf;
 
 class Car extends BaseController
 {
@@ -19,6 +20,7 @@ class Car extends BaseController
     public function index()
     {
         $data['title'] = 'Mobil';
+        $data['brands'] = $this->CarModel->getBrands();
         return view('Car/index', $data);
     }
 
@@ -149,11 +151,13 @@ class Car extends BaseController
 
     public function getCar()
     {
-        ini_set('memory_limit', '8192M');
+        ini_set('memory_limit', '-1');
         $request = Services::request();
+        $status = $this->request->getPost('status');
+        $brandId = $this->request->getPost('brandId');
         $carModel = new DataTableCarModel($request);
         if ($request->getMethod(true) == 'POST') {
-            $cars = $carModel->get_datatables();
+            $cars = $carModel->get_datatables($status, $brandId);
             $data = [];
             foreach ($cars as $car) {
                 // Total Additional Cost
@@ -161,6 +165,7 @@ class Car extends BaseController
 
                 // Row Table
                 $row = [];
+                $urlDetail = base_url('mobil/'.$car->id);
                 $row[] = "<div class=\"d-flex align-items-center\">
                 <!--begin::Thumbnail-->
                 <div class=\"symbol symbol-50px\">
@@ -171,8 +176,8 @@ class Car extends BaseController
                 <div class=\"ms-5\">
                     <!--begin::Car details-->
                     <div class=\"d-flex flex-column\">
-                        <a href=\"#\"
-                            class=\"text-gray-800 text-hover-primary mb-1\">$car->car_name</a>
+                        <a href=\"$urlDetail\"
+                            class=\"text-gray-800 text-hover-primary mb-1\" target=\"_blank\">$car->car_name</a>
                         <span>$car->brand_name</span>
                     </div>
                     <!--begin::Car details-->
@@ -182,7 +187,14 @@ class Car extends BaseController
                 $row[] = $car->car_year;
                 $row[] = $car->license_number;
                 $totalCost = 'Rp '.number_format(($car->capital_price + $totalAdditionalCost), '0', ',', '.');
-                $row[] = 'status';
+                switch ($car->status) {
+                    case '0':
+                        $row[] = "<span class=\"badge badge-light-success fs-7 fw-bold\">Ready</span>";
+                        break;
+                    case '1':
+                        $row[] = "<span class=\"badge badge-light-danger fs-7 fw-bold\">Sold</span>";
+                }
+
                 $row[] = "<div class=\"text-end\">$totalCost</div>";
                 $row[] = "<div class=\"d-flex justify-content-end flex-shrink-0\">
                 <a href=\"<?= base_url(); ?>/pengguna/detail/\" class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
@@ -224,11 +236,58 @@ class Car extends BaseController
             }
             $output = [
                 "draw" => $request->getPost('draw'),
-                "recordsTotal" => $carModel->count_all(),
+                "recordsTotal" => $carModel->count_all($status, $brandId),
                 "recordsFiltered" => $carModel->count_filtered(),
                 "data" => $data
             ];
             echo json_encode($output);
+        }
+    }
+
+    public function detail($id, $print = false)
+    {
+        ini_set('memory_limit', '-1');
+        $car = $this->CarModel->find($id);
+        if ($car != null) {
+            $car->car_brand = $this->CarModel->checkBrand($car->brand_id);
+            $car->totalAdditionalCost = $this->CarModel->getTotalAdditionalCost($car->id);
+
+            $data = [
+                'title' => $car->car_name .' | '. 'Renufus',
+                'car' => $car,
+                'print' => false,
+                'additionalCosts' => $this->CarModel->getAdditionalCost($car->id),
+            ];
+            if ($print != false) {
+                $data['print'] = true;
+                return view('Car/Detail/Print/index', $data);
+            }
+            return view('Car/Detail/index', $data);
+        }
+        return redirect()->to(base_url('mobil'));
+    }
+
+    public function printDetail($id)
+    {
+        $car = $this->CarModel->find($id);
+        if ($car != null) {
+            $html = $this->detail($id, true);
+            // instantiate and use the dompdf class
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($html);
+
+            // (Optional) Setup the paper size and orientation
+            $dompdf->setPaper('A4', 'landscape');
+
+            // Render the HTML as PDF
+            $dompdf->render();
+
+            // Output the generated PDF to Browser
+            $dompdf->stream($car->car_name.'.pdf', [
+                'Attachment' => false,
+            ]);
+        } else {
+            return redirect()->to(base_url('mobil'));
         }
     }
 
@@ -369,6 +428,27 @@ class Car extends BaseController
     }
 
     public function downloadAdditionalReceipt()
+    {
+        if ($this->request->isAJAX()) {
+            $additionalId = $this->request->getPost('additionalId');
+            $additionalCost = $this->CarModel->getAdditionalCost(null, $additionalId);
+
+            $isEmpty = ($additionalCost == null);
+            if ($isEmpty) {
+                $response = [
+                    'error' => 'Data tidak ditemukan',
+                ];
+                return json_encode($response);
+            }
+
+            $response['success'] = 'Berhasil mendownload image';
+            $response['blobBase64'] = $additionalCost->additional_receipt;
+            $response['fileName'] = $additionalCost->cost_name;
+            return json_encode($response);
+        }
+    }
+
+    public function downloadTempAdditionalReceipt()
     {
         if ($this->request->isAJAX()) {
             $tempId = $this->request->getPost('tempId');

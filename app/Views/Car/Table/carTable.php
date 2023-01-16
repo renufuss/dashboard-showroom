@@ -45,7 +45,7 @@
     </thead>
     <!--end::Table head-->
     <!--begin::Table body-->
-    <tbody class="fw-semibold text-gray-600">
+    <tbody class="fw-semibold text-gray-600" id="tbody">
 
     </tbody>
     <!--end::Table body-->
@@ -54,40 +54,47 @@
 <script>
     function getCar() {
         if(DataTable.isDataTable('#carTable')){
-            $('#carTable').DataTable().clear().draw();
-        }else{
-            let table = $('#carTable').DataTable({
-                "processing": true,
-                "serverSide": true,
-                "order": [],
-                "ajax": {
-                    "url": "/mobil/getcar",
-                    "type": "POST",
-                },
-                'columnDefs': [{
-                        'responsivePriority': 1,
-                        'targets': 0
-                    },
-                    {
-                        'responsivePriority': 2,
-                        'targets': -1
-                    }
-                ],
-                "scrollX": true, // enables horizontal scrolling      
-                "filter": true,
-                "responsive": true,
-                "info": true, // control table information display field
-                "stateSave": false, //restore table state on page reload,
-                "language": {
-                    "processing": "<i class='fa fa-refresh fa-spin'></i>",
-                },
-                // optional
-                // "columnDefs": [{
-                //     "target": 0,
-                //     "orderable": false,
-                // }],
-            })
+            $('#carTable').DataTable().destroy();
+            // Loading
+            $('#tbody').html(`<i class='fa fa-refresh fa-spin'></i>`);
         }
+        let table = $('#carTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "order": [],
+            "ajax": {
+                "url": "/mobil/getcar",
+                "type": "POST",
+                "data" : {
+                    "status" : $('#status').val(),
+                    "brandId" : $('#car_brand').val(),
+                }
+            },
+            'columnDefs': [{
+                    'responsivePriority': 1,
+                    'targets': 0
+                },
+                {
+                    'responsivePriority': 2,
+                    'targets': -1
+                }
+            ],
+            "scrollX": true, // enables horizontal scrolling      
+            "filter": true,
+            "responsive": true,
+            "info": true, // control table information display field
+            "stateSave": false, //restore table state on page reload,
+            "language": {
+                "processing": "<i class='fa fa-refresh fa-spin'></i>",
+            },
+            // optional
+            // "columnDefs": [{
+            //     "target": 0,
+            //     "orderable": false,
+            // }],
+        })
+        // removeLoading
+        $('#tbody').html('');
         $('#search').on('keyup', function () {
             table.search(this.value).draw();
         });
@@ -153,5 +160,11 @@
 
     $(document).ready(function () {
         getCar();
+
+        $('#btnApplyFilter').click(function (e) { 
+            e.preventDefault();
+             getCar();
+             $('#search').val('');
+        });
     });
 </script>

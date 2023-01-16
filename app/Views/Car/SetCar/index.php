@@ -583,36 +583,6 @@
         });
     }
 
-    function getImage(tempId) {
-        $.ajax({
-            type: "post",
-            url: "/mobil/download/additionalreceipt",
-            data: {
-                tempId : tempId,
-                temp_session : sessionStorage.tab,
-            },
-            dataType: "json",
-            success: function (response) {
-                if (response.error) {
-                    toastr.error(response.error, "Error");
-                }
-
-                if (response.success) {
-                    downloadImage(response.blobBase64, response.fileName);
-                }
-            }
-        });
-    }
-
-    function downloadImage(blobBase64, fileName) {
-        linkSource = `data:image/png;base64,${blobBase64}`;
-        downloadLink = document.createElement('a');
-        fileName = `${fileName}.png`;
-        downloadLink.href = linkSource;
-        downloadLink.download = fileName;
-        downloadLink.click();
-    }
-
     function getTotalTempAdditionalCost() {
         $.ajax({
             type: "post",
