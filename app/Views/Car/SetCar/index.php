@@ -334,7 +334,7 @@
                                     <div class="form-group">
                                         <label for="totalTempAdditionalCost">Total Biaya</label>
                                         <input type="text" class="form-control form-control-lg"
-                                            style="text-align: right; color:blue; font-weight : bold; font-size:18pt;"
+                                            style="text-align: right; color:orange; font-weight : bold; font-size:18pt;"
                                             value="0" id="totalTempAdditionalCost" readonly>
                                     </div>
                                 </div>
@@ -396,6 +396,7 @@
             decimalCharacterAlternative: ',',
             currencySymbol: 'Rp ',
             minimumValue: 0,
+            modifyValueOnWheel: false,
             currencySymbolPlacement: AutoNumeric.options.currencySymbolPlacement.prefix,
         });
     }

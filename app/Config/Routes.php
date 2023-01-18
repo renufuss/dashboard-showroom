@@ -42,6 +42,7 @@ $routes->post('/mobil/getcar', 'Car::getCar');
 $routes->post('/mobil/alertDelete', 'Car::alertCarDelete');
 $routes->post('/mobil/delete', 'Car::deleteCar');
 $routes->get('/mobil/(:num)', 'Car::detail/$1');
+$routes->get('/mobil/(:num)/general', 'Car::pageEditGeneralCar/$1');
 $routes->get('/mobil/(:num)/print', 'Car::printDetail/$1');
 
 $routes->post('/mobil/download/additionalreceipt', 'Car::downloadAdditionalReceipt');

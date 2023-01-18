@@ -35,8 +35,7 @@
             <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
-                <a class="menu-link  <?= (url_is('mobil*')) ? 'active' : ''; ?>""
-                    href="<?= base_url('mobil'); ?>">
+                <a class="menu-link  <?= (url_is('mobil*')) ? 'active' : ''; ?>" href="<?= base_url('mobil'); ?>">
                     <span class="menu-icon">
                         <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/ecommerce/ecm006.svg-->
                         <span class="svg-icon svg-icon-muted svg-icon-2hx"><svg width="24" height="24"

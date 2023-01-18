@@ -23,7 +23,7 @@ class CarModel extends Model
 
     protected $validationRules    = [
         'car_name' => 'required|alpha_numeric_space',
-        'license_number' => 'required|alpha_numeric',
+        'license_number' => 'required|alpha_numeric_space',
         'car_color' => 'required|alpha_space',
         'car_year' => 'required|numeric',
         'car_brand' => 'required',
@@ -38,7 +38,7 @@ class CarModel extends Model
         ],
         'license_number' => [
             'required' => 'Plat nomor tidak boleh kosong',
-            'alpha_numeric' => 'Plat nomor hanya boleh huruf dan angka tanpa spasi'
+            'alpha_numeric' => 'Plat nomor hanya boleh huruf dan angka'
         ],
         'car_color' => [
             'required' => 'Warna mobil tidak boleh kosong',

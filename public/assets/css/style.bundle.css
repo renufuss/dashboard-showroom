@@ -53358,6 +53358,10 @@ html:not([data-theme="dark"]) {
   .desktop-only {
     display: none;
   }
+
+  .text-center-mobile {
+    text-align: center;
+  }
 }
 
 /* Loader */

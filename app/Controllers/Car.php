@@ -55,6 +55,7 @@ class Car extends BaseController
         if ($this->request->isAJAX()) {
             // Form Input
             $input = [
+                'id' => $this->request->getPost('id'),
                 'car_name' => $this->request->getPost('car_name'),
                 'license_number' => $this->request->getPost('license_number'),
                 'car_color' => $this->request->getPost('car_color'),
@@ -91,7 +92,6 @@ class Car extends BaseController
             $receipt = $this->blobImage($input['receipt']);
             $carImage = $this->blobImage($input['car_image']);
 
-
             //Save
             $data = [
                 'car_name' => ucwords(strtolower($input['car_name'])),
@@ -103,14 +103,20 @@ class Car extends BaseController
                 'receipt' => $receipt,
                 'car_image' => $carImage,
             ];
+            if ($input['id'] != null) {
+                $data['id'] = $input['id'];
+            }
+
             $this->CarModel->save($data);
 
-            // Insert Temp Additional Cost
-            $tempSession = $this->request->getPost('temp_session');
-            $tempAdditionalCost = $this->CarModel->getTempAdditionalCost(user()->id, null, $tempSession);
-            $carId = $this->CarModel->getInsertID();
-            if ($tempAdditionalCost != null) {
-                $this->CarModel->setAdditionalCost($tempAdditionalCost, $carId);
+            if ($input['id'] == null) {
+                // Insert Temp Additional Cost
+                $tempSession = $this->request->getPost('temp_session');
+                $tempAdditionalCost = $this->CarModel->getTempAdditionalCost(user()->id, null, $tempSession);
+                $carId = $this->CarModel->getInsertID();
+                if ($tempAdditionalCost != null) {
+                    $this->CarModel->setAdditionalCost($tempAdditionalCost, $carId);
+                }
             }
 
             $response['success'] = 'Berhasil menyimpan mobil';
@@ -118,9 +124,25 @@ class Car extends BaseController
         }
     }
 
+    public function pageEditGeneralCar($id)
+    {
+        $car = $this->CarModel->find($id);
+        if ($car != null) {
+            $car->car_brand = $this->CarModel->checkBrand($car->brand_id);
+            $data = [
+                'title' => $car->car_name.' | Edit Car',
+                'car' => $car,
+                'brands' => $this->CarModel->getBrands(),
+            ];
+            return view('Car/EditCar/general', $data);
+        } else {
+            return redirect()->to(base_url('mobil'));
+        }
+    }
+
     public function formatLicenseNumber($licenseNumber)
     {
-        $licenseNumber = $licenseNumber;
+        $licenseNumber = str_replace(' ', '', $licenseNumber);
         $realNumber = [];
         $convertNumber = [];
         for ($i = 0; $i < strlen($licenseNumber); $i++) {
@@ -195,9 +217,10 @@ class Car extends BaseController
                         $row[] = "<span class=\"badge badge-light-danger fs-7 fw-bold\">Sold</span>";
                 }
 
+                $urlEditGeneral = base_url().'/mobil/'.$car->id.'/general';
                 $row[] = "<div class=\"text-end\">$totalCost</div>";
                 $row[] = "<div class=\"d-flex justify-content-end flex-shrink-0\">
-                <a href=\"<?= base_url(); ?>/pengguna/detail/\" class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
+                <a href=\"$urlEditGeneral\" target=_blank class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
                     <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
                     <span class=\"svg-icon svg-icon-3\">
                         <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"

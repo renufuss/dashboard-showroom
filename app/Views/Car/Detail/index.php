@@ -50,7 +50,7 @@
                             <!--begin::Input group-->
                             <div class="fv-row mt-3">
                                 <!--begin::Label-->
-                                <label class="required form-label">Tahun Mobil</label>
+                                <label class="form-label">Tahun Mobil</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="car_year" id="car_year" class="form-control mb-2"
@@ -71,7 +71,7 @@
                             <!--begin::Input group-->
                             <div class="mt-3 fv-row">
                                 <!--begin::Label-->
-                                <label class="required form-label">Brand Mobil</label>
+                                <label class="form-label">Brand Mobil</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="car_brand" id="car_brand" class="form-control mb-2"
@@ -201,7 +201,7 @@
                                     <div class="form-group">
                                         <label for="totalTempAdditionalCost">Total Pengeluaran Tambahan</label>
                                         <input type="text" class="form-control form-control-lg"
-                                            style="text-align: right; color:black; font-weight : bold; font-size:12pt;"
+                                            style="text-align: right; color:orange; font-weight : bold; font-size:12pt;"
                                             value="<?= 'Rp '.number_format(($car->totalAdditionalCost), '0', ',', '.'); ?>" id="totalTempAdditionalCost" readonly>
                                     </div>
                                 </div>
@@ -226,7 +226,7 @@
                                     <div class="form-group">
                                         <label for="totalTempAdditionalCost">Total Pengeluaran (Harga Mobil + Pengeluaran Tambahan)</label>
                                         <input type="text" class="form-control form-control-lg"
-                                            style="text-align: right; color:blue; font-weight : bold; font-size:12pt;"
+                                            style="text-align: right; color:red; font-weight : bold; font-size:12pt;"
                                             value="<?= 'Rp '.number_format(($car->totalAdditionalCost + $car->capital_price), '0', ',', '.'); ?>" id="totalTempAdditionalCost" readonly>
                                     </div>
                                 </div>
