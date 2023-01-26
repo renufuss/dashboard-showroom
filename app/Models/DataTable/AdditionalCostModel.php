@@ -5,12 +5,12 @@ namespace App\Models\DataTable;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\Model;
 
-class CarModel extends Model
+class AdditionalCostModel extends Model
 {
-    protected $table = "car";
-    protected $column_order = array('car_name', 'car_color', 'car_year', 'license_number', null, 'capital_price', 'car_price', null);
-    protected $column_search = array('car_name', 'car_color', 'car_year', 'license_number', 'capital_price', 'car_price');
-    protected $order = array('car_name' => 'asc', 'car_color' => 'asc', 'car_year' => 'asc', 'license_number' => 'asc', 'capital_price' => 'asc', 'car_price' => 'asc');
+    protected $table = "car_additional_cost";
+    protected $column_order = array(null, 'cost_name', 'additional_price', null, 'paid_by', null);
+    protected $column_search = array('cost_name', 'additional_price', 'paid_by');
+    protected $order = array('cost_name' => 'asc', 'additional_price' => 'asc', 'paid_by' => 'asc');
     protected $request;
     protected $db;
     protected $dt;
@@ -21,16 +21,12 @@ class CarModel extends Model
         $this->db = db_connect();
         $this->request = $request;
     }
-    private function _get_datatables_query($status = null, $brandId = null)
+    private function _get_datatables_query($carId = null)
     {
-        $this->dt = $this->db->table($this->table)->select('car.*, brand_name')->join('car_brand', 'car.brand_id=car_brand.id')->where('car.deleted_at', null);
+        $this->dt = $this->db->table($this->table)->select('*');
 
-        if ($status != null) {
-            $this->dt->where('car.status', $status);
-        }
-
-        if ($brandId != null) {
-            $this->dt->where('car.brand_id', $brandId);
+        if ($carId != null) {
+            $this->dt->where('car_id', $carId);
         }
 
         $i = 0;
@@ -56,30 +52,26 @@ class CarModel extends Model
             $this->dt->orderBy(key($order), $order[key($order)]);
         }
     }
-    public function get_datatables($status = null, $brandId = null)
+    public function get_datatables($carId = null)
     {
-        $this->_get_datatables_query($status, $brandId);
+        $this->_get_datatables_query($carId);
         if ($this->request->getPost('length') != -1) {
             $this->dt->limit($this->request->getPost('length'), $this->request->getPost('start'));
         }
         $query = $this->dt->get();
         return $query->getResult();
     }
-    public function count_filtered()
+    public function count_filtered($carId)
     {
-        $this->_get_datatables_query();
+        $this->_get_datatables_query($carId);
         return $this->dt->countAllResults();
     }
-    public function count_all($status = null, $brandId = null)
+    public function count_all($carId = null)
     {
-        $tbl_storage = $this->db->table($this->table)->select('car.*, brand_name')->join('car_brand', 'car.brand_id=car_brand.id')->where('car.deleted_at', null);
+        $tbl_storage = $this->db->table($this->table)->select('*');
 
-        if ($status != null) {
-            $tbl_storage->where('car.status', $status);
-        }
-
-        if ($brandId != null) {
-            $tbl_storage->where('car.brand_id', $brandId);
+        if ($carId != null) {
+            $tbl_storage->where('car_id', $carId);
         }
 
         return $tbl_storage->countAllResults();

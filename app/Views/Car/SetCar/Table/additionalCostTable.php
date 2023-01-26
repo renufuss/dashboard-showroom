@@ -16,7 +16,7 @@
             <th class="desktop-only text-end">Jumlah Pengeluaran</th>
             <th class="text-center">Bukti Pengeluaran</th>
             <th>Pembayaran</th>
-            <th class="text-end min-w-70px">Actions</th>
+            <th class="text-end min-w-70px">Aksi</th>
         </tr>
         <!--end::Table row-->
     </thead>

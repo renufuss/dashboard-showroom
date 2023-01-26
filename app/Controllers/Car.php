@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\CarModel;
 use App\Models\DataTable\CarModel as DataTableCarModel;
+use App\Models\DataTable\AdditionalCostModel as DataTableAdditionalCostModel;
 use Config\Services;
 use Dompdf\Dompdf;
 
@@ -45,7 +46,7 @@ class Car extends BaseController
         $pathInfo = 'assets/images/cars/'.$image->getName();
         $fileContent = file_get_contents($pathInfo);
         $base64 = rtrim(base64_encode($fileContent));
-        $this->removeImage($image);
+        $this->removeImage($image->getName());
 
         return $base64;
     }
@@ -62,6 +63,7 @@ class Car extends BaseController
                 'car_year' => $this->request->getPost('car_year'),
                 'car_brand' => $this->request->getPost('car_brand'),
                 'capital_price' => str_replace([',','.','Rp '], '', $this->request->getPost('capital_price')),
+                'car_price' => str_replace([',','.','Rp '], '', $this->request->getPost('car_price')),
                 'receipt' => $this->request->getFile('receipt'),
                 'car_image' => $this->request->getFile('car_image'),
             ];
@@ -100,6 +102,7 @@ class Car extends BaseController
                 'car_year' => $input['car_year'],
                 'brand_id' => $input['car_brand'],
                 'capital_price' => $input['capital_price'],
+                'car_price' => $input['car_price'],
                 'receipt' => $receipt,
                 'car_image' => $carImage,
             ];
@@ -133,10 +136,111 @@ class Car extends BaseController
                 'title' => $car->car_name.' | Edit Car',
                 'car' => $car,
                 'brands' => $this->CarModel->getBrands(),
+                'additionalCosts' => $this->CarModel->getAdditionalCost($car->id),
             ];
             return view('Car/EditCar/general', $data);
         } else {
             return redirect()->to(base_url('mobil'));
+        }
+    }
+
+    public function pageEditAdditionalCost($id)
+    {
+        $car = $this->CarModel->find($id);
+        if ($car != null) {
+            $car->car_brand = $this->CarModel->checkBrand($car->brand_id);
+            $data = [
+                'title' => $car->car_name.' | Edit Car',
+                'car' => $car,
+                'additionalCosts' => $this->CarModel->getAdditionalCost($car->id),
+                'brands' => $this->CarModel->getBrands(),
+            ];
+            return view('Car/EditCar/additionalCost', $data);
+        } else {
+            return redirect()->to(base_url('mobil'));
+        }
+    }
+
+    public function getAdditionalCost($carId)
+    {
+        ini_set('memory_limit', '-1');
+        $request = Services::request();
+        $additionalCostModel = new DataTableAdditionalCostModel($request);
+        if ($request->getMethod(true) == 'POST') {
+            $additionalCosts = $additionalCostModel->get_datatables($carId);
+            $no = $request->getPost('start');
+            $data = [];
+            foreach ($additionalCosts as $additionalCost) {
+                $no++;
+                // Row Table
+                $row = [];
+                $row[] = $no;
+                $row[] = $additionalCost->cost_name;
+                $row[] = "Rp " . number_format($additionalCost->additional_price, '0', ',', '.');
+                if ($additionalCost->additional_receipt != null) {
+                    $row[] = "<button class=\"btn btn-icon btn-bg-light btn-active-color-success btn-sm\"
+                    onclick=\"getImage('$additionalCost->id');return false;\"><span class=\"svg-icon svg-icon-muted svg-icon-2hx\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"
+                    fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">
+                    <path opacity=\"0.3\"
+                        d=\"M19 15C20.7 15 22 13.7 22 12C22 10.3 20.7 9 19 9C18.9 9 18.9 9 18.8 9C18.9 8.7 19 8.3 19 8C19 6.3 17.7 5 16 5C15.4 5 14.8 5.2 14.3 5.5C13.4 4 11.8 3 10 3C7.2 3 5 5.2 5 8C5 8.3 5 8.7 5.1 9H5C3.3 9 2 10.3 2 12C2 13.7 3.3 15 5 15H19Z\"
+                        fill=\"currentColor\" />
+                    <path d=\"M13 17.4V12C13 11.4 12.6 11 12 11C11.4 11 11 11.4 11 12V17.4H13Z\"
+                        fill=\"currentColor\" />
+                    <path opacity=\"0.3\" d=\"M8 17.4H16L12.7 20.7C12.3 21.1 11.7 21.1 11.3 20.7L8 17.4Z\"
+                        fill=\"currentColor\" />
+                </svg>
+            </span>
+            <!--end::Svg Icon-->
+                </button>";
+                } else {
+                    $row[] = "<span>-</span>";
+                }
+                $row[] = $additionalCost->paid_by;
+                $row[] = "<div class=\"d-flex justify-content-end flex-shrink-0\">
+                <a href=\"a\" target=_blank class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
+                    <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
+                    <span class=\"svg-icon svg-icon-3\">
+                        <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
+                            xmlns=\"http://www.w3.org/2000/svg\">
+                            <path
+                                d=\"M17.5 11H6.5C4 11 2 9 2 6.5C2 4 4 2 6.5 2H17.5C20 2 22 4 22 6.5C22 9 20 11 17.5 11ZM15 6.5C15 7.9 16.1 9 17.5 9C18.9 9 20 7.9 20 6.5C20 5.1 18.9 4 17.5 4C16.1 4 15 5.1 15 6.5Z\"
+                                fill=\"currentColor\"></path>
+                            <path opacity=\"0.3\"
+                                d=\"M17.5 22H6.5C4 22 2 20 2 17.5C2 15 4 13 6.5 13H17.5C20 13 22 15 22 17.5C22 20 20 22 17.5 22ZM4 17.5C4 18.9 5.1 20 6.5 20C7.9 20 9 18.9 9 17.5C9 16.1 7.9 15 6.5 15C5.1 15 4 16.1 4 17.5Z\"
+                                fill=\"currentColor\"></path>
+                        </svg>
+                    </span>
+                    <!--end::Svg Icon-->
+                </a>
+                <button class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm\" onclick=\"alertCarDelete('b')\">
+                    <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
+                    <span class=\"svg-icon svg-icon-3\">
+                        <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
+                            xmlns=\"http://www.w3.org/2000/svg\">
+                            <path
+                                d=\"M5 9C5 8.44772 5.44772 8 6 8H18C18.5523 8 19 8.44772 19 9V18C19 19.6569 17.6569 21 16 21H8C6.34315 21 5 19.6569 5 18V9Z\"
+                                fill=\"currentColor\"></path>
+                            <path opacity=\"0.5\"
+                                d=\"M5 5C5 4.44772 5.44772 4 6 4H18C18.5523 4 19 4.44772 19 5V5C19 5.55228 18.5523 6 18 6H6C5.44772 6 5 5.55228 5 5V5Z\"
+                                fill=\"currentColor\"></path>
+                            <path opacity=\"0.5\"
+                                d=\"M9 4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4V4H9V4Z\"
+                                fill=\"currentColor\"></path>
+                        </svg>
+                    </span>
+                    <!--end::Svg Icon-->
+                </button>
+            </div>";
+
+                $data[] = $row;
+            }
+            $output = [
+                "draw" => $request->getPost('draw'),
+                "recordsTotal" => $additionalCostModel->count_all($carId),
+                "recordsFiltered" => $additionalCostModel->count_filtered($carId),
+                "data" => $data
+            ];
+            echo json_encode($output);
         }
     }
 
@@ -208,7 +312,6 @@ class Car extends BaseController
                 $row[] = $car->car_color;
                 $row[] = $car->car_year;
                 $row[] = $car->license_number;
-                $totalCost = 'Rp '.number_format(($car->capital_price + $totalAdditionalCost), '0', ',', '.');
                 switch ($car->status) {
                     case '0':
                         $row[] = "<span class=\"badge badge-light-success fs-7 fw-bold\">Ready</span>";
@@ -216,9 +319,11 @@ class Car extends BaseController
                     case '1':
                         $row[] = "<span class=\"badge badge-light-danger fs-7 fw-bold\">Sold</span>";
                 }
-
-                $urlEditGeneral = base_url().'/mobil/'.$car->id.'/general';
+                $carPrice = 'Rp '.number_format($car->car_price, '0', ',', '.');
+                $totalCost = 'Rp '.number_format(($car->capital_price + $totalAdditionalCost), '0', ',', '.');
                 $row[] = "<div class=\"text-end\">$totalCost</div>";
+                $row[] = "<div class=\"text-end\">$carPrice</div>";
+                $urlEditGeneral = base_url().'/mobil/'.$car->id.'/umum';
                 $row[] = "<div class=\"d-flex justify-content-end flex-shrink-0\">
                 <a href=\"$urlEditGeneral\" target=_blank class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
                     <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->

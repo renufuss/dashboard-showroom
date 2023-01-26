@@ -39,7 +39,8 @@
             <th>Plat Nomor</th>
             <th>Status</th>
             <th class="text-end">Modal</th>
-            <th class="text-center">Actions</th>
+            <th class="text-end">Harga</th>
+            <th class="text-end">Aksi</th>
         </tr>
         <!--end::Table row-->
     </thead>
@@ -88,10 +89,15 @@
                 "processing": "<i class='fa fa-refresh fa-spin'></i>",
             },
             // optional
-            // "columnDefs": [{
-            //     "target": 0,
-            //     "orderable": false,
-            // }],
+            "columnDefs": [{
+                "target": 4,
+                "orderable": false,
+            },
+            {
+                "target": -1,
+                "orderable": false,
+            },
+        ],
         })
         // removeLoading
         $('#tbody').html('');

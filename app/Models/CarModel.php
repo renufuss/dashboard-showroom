@@ -14,7 +14,7 @@ class CarModel extends Model
     protected $returnType     = 'object';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['car_name', 'license_number', 'car_color', 'car_year', 'brand_id', 'capital_price', 'receipt', 'car_image', 'deleted_at'];
+    protected $allowedFields = ['car_name', 'license_number', 'car_color', 'car_year', 'brand_id', 'capital_price', 'car_price', 'receipt', 'car_image', 'deleted_at'];
 
     protected $useTimestamps = true;
     protected $createdField  = null;
@@ -28,6 +28,7 @@ class CarModel extends Model
         'car_year' => 'required|numeric',
         'car_brand' => 'required',
         'capital_price' => 'required|numeric',
+        'car_price' => 'required|numeric',
         'receipt' => 'max_size[receipt,5120]|is_image[receipt]|mime_in[receipt,image/jpg,image/jpeg,image/png]|uploaded[receipt]',
         'car_image' => 'max_size[car_image,5120]|is_image[car_image]|mime_in[car_image,image/jpg,image/jpeg,image/png]|uploaded[car_image]',
     ];
@@ -52,8 +53,12 @@ class CarModel extends Model
             'required' => 'Brand mobil tidak boleh kosong',
         ],
         'capital_price' => [
-            'required' => 'Harga mobil tidak boleh kosong',
-            'numeric' => 'Harga mobil harus menggunakan angka',
+            'required' => 'Harga beli mobil tidak boleh kosong',
+            'numeric' => 'Harga beli mobil harus menggunakan angka',
+        ],
+        'car_price' => [
+            'required' => 'Harga jual mobil tidak boleh kosong',
+            'numeric' => 'Harga jual mobil harus menggunakan angka',
         ],
         'receipt' => [
             'max_size' => 'Ukuran gambar tidak boleh melebihi 5 MB',

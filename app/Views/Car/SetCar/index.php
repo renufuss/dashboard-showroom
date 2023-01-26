@@ -202,7 +202,7 @@
                         <!--begin::Card header-->
                         <div class="card-header">
                             <div class="card-title">
-                                <h2>Harga & Bukti Pembelian</h2>
+                                <h2>Harga Beli & Bukti Pembelian</h2>
                             </div>
                         </div>
                         <!--end::Card header-->
@@ -211,7 +211,7 @@
                             <!--begin::Input group-->
                             <div class="mb-10">
                                 <!--begin::Label-->
-                                <label class="form-label required">Harga Mobil</label>
+                                <label class="form-label required">Harga Beli</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" class="form-control mb-2" name="capital_price" id="capital_price"
@@ -343,6 +343,37 @@
                         <!--end::Card header-->
                     </div>
                     <!--end::Pengeluaran Tambahan-->
+                    <!--begin::Harga Pokok Penjualan-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>Harga Pokok Penjualan</h2>
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Input group-->
+                            <div class="mb-10">
+                                <!--begin::Label-->
+                                <label class="form-label required">Harga Jual</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" class="form-control mb-2" name="car_price" id="car_price"
+                                    autocomplete="off" />
+                                <!--end::Input-->
+                                <div class="invalid-feedback" id="car_price-feedback"></div>
+                                <!--begin::Description-->
+                                <div class="text-muted fs-7">Harga pokok penjualan mobil</div>
+                                <!--end::Description-->
+                            </div>
+                            <!--end::Input group-->
+                        </div>
+                        <!--end::Card header-->
+                    </div>
+                    <!--end::Harga Pokok Penjualan-->
+
                     <div class="d-flex justify-content-end">
                         <!--begin::Button-->
                         <a href="<?= base_url('mobil'); ?>" class="btn btn-sm btn-light btn-active-light-primary me-5"
@@ -389,7 +420,7 @@
     }
 
     function autoNumeric() {
-        [additionalPrice, capitalPrice] = AutoNumeric.multiple(['#additional_price', '#capital_price'], {
+        [additionalPrice, capitalPrice, carPrice] = AutoNumeric.multiple(['#additional_price', '#capital_price', '#car_price'], {
             digitGroupSeparator: '.',
             decimalPlaces: 0,
             decimalCharacter: ',',

@@ -8,7 +8,7 @@
     <div class="card-header border-0">
         <!--begin::Card title-->
         <div class="card-title m-0">
-            <h3 class="fw-bold m-0">Detail Profil</h3>
+            <h3 class="fw-bold m-0">Umum</h3>
         </div>
         <!--end::Card title-->
     </div>
@@ -22,7 +22,7 @@
                 <!--begin::Input group-->
                 <div class="row mb-6">
                     <!--begin::Label-->
-                    <label class="col-lg-4 col-form-label fw-semibold fs-6">Foto Mobil</label>
+                    <label class="col-lg-4 col-form-label fw-semibold fs-6 required">Foto Mobil</label>
                     <!--end::Label-->
                     <!--begin::Col-->
                     <div class="col-lg-8">
@@ -212,7 +212,7 @@
                 <!--begin::Input group-->
                 <div class="row mb-6">
                     <!--begin::Label-->
-                    <label class="col-lg-4 col-form-label required fw-semibold fs-6">Harga Mobil</label>
+                    <label class="col-lg-4 col-form-label required fw-semibold fs-6">Harga Pembelian</label>
                     <!--end::Label-->
                     <!--begin::Col-->
                     <div class="col-lg-8">
@@ -225,6 +225,31 @@
                                     value="<?= 'Rp '.number_format(($car->capital_price), '0', ',', '.'); ?>"
                                     autocomplete="off">
                                 <div class="fv-plugins-message-container invalid-feedback" id="capital_price-feedback">
+                                </div>
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <!--end::Row-->
+                    </div>
+                    <!--end::Col-->
+                </div>
+                <!--end::Input group-->
+                <!--begin::Input group-->
+                <div class="row mb-6">
+                    <!--begin::Label-->
+                    <label class="col-lg-4 col-form-label required fw-semibold fs-6">Harga Penjualan</label>
+                    <!--end::Label-->
+                    <!--begin::Col-->
+                    <div class="col-lg-8">
+                        <!--begin::Row-->
+                        <div class="row">
+                            <!--begin::Col-->
+                            <div class="col-lg-12 fv-row fv-plugins-icon-container">
+                                <input type="text" name="car_price" id="car_price"
+                                    class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
+                                    value="<?= 'Rp '.number_format(($car->car_price), '0', ',', '.'); ?>"
+                                    autocomplete="off">
+                                <div class="fv-plugins-message-container invalid-feedback" id="car_price-feedback">
                                 </div>
                             </div>
                             <!--end::Col-->
@@ -301,7 +326,7 @@
     }
 
     function autoNumeric() {
-        capitalPrice = new AutoNumeric(('#capital_price'), {
+        [capitalPrice, carPrice] = AutoNumeric.multiple(['#capital_price', '#car_price'], {
             digitGroupSeparator: '.',
             decimalPlaces: 0,
             decimalCharacter: ',',

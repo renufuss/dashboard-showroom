@@ -42,7 +42,9 @@ $routes->post('/mobil/getcar', 'Car::getCar');
 $routes->post('/mobil/alertDelete', 'Car::alertCarDelete');
 $routes->post('/mobil/delete', 'Car::deleteCar');
 $routes->get('/mobil/(:num)', 'Car::detail/$1');
-$routes->get('/mobil/(:num)/general', 'Car::pageEditGeneralCar/$1');
+$routes->get('/mobil/(:num)/umum', 'Car::pageEditGeneralCar/$1');
+$routes->get('/mobil/(:num)/biaya', 'Car::pageEditAdditionalCost/$1');
+$routes->post('/mobil/(:num)/biaya', 'Car::getAdditionalCost/$1');
 $routes->get('/mobil/(:num)/print', 'Car::printDetail/$1');
 
 $routes->post('/mobil/download/additionalreceipt', 'Car::downloadAdditionalReceipt');

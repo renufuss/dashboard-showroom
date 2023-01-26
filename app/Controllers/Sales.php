@@ -6,7 +6,7 @@ class Sales extends BaseController
 {
     public function index()
     {
-        $data['title'] = 'Penjualan';
+        $data['title'] = 'Layout';
         return view('Sales/index', $data);
     }
 }

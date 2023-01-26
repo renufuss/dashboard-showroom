@@ -87,7 +87,7 @@
         <!-- mobile -->
         <div class="row fs-5 text-gray-500 fw-bold text-center mobile-only" style="padding-left:15px">
             <div class="col-md-4 col-4 mt-2">
-                <a href="<?= base_url(); ?>/mobil/<?= $car->id; ?>/general" class="nav-link text-active-primary ms-0 me-10 py-5 <?= (url_is('mobil/*/general')) ? 'active' : ''; ?>">
+                <a href="<?= base_url(); ?>/mobil/<?= $car->id; ?>/umum" class="nav-link text-active-primary ms-0 me-10 py-5 <?= (url_is('mobil/*/umum')) ? 'active' : ''; ?>">
                     <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/ecommerce/ecm006.svg-->
                     <span class="svg-icon svg-icon-muted svg-icon-2x"><svg width="24" height="24" viewBox="0 0 24 24"
                             fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -141,8 +141,8 @@
         <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold desktop-only">
             <!--begin::Nav item-->
             <li class="nav-item mt-2">
-                <a class="nav-link text-active-primary ms-0 me-10 py-5 <?= (url_is('mobil/*/general')) ? 'active' : ''; ?>"
-                    href="<?= base_url(); ?>/mobil/<?= $car->id; ?>/general">General</a>
+                <a class="nav-link text-active-primary ms-0 me-10 py-5 <?= (url_is('mobil/*/umum')) ? 'active' : ''; ?>"
+                    href="<?= base_url(); ?>/mobil/<?= $car->id; ?>/umum">Umum</a>
             </li>
             <!--end::Nav item-->
             <!--begin::Nav item-->
@@ -153,7 +153,7 @@
             <!--end::Nav item-->
             <!--begin::Nav item-->
             <li class="nav-item mt-2">
-                <a class="nav-link text-active-primary ms-0 me-10 py-5 <?= (url_is('mobil/*/biaya')) ? 'active' : ''; ?>"
+                <a class="nav-link text-active-primary ms-0 me-10 py-5"
                     href="<?= base_url(); ?>/mobil">
                     <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/arrows/arr079.svg-->
                     <span class="svg-icon svg-icon-muted svg-icon-3"><svg width="24" height="24" viewBox="0 0 24 24"
