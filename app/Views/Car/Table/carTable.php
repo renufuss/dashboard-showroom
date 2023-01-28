@@ -69,6 +69,7 @@
                 "data" : {
                     "status" : $('#status').val(),
                     "brandId" : $('#car_brand').val(),
+                    "keyword" : null,
                 }
             },
             'columnDefs': [{

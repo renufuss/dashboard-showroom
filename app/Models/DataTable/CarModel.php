@@ -21,7 +21,7 @@ class CarModel extends Model
         $this->db = db_connect();
         $this->request = $request;
     }
-    private function _get_datatables_query($status = null, $brandId = null)
+    private function _get_datatables_query($status = null, $brandId = null, $keyword = [])
     {
         $this->dt = $this->db->table($this->table)->select('car.*, brand_name')->join('car_brand', 'car.brand_id=car_brand.id')->where('car.deleted_at', null);
 
@@ -31,6 +31,10 @@ class CarModel extends Model
 
         if ($brandId != null) {
             $this->dt->where('car.brand_id', $brandId);
+        }
+
+        if ($keyword != null) {
+            $this->dt->like('license_number', $keyword['license_number'])->orLike('car_name', $keyword['car_name'])->where('car.status', $keyword['car_status']);
         }
 
         $i = 0;
@@ -56,21 +60,21 @@ class CarModel extends Model
             $this->dt->orderBy(key($order), $order[key($order)]);
         }
     }
-    public function get_datatables($status = null, $brandId = null)
+    public function get_datatables($status = null, $brandId = null, $keyword = [])
     {
-        $this->_get_datatables_query($status, $brandId);
+        $this->_get_datatables_query($status, $brandId, $keyword);
         if ($this->request->getPost('length') != -1) {
             $this->dt->limit($this->request->getPost('length'), $this->request->getPost('start'));
         }
         $query = $this->dt->get();
         return $query->getResult();
     }
-    public function count_filtered()
+    public function count_filtered($status = null, $brandId = null, $keyword = [])
     {
-        $this->_get_datatables_query();
+        $this->_get_datatables_query($status, $brandId, $keyword);
         return $this->dt->countAllResults();
     }
-    public function count_all($status = null, $brandId = null)
+    public function count_all($status = null, $brandId = null, $keyword = [])
     {
         $tbl_storage = $this->db->table($this->table)->select('car.*, brand_name')->join('car_brand', 'car.brand_id=car_brand.id')->where('car.deleted_at', null);
 
@@ -80,6 +84,10 @@ class CarModel extends Model
 
         if ($brandId != null) {
             $tbl_storage->where('car.brand_id', $brandId);
+        }
+
+        if ($keyword != null) {
+            $tbl_storage->like('license_number', $keyword['license_number'])->orLike('car_name', $keyword['car_name'])->where('car.status', $keyword['car_status']);
         }
 
         return $tbl_storage->countAllResults();

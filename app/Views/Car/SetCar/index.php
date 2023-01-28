@@ -400,7 +400,7 @@
 
     //sessionStorage TAB  
     if (!sessionStorage.tab) {
-            sessionStorage.tab = generateString(32);
+        sessionStorage.tab = generateString(32);
     }
     $(document).ready(function () {
         getTempAdditionalCost();

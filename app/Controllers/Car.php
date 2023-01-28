@@ -55,10 +55,11 @@ class Car extends BaseController
     {
         if ($this->request->isAJAX()) {
             // Form Input
+            $licenseNumber = $this->formatLicenseNumber(strtoupper($this->request->getPost('license_number')));
             $input = [
                 'id' => $this->request->getPost('id'),
                 'car_name' => $this->request->getPost('car_name'),
-                'license_number' => $this->request->getPost('license_number'),
+                'license_number' => $licenseNumber,
                 'car_color' => $this->request->getPost('car_color'),
                 'car_year' => $this->request->getPost('car_year'),
                 'car_brand' => $this->request->getPost('car_brand'),
@@ -74,18 +75,6 @@ class Car extends BaseController
                 $response = [
                     'error' => $this->validator->getErrors(),
                     'errorMsg' => 'Gagal menyimpan mobil',
-                ];
-                return json_encode($response);
-            }
-
-            // License number validation
-            $licenseNumber = $this->formatLicenseNumber(strtoupper($input['license_number']));
-            if ($licenseNumber == false) {
-                $response = [
-                    'error' => [
-                        'license_number' => 'Plat nomor tidak valid'
-                    ],
-                    'errorMsg' => 'Gagal Menyimpan mobil',
                 ];
                 return json_encode($response);
             }
@@ -269,6 +258,10 @@ class Car extends BaseController
         if (str_contains($licenseNumber, $realNumber)) {
             $licenseNumber = str_replace($realNumber, $convertNumber, $licenseNumber);
 
+            if ($licenseNumber[0] === ' ' || ctype_alpha($licenseNumber)) { //user memasukkan angka duluan dan huruf semua
+                return false;
+            }
+
             return $licenseNumber;
         }
 
@@ -278,94 +271,144 @@ class Car extends BaseController
     public function getCar()
     {
         ini_set('memory_limit', '-1');
+        $car = new Car();
         $request = Services::request();
         $status = $this->request->getPost('status');
         $brandId = $this->request->getPost('brandId');
+        $sales = $this->request->getPost('sales');
+        $keywords = $this->request->getPost('keyword');
+        $keyword = null;
+        if ($keywords != null) {
+            $keyword = [
+                'license_number' => $car->formatLicenseNumber($keywords),
+                'car_name' => $keywords,
+                'car_status' => 0, //Ready Car
+            ];
+        }
+
         $carModel = new DataTableCarModel($request);
         if ($request->getMethod(true) == 'POST') {
-            $cars = $carModel->get_datatables($status, $brandId);
+            $cars = $carModel->get_datatables($status, $brandId, $keyword);
             $data = [];
-            foreach ($cars as $car) {
-                // Total Additional Cost
-                $totalAdditionalCost = $this->CarModel->getTotalAdditionalCost($car->id);
+            // Menu Mobil
+            if ($sales == null) {
+                foreach ($cars as $car) {
+                    // Total Additional Cost
+                    $totalAdditionalCost = $this->CarModel->getTotalAdditionalCost($car->id);
 
-                // Row Table
-                $row = [];
-                $urlDetail = base_url('mobil/'.$car->id);
-                $row[] = "<div class=\"d-flex align-items-center\">
-                <!--begin::Thumbnail-->
-                <div class=\"symbol symbol-50px\">
-                    <span class=\"symbol-label\"
-                        style=\"background-image:url(data:image/png;base64,$car->car_image);\"></span>
-                </div>
-                <!--end::Thumbnail-->
-                <div class=\"ms-5\">
-                    <!--begin::Car details-->
-                    <div class=\"d-flex flex-column\">
-                        <a href=\"$urlDetail\"
-                            class=\"text-gray-800 text-hover-primary mb-1\" target=\"_blank\">$car->car_name</a>
-                        <span>$car->brand_name</span>
+                    // Row Table
+                    $row = [];
+                    $urlDetail = base_url('mobil/'.$car->id);
+                    $row[] = "<div class=\"d-flex align-items-center\">
+                    <!--begin::Thumbnail-->
+                    <div class=\"symbol symbol-50px\">
+                        <span class=\"symbol-label\"
+                            style=\"background-image:url(data:image/png;base64,$car->car_image);\"></span>
                     </div>
-                    <!--begin::Car details-->
-                </div>
+                    <!--end::Thumbnail-->
+                    <div class=\"ms-5\">
+                        <!--begin::Car details-->
+                        <div class=\"d-flex flex-column\">
+                            <a href=\"$urlDetail\"
+                                class=\"text-gray-800 text-hover-primary mb-1\" target=\"_blank\">$car->car_name</a>
+                            <span>$car->brand_name</span>
+                        </div>
+                        <!--begin::Car details-->
+                    </div>
+                    </div>";
+                    $row[] = $car->car_color;
+                    $row[] = $car->car_year;
+                    $row[] = $car->license_number;
+                    switch ($car->status) {
+                        case '0':
+                            $row[] = "<span class=\"badge badge-light-success fs-7 fw-bold\">Ready</span>";
+                            break;
+                        case '1':
+                            $row[] = "<span class=\"badge badge-light-danger fs-7 fw-bold\">Sold</span>";
+                    }
+                    $carPrice = 'Rp '.number_format($car->car_price, '0', ',', '.');
+                    $totalCost = 'Rp '.number_format(($car->capital_price + $totalAdditionalCost), '0', ',', '.');
+                    $row[] = "<div class=\"text-end\">$totalCost</div>";
+                    $row[] = "<div class=\"text-end\">$carPrice</div>";
+                    $urlEditGeneral = base_url().'/mobil/'.$car->id.'/umum';
+                    $row[] = "<div class=\"d-flex justify-content-end flex-shrink-0\">
+                    <a href=\"$urlEditGeneral\" target=_blank class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
+                        <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
+                        <span class=\"svg-icon svg-icon-3\">
+                            <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
+                                xmlns=\"http://www.w3.org/2000/svg\">
+                                <path
+                                    d=\"M17.5 11H6.5C4 11 2 9 2 6.5C2 4 4 2 6.5 2H17.5C20 2 22 4 22 6.5C22 9 20 11 17.5 11ZM15 6.5C15 7.9 16.1 9 17.5 9C18.9 9 20 7.9 20 6.5C20 5.1 18.9 4 17.5 4C16.1 4 15 5.1 15 6.5Z\"
+                                    fill=\"currentColor\"></path>
+                                <path opacity=\"0.3\"
+                                    d=\"M17.5 22H6.5C4 22 2 20 2 17.5C2 15 4 13 6.5 13H17.5C20 13 22 15 22 17.5C22 20 20 22 17.5 22ZM4 17.5C4 18.9 5.1 20 6.5 20C7.9 20 9 18.9 9 17.5C9 16.1 7.9 15 6.5 15C5.1 15 4 16.1 4 17.5Z\"
+                                    fill=\"currentColor\"></path>
+                            </svg>
+                        </span>
+                        <!--end::Svg Icon-->
+                    </a>
+                    <button class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm\" onclick=\"alertCarDelete('$car->id')\">
+                        <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
+                        <span class=\"svg-icon svg-icon-3\">
+                            <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
+                                xmlns=\"http://www.w3.org/2000/svg\">
+                                <path
+                                    d=\"M5 9C5 8.44772 5.44772 8 6 8H18C18.5523 8 19 8.44772 19 9V18C19 19.6569 17.6569 21 16 21H8C6.34315 21 5 19.6569 5 18V9Z\"
+                                    fill=\"currentColor\"></path>
+                                <path opacity=\"0.5\"
+                                    d=\"M5 5C5 4.44772 5.44772 4 6 4H18C18.5523 4 19 4.44772 19 5V5C19 5.55228 18.5523 6 18 6H6C5.44772 6 5 5.55228 5 5V5Z\"
+                                    fill=\"currentColor\"></path>
+                                <path opacity=\"0.5\"
+                                    d=\"M9 4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4V4H9V4Z\"
+                                    fill=\"currentColor\"></path>
+                            </svg>
+                        </span>
+                        <!--end::Svg Icon-->
+                    </button>
                 </div>";
-                $row[] = $car->car_color;
-                $row[] = $car->car_year;
-                $row[] = $car->license_number;
-                switch ($car->status) {
-                    case '0':
-                        $row[] = "<span class=\"badge badge-light-success fs-7 fw-bold\">Ready</span>";
-                        break;
-                    case '1':
-                        $row[] = "<span class=\"badge badge-light-danger fs-7 fw-bold\">Sold</span>";
-                }
-                $carPrice = 'Rp '.number_format($car->car_price, '0', ',', '.');
-                $totalCost = 'Rp '.number_format(($car->capital_price + $totalAdditionalCost), '0', ',', '.');
-                $row[] = "<div class=\"text-end\">$totalCost</div>";
-                $row[] = "<div class=\"text-end\">$carPrice</div>";
-                $urlEditGeneral = base_url().'/mobil/'.$car->id.'/umum';
-                $row[] = "<div class=\"d-flex justify-content-end flex-shrink-0\">
-                <a href=\"$urlEditGeneral\" target=_blank class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
-                    <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
-                    <span class=\"svg-icon svg-icon-3\">
-                        <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
-                            xmlns=\"http://www.w3.org/2000/svg\">
-                            <path
-                                d=\"M17.5 11H6.5C4 11 2 9 2 6.5C2 4 4 2 6.5 2H17.5C20 2 22 4 22 6.5C22 9 20 11 17.5 11ZM15 6.5C15 7.9 16.1 9 17.5 9C18.9 9 20 7.9 20 6.5C20 5.1 18.9 4 17.5 4C16.1 4 15 5.1 15 6.5Z\"
-                                fill=\"currentColor\"></path>
-                            <path opacity=\"0.3\"
-                                d=\"M17.5 22H6.5C4 22 2 20 2 17.5C2 15 4 13 6.5 13H17.5C20 13 22 15 22 17.5C22 20 20 22 17.5 22ZM4 17.5C4 18.9 5.1 20 6.5 20C7.9 20 9 18.9 9 17.5C9 16.1 7.9 15 6.5 15C5.1 15 4 16.1 4 17.5Z\"
-                                fill=\"currentColor\"></path>
-                        </svg>
-                    </span>
-                    <!--end::Svg Icon-->
-                </a>
-                <button class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm\" onclick=\"alertCarDelete('$car->id')\">
-                    <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
-                    <span class=\"svg-icon svg-icon-3\">
-                        <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
-                            xmlns=\"http://www.w3.org/2000/svg\">
-                            <path
-                                d=\"M5 9C5 8.44772 5.44772 8 6 8H18C18.5523 8 19 8.44772 19 9V18C19 19.6569 17.6569 21 16 21H8C6.34315 21 5 19.6569 5 18V9Z\"
-                                fill=\"currentColor\"></path>
-                            <path opacity=\"0.5\"
-                                d=\"M5 5C5 4.44772 5.44772 4 6 4H18C18.5523 4 19 4.44772 19 5V5C19 5.55228 18.5523 6 18 6H6C5.44772 6 5 5.55228 5 5V5Z\"
-                                fill=\"currentColor\"></path>
-                            <path opacity=\"0.5\"
-                                d=\"M9 4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4V4H9V4Z\"
-                                fill=\"currentColor\"></path>
-                        </svg>
-                    </span>
-                    <!--end::Svg Icon-->
-                </button>
-            </div>";
 
-                $data[] = $row;
+                    $data[] = $row;
+                }
+            } else { //Menu penjualan mobil
+                foreach ($cars as $car) {
+                    // Row Table
+                    $row = [];
+                    $row[] = "<div class=\"d-flex align-items-center\">
+                    <!--begin::Thumbnail-->
+                    <div class=\"symbol symbol-50px\">
+                        <span class=\"symbol-label\"
+                            style=\"background-image:url(data:image/png;base64,$car->car_image);\"></span>
+                    </div>
+                    <!--end::Thumbnail-->
+                    <div class=\"ms-5\">
+                        <!--begin::Car details-->
+                        <div class=\"d-flex flex-column\">
+                            <a href=\"#\"
+                                class=\"text-gray-800 text-hover-primary mb-1\" target=\"_blank\">$car->car_name</a>
+                            <span>$car->license_number</span>
+                        </div>
+                        <!--begin::Car details-->
+                    </div>
+                    </div>";
+                    $carPrice = 'Rp '.number_format($car->car_price, '0', ',', '.');
+                    $row[] = "<div class=\"text-end\">$carPrice</div>";
+                    $row[] = "<div class=\"text-end\"> <button class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm\" onclick=\"selectItem('$car->license_number')\">
+                    <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/arrows/arr012.svg-->
+                    <span class=\"svg-icon svg-icon-muted svg-icon-3\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">
+                    <path opacity=\"0.3\" d=\"M10 18C9.7 18 9.5 17.9 9.3 17.7L2.3 10.7C1.9 10.3 1.9 9.7 2.3 9.3C2.7 8.9 3.29999 8.9 3.69999 9.3L10.7 16.3C11.1 16.7 11.1 17.3 10.7 17.7C10.5 17.9 10.3 18 10 18Z\" fill=\"currentColor\"/>
+                    <path d=\"M10 18C9.7 18 9.5 17.9 9.3 17.7C8.9 17.3 8.9 16.7 9.3 16.3L20.3 5.3C20.7 4.9 21.3 4.9 21.7 5.3C22.1 5.7 22.1 6.30002 21.7 6.70002L10.7 17.7C10.5 17.9 10.3 18 10 18Z\" fill=\"currentColor\"/>
+                    </svg>
+                    </span>
+                    <!--end::Svg Icon-->
+                    </button></div>";
+
+                    $data[] = $row;
+                }
             }
             $output = [
                 "draw" => $request->getPost('draw'),
-                "recordsTotal" => $carModel->count_all($status, $brandId),
-                "recordsFiltered" => $carModel->count_filtered(),
+                "recordsTotal" => $carModel->count_all($status, $brandId, $keyword),
+                "recordsFiltered" => $carModel->count_filtered($status, $brandId, $keyword),
                 "data" => $data
             ];
             echo json_encode($output);
@@ -673,5 +716,12 @@ class Car extends BaseController
         }
         $response['error'] = 'Tidak ada data yang dihapus';
         return json_encode($response);
+    }
+
+    public function findCarReady($keyword)
+    {
+        $licenseNumber = $this->formatLicenseNumber($keyword);
+
+        return $this->CarModel->findCarReady($keyword, $licenseNumber);
     }
 }

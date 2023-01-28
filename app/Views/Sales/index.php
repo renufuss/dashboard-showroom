@@ -42,7 +42,9 @@
                                         <input type="text" class="form-control mb-2" name="keyword" id="keyword"
                                             autocomplete="off">
                                         <div class="input-group-append">
-                                            <button class="btn btn-icon btn-bg-light btn-active-color-primary" data-bs-toggle="modal" data-bs-target="#modalProduk">
+                                            <button type="button"
+                                                class="btn btn-icon btn-bg-light btn-active-color-primary"
+                                                id="btnSearch">
                                                 <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
                                                 <span class="svg-icon svg-icon-3">
                                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -70,9 +72,9 @@
 
                             <div class="col-md-10 mb-2">
                                 <div class="form-group">
-                                    <label class="form-label" for="jml">Total Bayar</label>
-                                    <input type="text" class="form-control" name="totalbayar" id="totalbayar"
-                                        style="text-align: right; color:blue; font-weight : bold;" value="0" readonly>
+                                    <label class="form-label" for="totalTempPrice">Total Bayar</label>
+                                    <input type="text" class="form-control" name="totalTempPrice" id="totalTempPrice"
+                                        style="text-align: right; color:orange; font-weight : bold;" value="0" readonly>
                                 </div>
                             </div>
 
@@ -127,9 +129,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12 dataDetailPenjualan">
-
-                            </div>
+                            <div class="col-md-12 salesTable"></div>
                         </div>
                     </div>
                     <!--end::Table-->
@@ -144,80 +144,187 @@
 </div>
 
 <!-- temporary Modal -->
-<?php include('Modal/car.php') ?>
 
+<div class="carModal"></div>
 
 <script>
+    $(document).ready(function () {
+        salesTable();
+    });
+
+    function toastConfig() {
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toastr-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "1500",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+    }
+
+    function openCarModal() {
+        $.ajax({
+            type: 'POST',
+            url: "/penjualan/car",
+            data: {
+                keyword: $('#keyword').val()
+            },
+            dataType: 'json',
+            success: function (response) {
+                $('.carModal').html(response.carModal).show();
+
+                $('#carModal').modal('show');
+            },
+            error: function (xhr, thrownError) {
+                alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+            },
+        })
+    }
+
+    function salesTable() {
+        $.ajax({
+            type: "get",
+            url: "/penjualan/table",
+            dataType: "json",
+            beforeSend: function () {
+                $(".salesTable").html(`<i class='fa fa-refresh fa-spin'></i>`);
+            },
+            success: function (response) {
+                $('.salesTable').html(response.salesTable);
+                getTotalTempPrice();
+            }
+        });
+    }
+
+    function alertDeleteTemp(tempId) {
+        $.ajax({
+            type: "POST",
+            url: "/penjualan/alertDeleteTemp",
+            data: {
+                tempId
+            },
+            dataType: "json",
+            success: function (response) {
+                if (!response.error) {
+                    Swal.fire({
+                        html: `Apakah kamu yakin ingin menghapus ${response.carName} ?`,
+                        icon: "warning",
+                        buttonsStyling: false,
+                        showCancelButton: true,
+                        confirmButtonText: "Iya, Hapus",
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true,
+                        customClass: {
+                            confirmButton: "btn btn-primary",
+                            cancelButton: 'btn btn-danger'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            deleteTemp(tempId);
+                        }
+                    });
+                } else {
+                    toastConfig();
+                    toastr.error(response.error, "Error");
+                }
+            }
+        });
+    }
+
+    function deleteTemp(tempId) {
+        $.ajax({
+            type: "post",
+            url: "/penjualan/deleteTemp",
+            data: {
+                tempId : tempId,
+            },
+            dataType: "JSON",
+            success: function (response) {
+                if (response.error) {
+                    toastr.error(response.error, "Error");
+                }
+
+                if (response.success) {
+                    toastr.success(response.success, "Sukses");
+                    salesTable();
+                }
+            }
+        });
+    }
+
+    function saveTemp() {
+        $.ajax({
+            type: 'post',
+            url: "/penjualan/saveTemp",
+            data: {
+                keyword: $('#keyword').val(),
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.totalCar == 'multiple') {
+                    openCarModal();
+                }
+
+                if (response.success) {
+                    salesTable();
+                    $('#keyword').val('');
+                }
+
+                if (response.error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error..',
+                        html: response.error,
+                        confirmButtonColor: 'red',
+                    })
+                }
+            },
+            error: function (xhr, thrownError) {
+                alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+            },
+        })
+    }
+    function getTotalTempPrice() {
+        $.ajax({
+            type: "get",
+            url: "/penjualan/tempPrice",
+            dataType: "json",
+            beforeSend: function () {
+                $('#totalTempPrice').val(0);
+            },
+            success: function (response) {
+                $('#totalTempPrice').val(response.totalTempPrice);
+            },
+            error: function (xhr, thrownError) {
+                alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+            },
+        });
+    }
+
     function checkLicenseNumber() {
-        let kode = $('#kodebarcode').val();
+        let keyword = $('#keyword').val();
 
-        if (kode.length == 0) {
-            $.ajax({
-                url: "<?= base_url('kasir/viewDataBarang') ?>",
-                dataType: 'json',
-                success: function (response) {
-                    $('.viewmodal').html(response.viewmodal).show();
-
-                    $('#modalProduk').modal('show');
-                },
-                error: function (xhr, thrownError) {
-                    alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-                },
-            })
+        if (keyword.length == 0) {
+            openCarModal();
         } else {
-            $.ajax({
-                type: 'post',
-                url: "<?= base_url('kasir/simpanTemp') ?>",
-                data: {
-                    kodebarcode: kode,
-                    namaproduk: $('#namaproduk').val(),
-                    jumlah: $('#jumlah').val(),
-                    nofaktur: $('#nofaktur').val(),
-                },
-                dataType: 'json',
-                success: function (response) {
-                    if (response.totaldata == 'banyak') {
-                        $.ajax({
-                            url: "<?= base_url('kasir/viewDataBarang') ?>",
-                            type: 'post',
-                            data: {
-                                keyword: kode,
-                            },
-                            dataType: 'json',
-                            success: function (response) {
-                                $('.viewmodal').html(response.viewmodal).show();
-
-                                $('#modalProduk').modal('show');
-                            },
-                            error: function (xhr, thrownError) {
-                                alert(xhr.status + "\n" + xhr.responseText + "\n" +
-                                    thrownError);
-                            },
-                        })
-                    }
-
-                    if (response.sukses == 'berhasil') {
-                        dataDetailPenjualan();
-                        kosong();
-                    }
-
-                    if (response.error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error..',
-                            html: response.error,
-                            confirmButtonColor: 'red',
-                        })
-                        dataDetailPenjualan();
-                        kosong();
-                    }
-                },
-                error: function (xhr, thrownError) {
-                    alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-                },
-            })
+            saveTemp();
         }
     }
+
+    $('#btnSearch').click(function (e) {
+        e.preventDefault();
+        checkLicenseNumber();
+    });
 </script>
 
 

@@ -23,7 +23,7 @@ class CarModel extends Model
 
     protected $validationRules    = [
         'car_name' => 'required|alpha_numeric_space',
-        'license_number' => 'required|alpha_numeric_space',
+        'license_number' => 'required|alpha_numeric_space|is_unique[car.license_number,id,{id}]',
         'car_color' => 'required|alpha_space',
         'car_year' => 'required|numeric',
         'car_brand' => 'required',
@@ -38,8 +38,9 @@ class CarModel extends Model
             'alpha_numeric_space' => 'Nama mobil hanya boleh angka atau huruf',
         ],
         'license_number' => [
-            'required' => 'Plat nomor tidak boleh kosong',
-            'alpha_numeric' => 'Plat nomor hanya boleh huruf dan angka'
+            'required' => 'Plat nomor tidak valid',
+            'alpha_numeric_space' => 'Plat nomor hanya boleh huruf dan angka',
+            'is_unique' => 'Plat nomor sudah pernah ditambahkan',
         ],
         'car_color' => [
             'required' => 'Warna mobil tidak boleh kosong',
@@ -214,5 +215,28 @@ class CarModel extends Model
             return $data;
         }
         return 0;
+    }
+
+    public function findCarReady($keyword, $licenseNumber)
+    {
+        $table = $this->db->table('car');
+        $query = $table->select('*')->like('car_name', $keyword)->where('deleted_at', null)->where('status', 0);
+
+        if ($licenseNumber != false) {
+            $query->orLike('license_number', $licenseNumber);
+        }
+
+        $data['car'] = $query->get()->getResultObject();
+        $data['totalCar'] = 0;
+
+        if ($data['car'] != null) {
+            $data['totalCar'] = count($data['car']);
+        }
+
+        if ($data['totalCar'] == 1) {
+            $data['car'] = $data['car'][0];
+        }
+
+        return $data;
     }
 }
