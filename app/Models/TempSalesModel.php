@@ -12,10 +12,10 @@ class TempSalesModel extends Model
     protected $returnType     = 'object';
     protected $allowedFields = ['car_id', 'car_price', 'user_id'];
 
-    public function getTempSales($tempId = null)
+    public function getTempSales($user, $tempId = null)
     {
         $table = $this->db->table('temp_sales');
-        $query = $table->select('*, temp_sales.id as tempId')->join('car', 'temp_sales.car_id=car.id', 'INNER')->where('user_id', user()->id)->where('car.deleted_at', null);
+        $query = $table->select('*, temp_sales.id as tempId')->join('car', 'temp_sales.car_id=car.id', 'INNER')->where('user_id', $user)->where('car.deleted_at', null);
 
         if ($tempId != null) {
             $query->where('temp_sales.id', $tempId);

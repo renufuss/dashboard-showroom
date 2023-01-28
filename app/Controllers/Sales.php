@@ -37,7 +37,7 @@ class Sales extends BaseController
     public function salesTable()
     {
         if ($this->request->isAJAX()) {
-            $data['cars'] = $this->tempSalesModel->getTempSales();
+            $data['cars'] = $this->tempSalesModel->getTempSales(user()->id);
             $response['salesTable'] = view('Sales/Table/salesTable', $data);
 
             echo json_encode($response);
@@ -95,7 +95,7 @@ class Sales extends BaseController
     {
         if ($this->request->isAJAX()) {
             $tempId = $this->request->getPost('tempId');
-            $temp = $this->tempSalesModel->getTempSales($tempId);
+            $temp = $this->tempSalesModel->getTempSales(user()->id, $tempId);
             if ($temp != null) {
                 $response['carName'] = $temp->car_name;
             } else {
@@ -109,7 +109,7 @@ class Sales extends BaseController
     {
         if ($this->request->isAJAX()) {
             $tempId = $this->request->getPost('tempId');
-            $temp = $this->tempSalesModel->getTempSales($tempId);
+            $temp = $this->tempSalesModel->getTempSales(user()->id, $tempId);
 
             $isEmpty = ($temp == null);
             if ($isEmpty) {
@@ -124,5 +124,22 @@ class Sales extends BaseController
             $response['success'] = 'Berhasil menghapus data penjualan';
             return json_encode($response);
         }
+    }
+
+    public function resetTemp()
+    {
+        $temps = $this->tempSalesModel->getTempSales(user()->id);
+
+        if ($temps != null) {
+            foreach ($temps as $temp) {
+                $this->tempSalesModel->delete($temp->tempId);
+            }
+
+            $response['success'] = 'Berhasil menghapus semua item yang dipilih';
+            return json_encode($response);
+        }
+
+        $response['error'] = 'Tidak ada data yang dihapus';
+        return json_encode($response);
     }
 }

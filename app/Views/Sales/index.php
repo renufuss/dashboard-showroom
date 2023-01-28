@@ -83,7 +83,7 @@
                                     <label class="form-label" for="tanggal">Aksi</label>
                                     <div>
                                         <button class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
-                                            onclick="alertDeleteTempAdditionalCost('2');return false;">
+                                            onclick="alertResetTemp();return false;">
                                             <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
                                             <span class="svg-icon svg-icon-3">
                                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -248,6 +248,44 @@
             data: {
                 tempId : tempId,
             },
+            dataType: "JSON",
+            success: function (response) {
+                if (response.error) {
+                    toastr.error(response.error, "Error");
+                }
+
+                if (response.success) {
+                    toastr.success(response.success, "Sukses");
+                    salesTable();
+                }
+            }
+        });
+    }
+
+    function alertResetTemp() {
+        Swal.fire({
+            html: `Apakah kamu yakin ingin menghapus semua item yang sudah dipilih ?`,
+            icon: "warning",
+            buttonsStyling: false,
+            showCancelButton: true,
+            confirmButtonText: "Iya, Hapus",
+            cancelButtonText: 'Batal',
+            reverseButtons: true,
+            customClass: {
+                confirmButton: "btn btn-primary",
+                cancelButton: 'btn btn-danger'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                resetTemp();
+            }
+        });
+    }
+
+    function resetTemp() {
+        $.ajax({
+            type: "get",
+            url: "/penjualan/reset",
             dataType: "JSON",
             success: function (response) {
                 if (response.error) {

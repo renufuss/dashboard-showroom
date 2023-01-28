@@ -62,6 +62,7 @@ $routes->post('/mobil/tambah/temp/reset', 'Car::resetTempAdditionalCost');
 $routes->get('/penjualan', 'Sales::index');
 $routes->get('/penjualan/table', 'Sales::salesTable');
 $routes->get('/penjualan/tempPrice', 'Sales::getTotalTempPrice');
+$routes->get('/penjualan/reset', 'Sales::resetTemp');
 $routes->post('/penjualan/car', 'Sales::carModal');
 $routes->post('/penjualan/alertDeleteTemp', 'Sales::alertDeleteTemp');
 $routes->post('/penjualan/deleteTemp', 'Sales::deleteTemp');
