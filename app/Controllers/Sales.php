@@ -34,6 +34,21 @@ class Sales extends BaseController
         }
     }
 
+    public function paymentModal()
+    {
+        if ($this->request->isAJAX()) {
+            $totalTempPrice = 'Rp '.number_format($this->tempSalesModel->getTotalTempPrice(), '0', ',', '.');
+            $data = [
+                'totalPrice' => $totalTempPrice,
+            ];
+            $msg = [
+                'paymentModal' => view('Sales/Modal/paymentModal', $data),
+            ];
+
+            echo json_encode($msg);
+        }
+    }
+
     public function salesTable()
     {
         if ($this->request->isAJAX()) {
@@ -141,5 +156,49 @@ class Sales extends BaseController
 
         $response['error'] = 'Tidak ada data yang dihapus';
         return json_encode($response);
+    }
+
+    public function setDiscount()
+    {
+        if ($this->request->isAJAX()) {
+            $discount = str_replace([',','.','Rp '], '', $this->request->getPost('discount'));
+            $totalTempPrice = $this->tempSalesModel->getTotalTempPrice();
+            $totalPrice = ($totalTempPrice - $discount);
+
+            $response = [
+                'totalPrice' => 'Rp '.number_format($totalPrice, '0', ',', '.'),
+            ];
+
+            return json_encode($response);
+        }
+    }
+
+    public function setOver()
+    {
+        if ($this->request->isAJAX()) {
+            $discount = $this->request->getPost('discount');
+            $amountOfMoney = $this->request->getPost('amount_of_money');
+
+            if ($discount == null) {
+                $discount = 0;
+            }
+
+            if ($amountOfMoney == null) {
+                $amountOfMoney = 0;
+            }
+
+            $discount = str_replace([',','.','Rp '], '', $discount);
+            $amountOfMoney = str_replace([',','.','Rp '], '', $amountOfMoney);
+            $totalTempPrice = $this->tempSalesModel->getTotalTempPrice();
+            $totalPrice = ($totalTempPrice - $discount);
+
+            $over = $amountOfMoney - $totalPrice;
+
+            $response = [
+                'over' => 'Rp '.number_format($over, '0', ',', '.'),
+            ];
+
+            return json_encode($response);
+        }
     }
 }

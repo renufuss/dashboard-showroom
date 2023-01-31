@@ -80,7 +80,7 @@
 
                             <div class="col-md-2 text-end">
                                 <div class="form-group">
-                                    <label class="form-label" for="tanggal">Aksi</label>
+                                    <label class="form-label">Aksi</label>
                                     <div>
                                         <button class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
                                             onclick="alertResetTemp();return false;">
@@ -101,8 +101,7 @@
                                             </span>
                                             <!--end::Svg Icon-->
                                         </button>
-                                        <button class="btn btn-icon btn-bg-light btn-active-color-success btn-sm"
-                                            onclick="alertDeleteTempAdditionalCost('2');return false;">
+                                        <button class="btn btn-icon btn-bg-light btn-active-color-success btn-sm" id="btnPayment">
                                             <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
                                             <span class="svg-icon svg-icon-3">
                                                 <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/ecommerce/ecm002.svg-->
@@ -146,6 +145,7 @@
 <!-- temporary Modal -->
 
 <div class="carModal"></div>
+<div class="paymentModal"></div>
 
 <script>
     $(document).ready(function () {
@@ -184,6 +184,22 @@
                 $('.carModal').html(response.carModal).show();
 
                 $('#carModal').modal('show');
+            },
+            error: function (xhr, thrownError) {
+                alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+            },
+        })
+    }
+
+    function openPaymentModal() {
+        $.ajax({
+            type: 'GET',
+            url: "/penjualan/payment",
+            dataType: 'json',
+            success: function (response) {
+                $('.paymentModal').html(response.paymentModal).show();
+
+                $('#paymentModal').modal('show');
             },
             error: function (xhr, thrownError) {
                 alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
@@ -362,6 +378,11 @@
     $('#btnSearch').click(function (e) {
         e.preventDefault();
         checkLicenseNumber();
+    });
+
+    $('#btnPayment').click(function (e) { 
+        e.preventDefault();
+        openPaymentModal();
     });
 </script>
 
