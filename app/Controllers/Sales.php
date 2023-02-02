@@ -18,7 +18,8 @@ class Sales extends BaseController
     public function index()
     {
         $data['title'] = 'Layout';
-        return view('Sales/index', $data);
+        // return view('Sales/index', $data);
+        return view('Sales/Print/invoice2', $data);
     }
 
     protected function removeImage($imageName)

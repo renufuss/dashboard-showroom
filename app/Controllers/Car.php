@@ -431,7 +431,8 @@ class Car extends BaseController
             ];
             if ($print != false) {
                 $data['print'] = true;
-                return view('Car/Detail/Print/index', $data);
+                // return view('Car/Detail/Print/index', $data);
+                return view('Sales/Print/invoice', $data);
             }
             return view('Car/Detail/index', $data);
         }
@@ -448,7 +449,7 @@ class Car extends BaseController
             $dompdf->loadHtml($html);
 
             // (Optional) Setup the paper size and orientation
-            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->setPaper('A4', 'portrait');
 
             // Render the HTML as PDF
             $dompdf->render();
