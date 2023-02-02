@@ -171,6 +171,44 @@
         });
     }
 
+    function toastConfig() {
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toastr-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "1500",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+    }
+
+    function removeFeedback(form) {
+        Object.entries(form).forEach(entry => {
+            const [key, value] = entry;
+            $(`#${key}`).removeClass('is-invalid');
+            $(`#${key}-feedback`).html('');
+        });
+
+        return true;
+    }
+
+    function addFeedback(responseError) {
+        Object.entries(responseError).forEach(entry => {
+            const [key, value] = entry;
+            $(`#${key}`).addClass('is-invalid');
+            $(`#${key}-feedback`).html(value);
+        });
+    }
+
     function setDiscount(){
         $.ajax({
             type: "POST",
@@ -200,16 +238,6 @@
         });
     }
 
-
-    $('#discount').on('input',function(e){
-        setDiscount();
-        setOver();
-    });
-
-    $('#amount_of_money').on('input',function(e){
-        setOver();
-    });
-
     function savePayment(){
         var form = $("#formPayment")[0]; // You need to use standard javascript object here
         var formData = new FormData(form);
@@ -230,11 +258,56 @@
     			<span class="bar"></span>
 				</div>`);
             },
-            success: function (response) {
-                console.log(response);
-            }
+            complete: function () {
+                $("#btnSavePayment").prop("disabled", false);
+                $("#btnSavePayment").html("Simpan");
+            },
+            success: function (response) {  
+                toastConfig();
+
+                // Remove Feedback
+                form = {
+                    full_name,
+                    identity_id,
+                    phone_number,
+                    address,
+                    identity_card,
+                    discount,
+                    total_price,
+                    amount_of_money,
+                };
+                removeFeedback(form);
+
+                if (response.error) {
+                    // Add Feedback
+                    addFeedback(response.error);
+                    toastr.error(response.errorMsg, "Error");
+                }
+
+                if (response.success) {
+                    toastr.success(response.success, "Sukses");
+                    resetTemp();
+                    setTimeout(function () {
+                        window.location = "/penjualan";
+                    }, 1200);
+                }
+
+            },
+            error: function (xhr, thrownError) {
+                alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+            },
         });
     }
+
+
+    $('#discount').on('input',function(e){
+        setDiscount();
+        setOver();
+    });
+
+    $('#amount_of_money').on('input',function(e){
+        setOver();
+    });
 
     $('#btnSavePayment').click(function (e) { 
         e.preventDefault();

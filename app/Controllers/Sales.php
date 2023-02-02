@@ -30,8 +30,8 @@ class Sales extends BaseController
 
     protected function blobImage($image)
     {
-        $image->move('assets/images/cars');
-        $pathInfo = 'assets/images/cars/'.$image->getName();
+        $image->move('assets/images/sales');
+        $pathInfo = 'assets/images/sales/'.$image->getName();
         $fileContent = file_get_contents($pathInfo);
         $base64 = rtrim(base64_encode($fileContent));
         $this->removeImage($image->getName());
@@ -223,24 +223,85 @@ class Sales extends BaseController
         }
     }
 
+    public function getReceiptNumber()
+    {
+        $lastTransaction = $this->SalesModel->lastTransaction(date('Y-m-d'));
+
+        $lastNoUrut = 0;
+        if ($lastTransaction != null) {
+            $lastNoUrut = substr($lastTransaction, -4); //4 Character dari belakang
+        }
+        $nextNoUrut = intval($lastNoUrut) + 1;
+        $receiptNumber = 'NND' . date('dmy') . sprintf('%04s', $nextNoUrut);
+        return $receiptNumber;
+    }
+
     public function savePayment()
     {
         if ($this->request->isAJAX()) {
-            $input['receipt_number'] = $this->getReceiptNumber();
-            $input['full_name'] = $this->request->getPost('full_name');
-            $input['identity_id'] = $this->request->getPost('identity_id');
-            $input['phone_number'] = $this->request->getPost('phone_number');
-            $input['address'] = $this->request->getPost('address');
-            $input['identity_card'] = $this->request->getFile('identity_card');
-            $input['real_price'] = $this->TempSalesModel->getTotalTempPrice();
-            $input['discount'] = $this->request->getPost('discount');
-            $input['total_price'] = $input['real_price']-$input['discount'];
-            $input['amount_of_money'] = $this->request->getPost('amount_of_money');
-            $input['sales_date'] = date('Y-m-d H:i:s');
-
-            $isValid = ($this->validateData($input, $this->SalesModel->getValidationRules(), $this->SalesModel->getValidationMessages()));
-            if ($isValid) {
+            $sales['receipt_number'] = $this->getReceiptNumber();
+            $sales['full_name'] = $this->request->getPost('full_name');
+            $sales['identity_id'] = $this->request->getPost('identity_id');
+            $sales['phone_number'] = $this->request->getPost('phone_number');
+            $sales['address'] = $this->request->getPost('address');
+            $sales['identity_card'] = $this->request->getFile('identity_card');
+            $sales['real_price'] = $this->TempSalesModel->getTotalTempPrice();
+            $discount = $this->request->getPost('discount');
+            if ($discount == null) {
+                $discount = 0;
             }
+            $sales['discount'] = str_replace([',','.','Rp',' '], '', $discount);
+            $sales['total_price'] = ($sales['real_price']-$sales['discount']);
+            $payment['amount_of_money'] = str_replace([',','.','Rp',' '], '', $this->request->getPost('amount_of_money'));
+            $sales['sales_date'] = date('Y-m-d H:i:s');
+
+            $isValid = ($this->validateData($sales, $this->SalesModel->getValidationRules(), $this->SalesModel->getValidationMessages()) && $payment['amount_of_money'] != null);
+            if (!$isValid) {
+                $error = $this->validator->getErrors();
+
+                if ($payment['amount_of_money'] == null) {
+                    $errorPayment = ['amount_of_money' => 'Jumlah uang tidak boleh kosong'];
+                    $error = array_merge($error, $errorPayment);
+                }
+
+                $response = [
+                    'error' => $error,
+                    'errorMsg' => 'Gagal menyimpan pembayaran',
+                ];
+                return json_encode($response);
+            }
+
+            $sales['identity_card'] = $this->blobImage($sales['identity_card']);
+
+            $this->SalesModel->save($sales);
+            $salesId = $this->SalesModel->getInsertID();
+
+            // Save Car
+            $cars = $this->TempSalesModel->getTempSales(user()->id);
+            $carData = [];
+            foreach ($cars as $car) {
+                $data = [
+                    'sales_id' => $salesId,
+                    'car_name' => $car->car_name,
+                    'license_number' => $car->license_number,
+                    'car_price' => $car->car_price,
+                ];
+
+                array_push($carData, $data);
+            }
+
+            $this->SalesModel->saveCar($carData);
+
+            $payment = [
+                'sales_id' => $salesId,
+                'amount_of_money' => $payment['amount_of_money'],
+                'payment_date' => date('Y-m-d H:i:s'),
+            ];
+
+            $this->SalesModel->savePayment($payment);
+
+            $response['success'] = 'Berhasil menyimpan pembayaran';
+            return json_encode($response);
         }
     }
 }

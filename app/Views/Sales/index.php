@@ -348,6 +348,7 @@
             },
         })
     }
+    
     function getTotalTempPrice() {
         $.ajax({
             type: "get",

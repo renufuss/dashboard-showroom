@@ -23,7 +23,7 @@ class SalesModel extends Model
 
     protected $validationRules    = [
         'receipt_number' => 'required',
-        'full_name' => 'alpha_space',
+        'full_name' => 'required|alpha_space',
         'identity_id' => 'required|numeric',
         'phone_number' => 'required|numeric',
         'address' => 'required',
@@ -38,47 +38,66 @@ class SalesModel extends Model
             'required' => 'Nomor resi tidak boleh kosong.',
         ],
         'full_name' => [
-            'required' => 'Plat nomor tidak valid',
-            'alpha_numeric_space' => 'Plat nomor hanya boleh huruf dan angka',
-            'is_unique' => 'Plat nomor sudah pernah ditambahkan',
+            'required' => 'Nama lengkap tidak boleh kosong',
+            'alpha_space' => 'Nama lengkap hanya boleh huruf',
         ],
         'identity_id' => [
-            'required' => 'Warna mobil tidak boleh kosong',
-            'alpha_space' => 'Warna mobil hanya boleh huruf'
+            'required' => 'NIK tidak boleh kosong',
+            'numeric' => 'NIK hanya boleh angka'
         ],
         'phone_number' => [
-            'required' => 'Tahun mobil tidak boleh kosong',
-            'numeric' => 'Tahun mobil harus menggunakan angka',
+            'required' => 'Nomor HP tidak boleh kosong',
+            'numeric' => 'Nomor HP hanya boleh angka',
         ],
         'address' => [
-            'required' => 'Brand mobil tidak boleh kosong',
+            'required' => 'Alamat tidak boleh kosong',
         ],
         'identity_card' => [
-            'required' => 'Harga beli mobil tidak boleh kosong',
-            'numeric' => 'Harga beli mobil harus menggunakan angka',
-        ],
-        'real_price' => [
-            'required' => 'Harga jual mobil tidak boleh kosong',
-            'numeric' => 'Harga jual mobil harus menggunakan angka',
-        ],
-        'discount' => [
             'max_size' => 'Ukuran gambar tidak boleh melebihi 5 MB',
             'is_image' => 'Yang anda pilih bukan gambar',
             'mime_in' => 'Yang anda pilih bukan gambar',
             'uploaded' => 'Bukti pembelian harus diupload',
         ],
+        'real_price' => [
+            'required' => 'Harga asli tidak boleh kosong',
+            'numeric' => 'Harga asli hanya boleh angka',
+        ],
+        'discount' => [
+            'required' => 'Diskon tidak boleh kosong',
+            'numeric' => 'Diskon hanya boleh angka',
+        ],
         'total_price' => [
-            'max_size' => 'Ukuran gambar tidak boleh melebihi 5 MB',
-            'is_image' => 'Yang anda pilih bukan gambar',
-            'mime_in' => 'Yang anda pilih bukan gambar',
-            'uploaded' => 'Foto mobil harus diupload',
+            'required' => 'Total harga tidak boleh kosong',
+            'numeric' => 'Total harga hanya boleh angka',
         ],
         'sales_date' => [
-            'max_size' => 'Ukuran gambar tidak boleh melebihi 5 MB',
-            'is_image' => 'Yang anda pilih bukan gambar',
-            'mime_in' => 'Yang anda pilih bukan gambar',
-            'uploaded' => 'Foto mobil harus diupload',
+            'required' => 'Tanggal pembayaran tidak boleh kosong',
         ],
     ];
     protected $skipValidation     = true;
+
+    public function lastTransaction($date)
+    {
+        $transaksi = $this->db->table('sales');
+        $query = $transaksi->select('max(receipt_number) as receipt_number')->like('sales_date', $date);
+        $lastTransaction = $query->get()->getFirstRow()->receipt_number;
+
+        return $lastTransaction;
+    }
+
+    public function saveCar($data)
+    {
+        $table = $this->db->table('car_sales');
+        $table->insertBatch($data);
+
+        return true;
+    }
+
+    public function savePayment($data)
+    {
+        $table = $this->db->table('payment_sales');
+        $table->insert($data);
+
+        return true;
+    }
 }
