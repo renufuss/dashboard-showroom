@@ -63,8 +63,8 @@ class Car extends BaseController
                 'car_color' => $this->request->getPost('car_color'),
                 'car_year' => $this->request->getPost('car_year'),
                 'car_brand' => $this->request->getPost('car_brand'),
-                'capital_price' => str_replace([',','.','Rp '], '', $this->request->getPost('capital_price')),
-                'car_price' => str_replace([',','.','Rp '], '', $this->request->getPost('car_price')),
+                'capital_price' => str_replace([',','.','Rp',' '], '', $this->request->getPost('capital_price')),
+                'car_price' => str_replace([',','.','Rp',' '], '', $this->request->getPost('car_price')),
                 'receipt' => $this->request->getFile('receipt'),
                 'car_image' => $this->request->getFile('car_image'),
             ];
@@ -537,7 +537,7 @@ class Car extends BaseController
 
             $input = [
                 'cost_name' => $this->request->getPost('cost_name'),
-                'additional_price' => str_replace([',','.','Rp '], '', $this->request->getPost('additional_price')),
+                'additional_price' => str_replace([',','.','Rp',' '], '', $this->request->getPost('additional_price')),
                 'additional_receipt' => $this->request->getFile('additional_receipt'),
                 'paid_by' => $this->request->getPost('paid_by'),
                 'temp_session' => $this->request->getPost('temp_session'),

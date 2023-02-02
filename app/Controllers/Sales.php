@@ -2,20 +2,41 @@
 
 namespace App\Controllers;
 
+use App\Models\SalesModel;
 use App\Models\TempSalesModel;
 
 class Sales extends BaseController
 {
-    protected $tempSalesModel;
+    protected $TempSalesModel;
+    protected $SalesModel;
     public function __construct()
     {
-        $this->tempSalesModel = new TempSalesModel();
+        $this->SalesModel = new SalesModel();
+        $this->TempSalesModel = new TempSalesModel();
     }
 
     public function index()
     {
         $data['title'] = 'Layout';
         return view('Sales/index', $data);
+    }
+
+    protected function removeImage($imageName)
+    {
+        if (file_exists('assets/images/cars/' . $imageName)) {
+            unlink('assets/images/cars/' . $imageName); //Hapus image lama
+        }
+    }
+
+    protected function blobImage($image)
+    {
+        $image->move('assets/images/cars');
+        $pathInfo = 'assets/images/cars/'.$image->getName();
+        $fileContent = file_get_contents($pathInfo);
+        $base64 = rtrim(base64_encode($fileContent));
+        $this->removeImage($image->getName());
+
+        return $base64;
     }
 
     public function carModal()
@@ -37,7 +58,7 @@ class Sales extends BaseController
     public function paymentModal()
     {
         if ($this->request->isAJAX()) {
-            $totalTempPrice = 'Rp '.number_format($this->tempSalesModel->getTotalTempPrice(), '0', ',', '.');
+            $totalTempPrice = 'Rp '.number_format($this->TempSalesModel->getTotalTempPrice(), '0', ',', '.');
             $data = [
                 'totalPrice' => $totalTempPrice,
             ];
@@ -52,7 +73,7 @@ class Sales extends BaseController
     public function salesTable()
     {
         if ($this->request->isAJAX()) {
-            $data['cars'] = $this->tempSalesModel->getTempSales(user()->id);
+            $data['cars'] = $this->TempSalesModel->getTempSales(user()->id);
             $response['salesTable'] = view('Sales/Table/salesTable', $data);
 
             echo json_encode($response);
@@ -62,7 +83,7 @@ class Sales extends BaseController
     public function getTotalTempPrice()
     {
         if ($this->request->isAJAX()) {
-            $totalTempPrice = 'Rp '.number_format($this->tempSalesModel->getTotalTempPrice(), '0', ',', '.');
+            $totalTempPrice = 'Rp '.number_format($this->TempSalesModel->getTotalTempPrice(), '0', ',', '.');
 
             $response = [
                 'totalTempPrice' => $totalTempPrice,
@@ -89,7 +110,7 @@ class Sales extends BaseController
                     'user_id' => user()->id,
                 ];
 
-                $isSelected = ($this->tempSalesModel->where('car_id', $temp['car_id'])->where('user_id', $temp['user_id'])->findAll() != null);
+                $isSelected = ($this->TempSalesModel->where('car_id', $temp['car_id'])->where('user_id', $temp['user_id'])->findAll() != null);
 
                 if ($isSelected) {
                     $response['error'] = 'Maaf, data sudah anda pilih...';
@@ -97,7 +118,7 @@ class Sales extends BaseController
                 }
 
                 $response['success'] = 'Berhasil menambahkan data';
-                $this->tempSalesModel->save($temp);
+                $this->TempSalesModel->save($temp);
             } else {
                 $response['error'] = 'Maaf, data tidak ditemukan...';
             }
@@ -110,7 +131,7 @@ class Sales extends BaseController
     {
         if ($this->request->isAJAX()) {
             $tempId = $this->request->getPost('tempId');
-            $temp = $this->tempSalesModel->getTempSales(user()->id, $tempId);
+            $temp = $this->TempSalesModel->getTempSales(user()->id, $tempId);
             if ($temp != null) {
                 $response['carName'] = $temp->car_name;
             } else {
@@ -124,7 +145,7 @@ class Sales extends BaseController
     {
         if ($this->request->isAJAX()) {
             $tempId = $this->request->getPost('tempId');
-            $temp = $this->tempSalesModel->getTempSales(user()->id, $tempId);
+            $temp = $this->TempSalesModel->getTempSales(user()->id, $tempId);
 
             $isEmpty = ($temp == null);
             if ($isEmpty) {
@@ -134,7 +155,7 @@ class Sales extends BaseController
                 return json_encode($response);
             }
 
-            $this->tempSalesModel->delete($temp->tempId);
+            $this->TempSalesModel->delete($temp->tempId);
 
             $response['success'] = 'Berhasil menghapus data penjualan';
             return json_encode($response);
@@ -143,11 +164,11 @@ class Sales extends BaseController
 
     public function resetTemp()
     {
-        $temps = $this->tempSalesModel->getTempSales(user()->id);
+        $temps = $this->TempSalesModel->getTempSales(user()->id);
 
         if ($temps != null) {
             foreach ($temps as $temp) {
-                $this->tempSalesModel->delete($temp->tempId);
+                $this->TempSalesModel->delete($temp->tempId);
             }
 
             $response['success'] = 'Berhasil menghapus semua item yang dipilih';
@@ -161,8 +182,12 @@ class Sales extends BaseController
     public function setDiscount()
     {
         if ($this->request->isAJAX()) {
-            $discount = str_replace([',','.','Rp '], '', $this->request->getPost('discount'));
-            $totalTempPrice = $this->tempSalesModel->getTotalTempPrice();
+            $discount = str_replace([',','.','Rp', ' '], '', $this->request->getPost('discount'));
+
+            if ($discount == null) {
+                $discount = 0;
+            }
+            $totalTempPrice = $this->TempSalesModel->getTotalTempPrice();
             $totalPrice = ($totalTempPrice - $discount);
 
             $response = [
@@ -176,9 +201,8 @@ class Sales extends BaseController
     public function setOver()
     {
         if ($this->request->isAJAX()) {
-            $discount = $this->request->getPost('discount');
-            $amountOfMoney = $this->request->getPost('amount_of_money');
-
+            $discount = str_replace([',','.','Rp',' '], '', $this->request->getPost('discount'));
+            $amountOfMoney = str_replace([',','.','Rp',' '], '', $this->request->getPost('amount_of_money'));
             if ($discount == null) {
                 $discount = 0;
             }
@@ -186,19 +210,37 @@ class Sales extends BaseController
             if ($amountOfMoney == null) {
                 $amountOfMoney = 0;
             }
-
-            $discount = str_replace([',','.','Rp '], '', $discount);
-            $amountOfMoney = str_replace([',','.','Rp '], '', $amountOfMoney);
-            $totalTempPrice = $this->tempSalesModel->getTotalTempPrice();
+            $totalTempPrice = $this->TempSalesModel->getTotalTempPrice();
             $totalPrice = ($totalTempPrice - $discount);
 
-            $over = $amountOfMoney - $totalPrice;
+            $over = $totalPrice - $amountOfMoney;
 
             $response = [
                 'over' => 'Rp '.number_format($over, '0', ',', '.'),
             ];
 
             return json_encode($response);
+        }
+    }
+
+    public function savePayment()
+    {
+        if ($this->request->isAJAX()) {
+            $input['receipt_number'] = $this->getReceiptNumber();
+            $input['full_name'] = $this->request->getPost('full_name');
+            $input['identity_id'] = $this->request->getPost('identity_id');
+            $input['phone_number'] = $this->request->getPost('phone_number');
+            $input['address'] = $this->request->getPost('address');
+            $input['identity_card'] = $this->request->getFile('identity_card');
+            $input['real_price'] = $this->TempSalesModel->getTotalTempPrice();
+            $input['discount'] = $this->request->getPost('discount');
+            $input['total_price'] = $input['real_price']-$input['discount'];
+            $input['amount_of_money'] = $this->request->getPost('amount_of_money');
+            $input['sales_date'] = date('Y-m-d H:i:s');
+
+            $isValid = ($this->validateData($input, $this->SalesModel->getValidationRules(), $this->SalesModel->getValidationMessages()));
+            if ($isValid) {
+            }
         }
     }
 }

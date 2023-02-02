@@ -122,7 +122,7 @@
                                 <span class="required">Jumlah Uang</span>
                             </label>
                             <!--end::Label-->
-                            <input type="text" id="amount_of_money" name="amount_of_money" class="form-control form-control-solid"/>
+                            <input type="text" id="amount_of_money" name="amount_of_money" class="form-control form-control-solid" autocomplete="off"/>
                             <div class="invalid-feedback" id="amount_of_money-feedback"></div>
                         </div>
                         <!-- end::col -->
@@ -146,7 +146,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
-                <button type="button" class="btn btn-primary btnSave">Simpan</button>
+                <button type="button" class="btn btn-primary" id="btnSavePayment">Simpan</button>
             </div>
             </form>
         </div>
@@ -200,12 +200,13 @@
         });
     }
 
-    $('#discount').keyup(function(e) {
+
+    $('#discount').on('input',function(e){
         setDiscount();
         setOver();
     });
 
-    $('#amount_of_money').keyup(function(e) {
+    $('#amount_of_money').on('input',function(e){
         setOver();
     });
 
@@ -221,14 +222,22 @@
             processData: false,
             cache: false,
             beforeSend: function () {
-                $("#btnSave").prop("disabled", true);
-                $("#btnSave").html(`
+                $("#btnSavePayment").prop("disabled", true);
+                $("#btnSavePayment").html(`
                 <div class="loader">
     			<span class="bar"></span>
     			<span class="bar"></span>
     			<span class="bar"></span>
 				</div>`);
             },
+            success: function (response) {
+                console.log(response);
+            }
         });
     }
+
+    $('#btnSavePayment').click(function (e) { 
+        e.preventDefault();
+        savePayment();
+    });
 </script>

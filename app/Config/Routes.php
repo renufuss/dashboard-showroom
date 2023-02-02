@@ -68,6 +68,7 @@ $routes->post('/penjualan/alertDeleteTemp', 'Sales::alertDeleteTemp');
 $routes->post('/penjualan/deleteTemp', 'Sales::deleteTemp');
 $routes->post('/penjualan/saveTemp', 'Sales::saveTemp');
 $routes->get('/penjualan/payment', 'Sales::paymentModal');
+$routes->post('/penjualan/payment', 'Sales::savePayment');
 $routes->post('/penjualan/payment/discount', 'Sales::setDiscount');
 $routes->post('/penjualan/payment/over', 'Sales::setOver');
 
