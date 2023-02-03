@@ -1,23 +1,58 @@
 <?php
 
+/**
+ * Car Class Doc Comment
+ *
+ * PHP Version 8.0.13
+ *
+ * @category Car
+ * @package  DashboardShowroom
+ * @author   Renanda Auzan Firdaus <renanda0039934@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @link     https://github.com/renufuss/dashboard-showroom
+ */
+
 namespace App\Controllers;
 
 use App\Models\CarModel;
-use App\Models\DataTable\CarModel as DataTableCarModel;
 use App\Models\DataTable\AdditionalCostModel as DataTableAdditionalCostModel;
+use App\Models\DataTable\CarModel as DataTableCarModel;
 use Config\Services;
 use Dompdf\Dompdf;
+
+/**
+ * Car Class Doc Comment
+ *
+ * PHP Version 8.0.13
+ *
+ * @category Car
+ * @package  DashboardShowroom
+ * @author   Renanda Auzan Firdaus <renanda0039934@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @link     https://github.com/renufuss/dashboard-showroom
+ */
 
 class Car extends BaseController
 {
     protected $CarModel;
     protected $Session;
+
+    /**
+     * Construct.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->Session = session();
         $this->CarModel = new CarModel();
     }
 
+    /**
+     * Open default page for https://base_url/mobil.
+     *
+     * @return view
+     */
     public function index()
     {
         $data['title'] = 'Mobil';
@@ -25,6 +60,11 @@ class Car extends BaseController
         return view('Car/index', $data);
     }
 
+    /**
+     * Open the page to add a new car
+     *
+     * @return view
+     */
     public function pageSetCar()
     {
         // custom session
@@ -33,6 +73,13 @@ class Car extends BaseController
         return view('Car/SetCar/index', $data);
     }
 
+    /**
+     * Delete images from the application folder.
+     *
+     * @param string $imageName Image file name.
+     *
+     * @return void
+     */
     protected function removeImage($imageName)
     {
         if (file_exists('assets/images/cars/' . $imageName)) {
@@ -40,22 +87,50 @@ class Car extends BaseController
         }
     }
 
+    /**
+     * Convert image to base64.
+     *
+     * @param object $image Image file object.
+     *
+     * @return base64Image
+     */
     protected function blobImage($image)
     {
         $image->move('assets/images/cars');
-        $pathInfo = 'assets/images/cars/'.$image->getName();
+        $pathInfo = 'assets/images/cars/' . $image->getName();
         $fileContent = file_get_contents($pathInfo);
         $base64 = rtrim(base64_encode($fileContent));
-        $this->removeImage($image->getName());
+        $this->removeImage($image->getName()); //Delete images from the application
 
         return $base64;
     }
 
+    /**
+     * Delete the rupiah format.
+     *
+     * @param string $amountOfMoney The amount of money using the rupiah format.
+     *
+     * @return void
+     */
+    public function unformatRupiah($amountOfMoney)
+    {
+        $number = str_replace([',', '.', 'Rp', ' '], '', $amountOfMoney);
+        return $number;
+    }
+
+    /**
+     * Check that the PHP version is specified.
+     *
+     * @return jsonResponse
+     */
     public function setCar()
     {
         if ($this->request->isAJAX()) {
             // Form Input
-            $licenseNumber = $this->formatLicenseNumber(strtoupper($this->request->getPost('license_number')));
+            $licenseNumber = $this->request->getVar('license_number');
+            $licenseNumber = $this->formatLicenseNumber(strtoupper($licenseNumber));
+            $capitalPrice = $this->request->getPost('capital_price');
+            $carPrice = $this->request->getPost('car_price');
             $input = [
                 'id' => $this->request->getPost('id'),
                 'car_name' => $this->request->getPost('car_name'),
@@ -63,14 +138,18 @@ class Car extends BaseController
                 'car_color' => $this->request->getPost('car_color'),
                 'car_year' => $this->request->getPost('car_year'),
                 'car_brand' => $this->request->getPost('car_brand'),
-                'capital_price' => str_replace([',','.','Rp',' '], '', $this->request->getPost('capital_price')),
-                'car_price' => str_replace([',','.','Rp',' '], '', $this->request->getPost('car_price')),
+                'capital_price' => $this->unformatRupiah($capitalPrice),
+                'car_price' => $this->unformatRupiah($carPrice),
                 'receipt' => $this->request->getFile('receipt'),
                 'car_image' => $this->request->getFile('car_image'),
             ];
 
             // Validation
-            $isValid = ($this->validateData($input, $this->CarModel->getValidationRules(), $this->CarModel->getValidationMessages()) && $this->CarModel->checkBrand($input['car_brand']));
+            $validationRules = $this->CarModel->getValidationRules();
+            $validationMessages = $this->CarModel->getValidationMessages();
+            $isBrand = $this->CarModel->checkBrand($input['car_brand']);
+
+            $isValid = ($this->validateData($input, $validationRules, $validationMessages) && $isBrand);
             if (!$isValid) {
                 $response = [
                     'error' => $this->validator->getErrors(),
@@ -116,13 +195,20 @@ class Car extends BaseController
         }
     }
 
-    public function pageEditGeneralCar($id)
+    /**
+     * Go to the page for editing cars in general.
+     *
+     * @param int $carId Car Id
+     *
+     * @return view
+     */
+    public function pageEditGeneralCar($carId)
     {
-        $car = $this->CarModel->find($id);
+        $car = $this->CarModel->find($carId);
         if ($car != null) {
             $car->car_brand = $this->CarModel->checkBrand($car->brand_id);
             $data = [
-                'title' => $car->car_name.' | Edit Car',
+                'title' => $car->car_name . ' | Edit Car',
                 'car' => $car,
                 'brands' => $this->CarModel->getBrands(),
                 'additionalCosts' => $this->CarModel->getAdditionalCost($car->id),
@@ -133,13 +219,20 @@ class Car extends BaseController
         }
     }
 
-    public function pageEditAdditionalCost($id)
+    /**
+     * Go to the page to edit the car surcharge.
+     *
+     * @param int $carId Car Id
+     *
+     * @return view
+     */
+    public function pageEditAdditionalCost($carId)
     {
-        $car = $this->CarModel->find($id);
+        $car = $this->CarModel->find($carId);
         if ($car != null) {
             $car->car_brand = $this->CarModel->checkBrand($car->brand_id);
             $data = [
-                'title' => $car->car_name.' | Edit Car',
+                'title' => $car->car_name . ' | Edit Car',
                 'car' => $car,
                 'additionalCosts' => $this->CarModel->getAdditionalCost($car->id),
                 'brands' => $this->CarModel->getBrands(),
@@ -150,6 +243,13 @@ class Car extends BaseController
         }
     }
 
+    /**
+     * Retrieve car surcharge data.
+     *
+     * @param int $carId Car Id
+     *
+     * @return table
+     */
     public function getAdditionalCost($carId)
     {
         ini_set('memory_limit', '-1');
@@ -227,12 +327,19 @@ class Car extends BaseController
                 "draw" => $request->getPost('draw'),
                 "recordsTotal" => $additionalCostModel->count_all($carId),
                 "recordsFiltered" => $additionalCostModel->count_filtered($carId),
-                "data" => $data
+                "data" => $data,
             ];
             echo json_encode($output);
         }
     }
 
+    /**
+     * Retrieve car surcharge data.
+     *
+     * @param int $licenseNumber Unformatted License Number
+     *
+     * @return table
+     */
     public function formatLicenseNumber($licenseNumber)
     {
         $licenseNumber = str_replace(' ', '', $licenseNumber);
@@ -254,7 +361,6 @@ class Car extends BaseController
         $realNumber = implode('', $realNumber);
         $convertNumber = implode('', $convertNumber);
 
-
         if (str_contains($licenseNumber, $realNumber)) {
             $licenseNumber = str_replace($realNumber, $convertNumber, $licenseNumber);
 
@@ -268,6 +374,11 @@ class Car extends BaseController
         return false;
     }
 
+    /**
+     * Fetch car data.
+     *
+     * @return table
+     */
     public function getCar()
     {
         ini_set('memory_limit', '-1');
@@ -298,7 +409,7 @@ class Car extends BaseController
 
                     // Row Table
                     $row = [];
-                    $urlDetail = base_url('mobil/'.$car->id);
+                    $urlDetail = base_url('mobil/' . $car->id);
                     $row[] = "<div class=\"d-flex align-items-center\">
                     <!--begin::Thumbnail-->
                     <div class=\"symbol symbol-50px\">
@@ -326,11 +437,11 @@ class Car extends BaseController
                         case '1':
                             $row[] = "<span class=\"badge badge-light-danger fs-7 fw-bold\">Sold</span>";
                     }
-                    $carPrice = 'Rp '.number_format($car->car_price, '0', ',', '.');
-                    $totalCost = 'Rp '.number_format(($car->capital_price + $totalAdditionalCost), '0', ',', '.');
+                    $carPrice = 'Rp ' . number_format($car->car_price, '0', ',', '.');
+                    $totalCost = 'Rp ' . number_format(($car->capital_price + $totalAdditionalCost), '0', ',', '.');
                     $row[] = "<div class=\"text-end\">$totalCost</div>";
                     $row[] = "<div class=\"text-end\">$carPrice</div>";
-                    $urlEditGeneral = base_url().'/mobil/'.$car->id.'/umum';
+                    $urlEditGeneral = base_url() . '/mobil/' . $car->id . '/umum';
                     $row[] = "<div class=\"d-flex justify-content-end flex-shrink-0\">
                     <a href=\"$urlEditGeneral\" target=_blank class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
                         <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
@@ -390,7 +501,7 @@ class Car extends BaseController
                         <!--begin::Car details-->
                     </div>
                     </div>";
-                    $carPrice = 'Rp '.number_format($car->car_price, '0', ',', '.');
+                    $carPrice = 'Rp ' . number_format($car->car_price, '0', ',', '.');
                     $row[] = "<div class=\"text-end\">$carPrice</div>";
                     $row[] = "<div class=\"text-end\"> <button class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm\" onclick=\"selectItem('$car->license_number')\">
                     <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/arrows/arr012.svg-->
@@ -409,22 +520,30 @@ class Car extends BaseController
                 "draw" => $request->getPost('draw'),
                 "recordsTotal" => $carModel->count_all($status, $brandId, $keyword),
                 "recordsFiltered" => $carModel->count_filtered($status, $brandId, $keyword),
-                "data" => $data
+                "data" => $data,
             ];
             echo json_encode($output);
         }
     }
 
-    public function detail($id, $print = false)
+    /**
+     * Open the car details page.
+     *
+     * @param int     $carId Car Id
+     * @param boolean $print Print detail or no
+     *
+     * @return view
+     */
+    public function detail($carId, $print = false)
     {
         ini_set('memory_limit', '-1');
-        $car = $this->CarModel->find($id);
+        $car = $this->CarModel->find($carId);
         if ($car != null) {
             $car->car_brand = $this->CarModel->checkBrand($car->brand_id);
             $car->totalAdditionalCost = $this->CarModel->getTotalAdditionalCost($car->id);
 
             $data = [
-                'title' => $car->car_name .' | '. 'Renufus',
+                'title' => $car->car_name . ' | ' . 'Renufus',
                 'car' => $car,
                 'print' => false,
                 'additionalCosts' => $this->CarModel->getAdditionalCost($car->id),
@@ -439,11 +558,18 @@ class Car extends BaseController
         return redirect()->to(base_url('mobil'));
     }
 
-    public function printDetail($id)
+    /**
+     * Print car details using domPDF.
+     *
+     * @param int $carId Car Id
+     *
+     * @return view
+     */
+    public function printDetail($carId)
     {
-        $car = $this->CarModel->find($id);
+        $car = $this->CarModel->find($carId);
         if ($car != null) {
-            $html = $this->detail($id, true);
+            $html = $this->detail($carId, true);
             // instantiate and use the dompdf class
             $dompdf = new Dompdf();
             $dompdf->loadHtml($html);
@@ -455,14 +581,22 @@ class Car extends BaseController
             $dompdf->render();
 
             // Output the generated PDF to Browser
-            $dompdf->stream($car->car_name.'.pdf', [
-                'Attachment' => false,
-            ]);
+            $dompdf->stream(
+                $car->car_name . '.pdf',
+                [
+                    'Attachment' => false,
+                ]
+            );
         } else {
             return redirect()->to(base_url('mobil'));
         }
     }
 
+    /**
+     * Displays alerts for removing cars.
+     *
+     * @return jsonResponse
+     */
     public function alertCarDelete()
     {
         if ($this->request->isAJAX()) {
@@ -485,6 +619,11 @@ class Car extends BaseController
         }
     }
 
+    /**
+     * Delete the car.
+     *
+     * @return jsonResponse
+     */
     public function deleteCar()
     {
         if ($this->request->isAJAX()) {
@@ -506,6 +645,11 @@ class Car extends BaseController
         }
     }
 
+    /**
+     * Save the car surcharge temporarily.
+     *
+     * @return jsonResponse
+     */
     public function setTempAdditionalCost()
     {
         if ($this->request->isAJAX()) {
@@ -538,7 +682,7 @@ class Car extends BaseController
 
             $input = [
                 'cost_name' => $this->request->getPost('cost_name'),
-                'additional_price' => str_replace([',','.','Rp',' '], '', $this->request->getPost('additional_price')),
+                'additional_price' => str_replace([',', '.', 'Rp', ' '], '', $this->request->getPost('additional_price')),
                 'additional_receipt' => $this->request->getFile('additional_receipt'),
                 'paid_by' => $this->request->getPost('paid_by'),
                 'temp_session' => $this->request->getPost('temp_session'),
@@ -576,6 +720,11 @@ class Car extends BaseController
         }
     }
 
+    /**
+     * Retrieve data while surcharge all cars.
+     *
+     * @return jsonResponse
+     */
     public function getTempAdditionalCost()
     {
         if ($this->request->isAJAX()) {
@@ -590,6 +739,14 @@ class Car extends BaseController
         }
     }
 
+    /**
+     * Retrieve data while surcharge all cars.
+     *
+     * @param int     $tempId      Additional Cost Id
+     * @param varchar $tempSession Local storage random session
+     *
+     * @return $tempAdditionalCost
+     */
     public function getTempAdditionalCostById($tempId, $tempSession)
     {
         $tempAdditionalCost = $this->CarModel->getTempAdditionalCost(user()->id, $tempId, $tempSession);
@@ -599,6 +756,11 @@ class Car extends BaseController
         return false;
     }
 
+    /**
+     * Download image additional receipt.
+     *
+     * @return jsonResponse
+     */
     public function downloadAdditionalReceipt()
     {
         if ($this->request->isAJAX()) {
@@ -620,6 +782,11 @@ class Car extends BaseController
         }
     }
 
+    /**
+     * Download image temp additional receipt.
+     *
+     * @return jsonResponse
+     */
     public function downloadTempAdditionalReceipt()
     {
         if ($this->request->isAJAX()) {
@@ -643,11 +810,16 @@ class Car extends BaseController
         }
     }
 
+    /**
+     * Retrieve the total temp additional cost data.
+     *
+     * @return jsonResponse
+     */
     public function getTotalTempAdditionalCost()
     {
         if ($this->request->isAJAX()) {
             $tempSession = $this->request->getPost('temp_session');
-            $totalTempAdditionalCost = 'Rp '.number_format($this->CarModel->getTotalTempAdditionalCost(user()->id, $tempSession), '0', ',', '.');
+            $totalTempAdditionalCost = 'Rp ' . number_format($this->CarModel->getTotalTempAdditionalCost(user()->id, $tempSession), '0', ',', '.');
 
             $response = [
                 'totalTempAdditionalCost' => $totalTempAdditionalCost,
@@ -657,6 +829,11 @@ class Car extends BaseController
         }
     }
 
+    /**
+     * Displays an alert to remove temp additional costs.
+     *
+     * @return jsonResponse
+     */
     public function alertTempAdditionalCostDelete()
     {
         if ($this->request->isAJAX()) {
@@ -680,6 +857,11 @@ class Car extends BaseController
         }
     }
 
+    /**
+     * Delete temp additional cost.
+     *
+     * @return jsonResponse
+     */
     public function deleteTempAdditionalCost()
     {
         if ($this->request->isAJAX()) {
@@ -702,6 +884,11 @@ class Car extends BaseController
         }
     }
 
+    /**
+     * Delete all temp additional cost.
+     *
+     * @return jsonResponse
+     */
     public function resetTempAdditionalCost()
     {
         $tempSession = $this->request->getPost('temp_session');
@@ -719,6 +906,13 @@ class Car extends BaseController
         return json_encode($response);
     }
 
+    /**
+     * Looking for a car that is ready for sale.
+     *
+     * @param $keyword keyword for search the car
+     *
+     * @return jsonResponse
+     */
     public function findCarReady($keyword)
     {
         $licenseNumber = $this->formatLicenseNumber($keyword);
