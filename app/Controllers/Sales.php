@@ -1,20 +1,55 @@
 <?php
 
+/**
+ * Car Class Doc Comment
+ *
+ * PHP Version 8.0.13
+ *
+ * @category Sales
+ * @package  DashboardShowroom
+ * @author   Renanda Auzan Firdaus <renanda0039934@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @link     https://github.com/renufuss/dashboard-showroom
+ */
+
 namespace App\Controllers;
 
 use App\Models\SalesModel;
 use App\Models\TempSalesModel;
 
+/**
+ * Car Class Doc Comment
+ *
+ * PHP Version 8.0.13
+ *
+ * @category Sales
+ * @package  DashboardShowroom
+ * @author   Renanda Auzan Firdaus <renanda0039934@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @link     https://github.com/renufuss/dashboard-showroom
+ */
+
 class Sales extends BaseController
 {
     protected $TempSalesModel;
     protected $SalesModel;
+
+    /**
+     * Construct.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->SalesModel = new SalesModel();
         $this->TempSalesModel = new TempSalesModel();
     }
 
+    /**
+     * Open default page for https://base_url/penjualan.
+     *
+     * @return view
+     */
     public function index()
     {
         $data['title'] = 'Layout';
@@ -22,6 +57,13 @@ class Sales extends BaseController
         return view('Sales/Print/invoice2', $data);
     }
 
+    /**
+     * Delete images from the application folder.
+     *
+     * @param string $imageName Image file name.
+     *
+     * @return void
+     */
     protected function removeImage($imageName)
     {
         if (file_exists('assets/images/cars/' . $imageName)) {
@@ -29,10 +71,17 @@ class Sales extends BaseController
         }
     }
 
+    /**
+     * Convert image to base64.
+     *
+     * @param object $image Image file object.
+     *
+     * @return base64Image
+     */
     protected function blobImage($image)
     {
         $image->move('assets/images/sales');
-        $pathInfo = 'assets/images/sales/'.$image->getName();
+        $pathInfo = 'assets/images/sales/' . $image->getName();
         $fileContent = file_get_contents($pathInfo);
         $base64 = rtrim(base64_encode($fileContent));
         $this->removeImage($image->getName());
@@ -40,13 +89,18 @@ class Sales extends BaseController
         return $base64;
     }
 
+    /**
+     * Opens a modal pop up to select a car.
+     *
+     * @return jsonResponse
+     */
     public function carModal()
     {
         if ($this->request->isAJAX()) {
             $keyword = $this->request->getPost('keyword');
 
             $data = [
-                'keyword' => $keyword
+                'keyword' => $keyword,
             ];
             $msg = [
                 'carModal' => view('Sales/Modal/carModal', $data),
@@ -56,10 +110,15 @@ class Sales extends BaseController
         }
     }
 
+    /**
+     * Opens a modal pop up to save the payment.
+     *
+     * @return jsonResponse
+     */
     public function paymentModal()
     {
         if ($this->request->isAJAX()) {
-            $totalTempPrice = 'Rp '.number_format($this->TempSalesModel->getTotalTempPrice(), '0', ',', '.');
+            $totalTempPrice = 'Rp ' . number_format($this->TempSalesModel->getTotalTempPrice(), '0', ',', '.');
             $data = [
                 'totalPrice' => $totalTempPrice,
             ];
@@ -71,6 +130,11 @@ class Sales extends BaseController
         }
     }
 
+    /**
+     * Displays the sales table containing the selected car.
+     *
+     * @return jsonResponse
+     */
     public function salesTable()
     {
         if ($this->request->isAJAX()) {
@@ -81,10 +145,15 @@ class Sales extends BaseController
         }
     }
 
+    /**
+     * Displays the current total price.
+     *
+     * @return jsonResponse
+     */
     public function getTotalTempPrice()
     {
         if ($this->request->isAJAX()) {
-            $totalTempPrice = 'Rp '.number_format($this->TempSalesModel->getTotalTempPrice(), '0', ',', '.');
+            $totalTempPrice = 'Rp ' . number_format($this->TempSalesModel->getTotalTempPrice(), '0', ',', '.');
 
             $response = [
                 'totalTempPrice' => $totalTempPrice,
@@ -94,6 +163,11 @@ class Sales extends BaseController
         }
     }
 
+    /**
+     * Choose a car to the sales table.
+     *
+     * @return jsonResponse
+     */
     public function saveTemp()
     {
         if ($this->request->isAJAX()) {
@@ -128,6 +202,11 @@ class Sales extends BaseController
         }
     }
 
+    /**
+     * Displays an alert to delete the car that has been selected.
+     *
+     * @return jsonResponse
+     */
     public function alertDeleteTemp()
     {
         if ($this->request->isAJAX()) {
@@ -142,6 +221,11 @@ class Sales extends BaseController
         }
     }
 
+    /**
+     * Delete the selected car.
+     *
+     * @return jsonResponse
+     */
     public function deleteTemp()
     {
         if ($this->request->isAJAX()) {
@@ -163,6 +247,11 @@ class Sales extends BaseController
         }
     }
 
+    /**
+     * Delete all selected cars.
+     *
+     * @return jsonResponse
+     */
     public function resetTemp()
     {
         $temps = $this->TempSalesModel->getTempSales(user()->id);
@@ -180,10 +269,15 @@ class Sales extends BaseController
         return json_encode($response);
     }
 
+    /**
+     * Change the total price after being given a discount.
+     *
+     * @return jsonResponse
+     */
     public function setDiscount()
     {
         if ($this->request->isAJAX()) {
-            $discount = str_replace([',','.','Rp', ' '], '', $this->request->getPost('discount'));
+            $discount = str_replace([',', '.', 'Rp', ' '], '', $this->request->getPost('discount'));
 
             if ($discount == null) {
                 $discount = 0;
@@ -192,18 +286,23 @@ class Sales extends BaseController
             $totalPrice = ($totalTempPrice - $discount);
 
             $response = [
-                'totalPrice' => 'Rp '.number_format($totalPrice, '0', ',', '.'),
+                'totalPrice' => 'Rp ' . number_format($totalPrice, '0', ',', '.'),
             ];
 
             return json_encode($response);
         }
     }
 
+    /**
+     * Displays the remaining unpaid money.
+     *
+     * @return jsonResponse
+     */
     public function setOver()
     {
         if ($this->request->isAJAX()) {
-            $discount = str_replace([',','.','Rp',' '], '', $this->request->getPost('discount'));
-            $amountOfMoney = str_replace([',','.','Rp',' '], '', $this->request->getPost('amount_of_money'));
+            $discount = str_replace([',', '.', 'Rp', ' '], '', $this->request->getPost('discount'));
+            $amountOfMoney = str_replace([',', '.', 'Rp', ' '], '', $this->request->getPost('amount_of_money'));
             if ($discount == null) {
                 $discount = 0;
             }
@@ -217,13 +316,18 @@ class Sales extends BaseController
             $over = $totalPrice - $amountOfMoney;
 
             $response = [
-                'over' => 'Rp '.number_format($over, '0', ',', '.'),
+                'over' => 'Rp ' . number_format($over, '0', ',', '.'),
             ];
 
             return json_encode($response);
         }
     }
 
+    /**
+     * Create receipt numbers.
+     *
+     * @return string $receiptNumber
+     */
     public function getReceiptNumber()
     {
         $lastTransaction = $this->SalesModel->lastTransaction(date('Y-m-d'));
@@ -237,6 +341,11 @@ class Sales extends BaseController
         return $receiptNumber;
     }
 
+    /**
+     * Save payment.
+     *
+     * @return jsonResponse
+     */
     public function savePayment()
     {
         if ($this->request->isAJAX()) {
@@ -251,9 +360,9 @@ class Sales extends BaseController
             if ($discount == null) {
                 $discount = 0;
             }
-            $sales['discount'] = str_replace([',','.','Rp',' '], '', $discount);
-            $sales['total_price'] = ($sales['real_price']-$sales['discount']);
-            $payment['amount_of_money'] = str_replace([',','.','Rp',' '], '', $this->request->getPost('amount_of_money'));
+            $sales['discount'] = str_replace([',', '.', 'Rp', ' '], '', $discount);
+            $sales['total_price'] = ($sales['real_price'] - $sales['discount']);
+            $payment['amount_of_money'] = str_replace([',', '.', 'Rp', ' '], '', $this->request->getPost('amount_of_money'));
             $sales['sales_date'] = date('Y-m-d H:i:s');
 
             $isValid = ($this->validateData($sales, $this->SalesModel->getValidationRules(), $this->SalesModel->getValidationMessages()) && $payment['amount_of_money'] != null);
