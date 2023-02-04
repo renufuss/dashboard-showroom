@@ -14,7 +14,7 @@
         <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
             <th>No</th>
             <th class="min-w-50px">Nama Pengeluaran</th>
-            <th class="desktop-only <?= ($print != true) ? 'text-end' : '' ?>">Jumlah Pengeluaran</th>
+            <th class="desktop-only <?php echo ($print != true) ? 'text-end' : '' ?>">Jumlah Pengeluaran</th>
             <?php if($print != true) : ?>
             <th class="text-center">Bukti Pengeluaran</th>
             <?php endif; ?>
@@ -29,30 +29,30 @@
         <?php $i = 1; ?>
         <?php foreach ($additionalCosts as $additionalCost) : ?>
         <tr>
-            <td><?= $i; ?></td>
+            <td><?php echo $i; ?></td>
             <?php $i++; ?>
             <!--begin::PLAT=-->
             <td class="pe-0">
                 <div class="d-flex flex-column">
-                    <span class="fw-bold text-dark"><?= $additionalCost->cost_name; ?></span>
+                    <span class="fw-bold text-dark"><?php echo $additionalCost->cost_name; ?></span>
                     <?php if($print != true) : ?>
                     <span class="mobile-only">Rp
-                        <?= number_format($additionalCost->additional_price, '0', ',', '.'); ?></span>
-                        <?php endif; ?>
+                        <?php echo number_format($additionalCost->additional_price, '0', ',', '.'); ?></span>
+                    <?php endif; ?>
                 </div>
             </td>
             <!--end::PLAT=-->
             <!--begin::Price=-->
-            <td class="pe-0 desktop-only <?= ($print != true) ? 'text-end' : '' ?>">
+            <td class="pe-0 desktop-only <?php echo ($print != true) ? 'text-end' : '' ?>">
                 <span class="fw-bold text-dark">Rp
-                    <?= number_format($additionalCost->additional_price, '0', ',', '.'); ?></span>
+                    <?php echo number_format($additionalCost->additional_price, '0', ',', '.'); ?></span>
             </td>
             <!--end::Price=-->
             <?php if($print != true) : ?>
             <td class="text-center">
                 <?php if($additionalCost->additional_receipt != null) : ?>
                 <button class="btn btn-icon btn-bg-light btn-active-color-success btn-sm"
-                    onclick="getImage('<?= $additionalCost->id; ?>');return false;">
+                    onclick="getImage('<?php echo $additionalCost->id; ?>');return false;">
                     <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/files/fil021.svg-->
                     <span class="svg-icon svg-icon-muted svg-icon-2hx"><svg width="24" height="24" viewBox="0 0 24 24"
                             fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -74,7 +74,7 @@
             <?php endif; ?>
             <!-- begin::Person Who Pay -->
             <td>
-                <?= $additionalCost->paid_by; ?>
+                <?php echo $additionalCost->paid_by; ?>
             </td>
             <!-- end::Person Who Pay -->
         </tr>

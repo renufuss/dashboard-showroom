@@ -79,7 +79,7 @@ class preload
     private function loadAutoloader()
     {
         $paths = new Config\Paths();
-        require rtrim($paths->systemDirectory, '\\/ ') . DIRECTORY_SEPARATOR . 'bootstrap.php';
+        include rtrim($paths->systemDirectory, '\\/ ') . DIRECTORY_SEPARATOR . 'bootstrap.php';
     }
 
     /**
@@ -103,7 +103,7 @@ class preload
                     }
                 }
 
-                require_once $file[0];
+                include_once $file[0];
                 echo 'Loaded: ' . $file[0] . "\n";
             }
         }

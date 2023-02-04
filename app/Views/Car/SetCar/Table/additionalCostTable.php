@@ -29,22 +29,22 @@
             <!--begin::PLAT=-->
             <td class="pe-0">
                 <div class="d-flex flex-column">
-                    <span class="fw-bold text-dark"><?= $additionalCost->cost_name; ?></span>
+                    <span class="fw-bold text-dark"><?php echo $additionalCost->cost_name; ?></span>
                     <span class="mobile-only">Rp
-                        <?= number_format($additionalCost->additional_price, '0', ',', '.'); ?></span>
+                        <?php echo number_format($additionalCost->additional_price, '0', ',', '.'); ?></span>
                 </div>
             </td>
             <!--end::PLAT=-->
             <!--begin::Price=-->
             <td class="pe-0 desktop-only text-end">
                 <span class="fw-bold text-dark">Rp
-                    <?= number_format($additionalCost->additional_price, '0', ',', '.'); ?></span>
+                    <?php echo number_format($additionalCost->additional_price, '0', ',', '.'); ?></span>
             </td>
             <!--end::Price=-->
             <td class="text-center">
                 <?php if($additionalCost->additional_receipt != null) : ?>
                 <button class="btn btn-icon btn-bg-light btn-active-color-success btn-sm"
-                    onclick="getImage('<?= $additionalCost->id; ?>');return false;">
+                    onclick="getImage('<?php echo $additionalCost->id; ?>');return false;">
                     <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/files/fil021.svg-->
                     <span class="svg-icon svg-icon-muted svg-icon-2hx"><svg width="24" height="24" viewBox="0 0 24 24"
                             fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -65,12 +65,12 @@
             </td>
             <!-- begin::Person Who Pay -->
             <td>
-                <?= $additionalCost->paid_by; ?>
+                <?php echo $additionalCost->paid_by; ?>
             </td>
             <!-- end::Person Who Pay -->
             <!--begin::Action=-->
             <td class="text-end">
-                <button class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" onclick="alertDeleteTempAdditionalCost('<?= $additionalCost->id; ?>');return false;">
+                <button class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" onclick="alertDeleteTempAdditionalCost('<?php echo $additionalCost->id; ?>');return false;">
                     <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
                     <span class="svg-icon svg-icon-3">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -1,6 +1,6 @@
 <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModal" aria-hidden="true"
-    data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    data-bs-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg " role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Pembayaran</h5>
@@ -107,7 +107,7 @@
                                 <span>Total Harga</span>
                             </label>
                             <!--end::Label-->
-                            <input type="text" id="total_price" name="total_price" class="form-control form-control-solid" value="<?= $totalPrice; ?>" readonly/>
+                            <input type="text" id="total_price" name="total_price" class="form-control form-control-solid" value="<?php echo $totalPrice; ?>" readonly/>
                             <div class="invalid-feedback" id="total_price-feedback"></div>
                         </div>
                         <!-- end::col -->
@@ -253,10 +253,10 @@
                 $("#btnSavePayment").prop("disabled", true);
                 $("#btnSavePayment").html(`
                 <div class="loader">
-    			<span class="bar"></span>
-    			<span class="bar"></span>
-    			<span class="bar"></span>
-				</div>`);
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                </div>`);
             },
             complete: function () {
                 $("#btnSavePayment").prop("disabled", false);

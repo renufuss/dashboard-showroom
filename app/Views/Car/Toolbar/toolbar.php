@@ -11,7 +11,7 @@
             <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                 <!--begin::Item-->
                 <li class="breadcrumb-item text-muted">
-                    <a href="<?= base_url(); ?>" class="text-muted text-hover-primary">Renufus</a>
+                    <a href="<?php echo base_url(); ?>" class="text-muted text-hover-primary">Renufus</a>
                 </li>
                 <!--end::Item-->
                 <!--begin::Item-->
@@ -66,7 +66,7 @@
                                 <select class="form-select form-select-solid" data-control="select2" data-placeholder="Semua Brand" id="car_brand" data-hide-search="true" data-allow-clear="true">
                                     <option></option>
                                     <?php foreach($brands as $brand) : ?>
-                                    <option value="<?= $brand->id; ?>"><?= $brand->brand_name; ?></option>
+                                    <option value="<?php echo $brand->id; ?>"><?php echo $brand->brand_name; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>

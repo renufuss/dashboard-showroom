@@ -1,12 +1,12 @@
-<?= $this->extend('Layout/index'); ?>
+<?php echo $this->extend('Layout/index'); ?>
 
 
-<?= $this->section('content'); ?>
+<?php echo $this->section('content'); ?>
 
 
 <div class="d-flex flex-column flex-column-fluid">
     <!--begin::Toolbar-->
-    <?php include('Toolbar/toolbar.php') ?>
+    <?php require 'Toolbar/toolbar.php' ?>
     <!--end::Toolbar-->
     <!--begin::Content-->
     <div id="kt_app_content" class="app-content flex-column-fluid">
@@ -41,7 +41,7 @@
                     <!--begin::Card toolbar-->
                     <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
                         <!--begin::Add product-->
-                        <a href="<?= base_url('mobil/tambah'); ?>" class="btn btn-primary">Tambah Mobil</a>
+                        <a href="<?php echo base_url('mobil/tambah'); ?>" class="btn btn-primary">Tambah Mobil</a>
                         <!--end::Add product-->
                     </div>
                     <!--end::Card toolbar-->
@@ -51,7 +51,7 @@
                 <div class="card-body pt-0">
                     <!--begin::Table-->
                     <div class="carTable"></div>
-                    <?php include('Table/carTable.php'); ?>
+                    <?php require 'Table/carTable.php'; ?>
                     <!--end::Table-->
                 </div>
                 <!--end::Card body-->
@@ -87,4 +87,4 @@
 
 
 
-<?= $this->endSection(); ?>
+<?php echo $this->endSection(); ?>

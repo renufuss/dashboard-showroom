@@ -16,6 +16,8 @@ namespace App\Controllers;
 
 use App\Models\SalesModel;
 use App\Models\TempSalesModel;
+use App\Models\DataTable\SalesModel as DataTableSalesModel;
+use Config\Services;
 
 /**
  * Car Class Doc Comment
@@ -53,8 +55,7 @@ class Sales extends BaseController
     public function index()
     {
         $data['title'] = 'Layout';
-        // return view('Sales/index', $data);
-        return view('Sales/Print/invoice2', $data);
+        return view('Sales/index', $data);
     }
 
     /**
@@ -392,9 +393,7 @@ class Sales extends BaseController
             foreach ($cars as $car) {
                 $data = [
                     'sales_id' => $salesId,
-                    'car_name' => $car->car_name,
-                    'license_number' => $car->license_number,
-                    'car_price' => $car->car_price,
+                    'car_id' => $car->id,
                 ];
 
                 array_push($carData, $data);
@@ -413,5 +412,109 @@ class Sales extends BaseController
             $response['success'] = 'Berhasil menyimpan pembayaran';
             return json_encode($response);
         }
+    }
+
+    /**
+     * Page Sales History.
+     *
+     * @return view
+     */
+    public function pageSalesHistory()
+    {
+        $data['title'] = 'Riwayat Penjualan';
+        return view('Sales/History/index', $data);
+    }
+
+    /**
+     * Page Sales History Detail.
+     *
+     * @return view
+     */
+    public function pageSalesHistoryDetail($receiptNumber)
+    {
+        ini_set('memory_limit', '-1');
+        $sales = $this->SalesModel->where('receipt_number', $receiptNumber)->first();
+        $cars = $this->SalesModel->getCar($receiptNumber);
+
+        if ($sales != null) {
+            $data = [
+                'title' => 'Detail | '. $sales->receipt_number,
+                'sales' => $sales,
+                'cars' => $cars,
+            ];
+            return view('Sales/History/Detail/Tab/detail', $data);
+        }
+        return redirect()->to(base_url('penjualan/riwayat'));
+    }
+
+     /**
+     * Get Sales History.
+     *
+     * @return Table
+     */
+    public function getSalesHistory()
+    {
+        ini_set('memory_limit', '-1');
+        $request = Services::request();
+        $salesModel = new DataTableSalesModel($request);
+        if ($request->getMethod(true) == 'POST') {
+            $sales = $salesModel->get_datatables();
+            $data = [];
+            foreach ($sales as $sale) {
+                // Row Table
+                $row = [];
+                $row[] = $sale->sales_date;
+                $row[] = $sale->receipt_number;
+                $row[] = $sale->full_name;
+                $row[] = $sale->phone_number;
+                $row[] = 'Status';
+                $row[] = "Rp " . number_format($sale->total_price, '0', ',', '.');
+                $urlDetail = base_url()."/penjualan/riwayat/".$sale->receipt_number;
+                $row[] = "<div class=\"text-end\"><a href=\"$urlDetail\" target=_blank class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
+                <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
+                <span class=\"svg-icon svg-icon-3\">
+                    <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
+                        xmlns=\"http://www.w3.org/2000/svg\">
+                        <path
+                            d=\"M17.5 11H6.5C4 11 2 9 2 6.5C2 4 4 2 6.5 2H17.5C20 2 22 4 22 6.5C22 9 20 11 17.5 11ZM15 6.5C15 7.9 16.1 9 17.5 9C18.9 9 20 7.9 20 6.5C20 5.1 18.9 4 17.5 4C16.1 4 15 5.1 15 6.5Z\"
+                            fill=\"currentColor\"></path>
+                        <path opacity=\"0.3\"
+                            d=\"M17.5 22H6.5C4 22 2 20 2 17.5C2 15 4 13 6.5 13H17.5C20 13 22 15 22 17.5C22 20 20 22 17.5 22ZM4 17.5C4 18.9 5.1 20 6.5 20C7.9 20 9 18.9 9 17.5C9 16.1 7.9 15 6.5 15C5.1 15 4 16.1 4 17.5Z\"
+                            fill=\"currentColor\"></path>
+                    </svg>
+                </span>
+                <!--end::Svg Icon-->
+            </a></div>";
+                $data[] = $row;
+            }
+            $output = [
+                "draw" => $request->getPost('draw'),
+                "recordsTotal" => $salesModel->count_all(),
+                "recordsFiltered" => $salesModel->count_filtered(),
+                "data" => $data,
+            ];
+            echo json_encode($output);
+        }
+    }
+
+    /**
+     * Page Sales History Detail.
+     *
+     * @return view
+     */
+    public function pageSalesHistoryPayment($receiptNumber)
+    {
+        $sales = $this->SalesModel->where('receipt_number', $receiptNumber)->first();
+        $cars = $this->SalesModel->getCar($receiptNumber);
+
+        if ($sales != null) {
+            $data = [
+                'title' => 'Pembayaran | '. $sales->receipt_number,
+                'sales' => $sales,
+                'cars' => $cars,
+            ];
+            return view('Sales/History/Detail/tab/payment', $data);
+        }
+        return redirect()->to(base_url('penjualan/riwayat'));
     }
 }

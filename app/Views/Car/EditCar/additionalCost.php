@@ -1,6 +1,6 @@
-<?= $this->extend('Car/EditCar/LayoutUpdate/index'); ?>
+<?php echo $this->extend('Car/EditCar/LayoutUpdate/index'); ?>
 
-<?= $this->section('boxBawah'); ?>
+<?php echo $this->section('boxBawah'); ?>
 
 <!--begin::Basic info-->
 <div class="card mb-5 mb-xl-10">
@@ -17,7 +17,7 @@
     <div id="kt_account_settings_profile_details" class="collapse show">
             <!--begin::Card body-->
             <div class="card-body border-top p-9">
-            <?php include 'Table/additionalCostTable.php'; ?>
+            <?php require 'Table/additionalCostTable.php'; ?>
             </div>
             <!--end::Card body-->
     </div>
@@ -25,4 +25,4 @@
 </div>
 <!--end::Basic info-->
 
-<?= $this->endSection(); ?>
+<?php echo $this->endSection(); ?>

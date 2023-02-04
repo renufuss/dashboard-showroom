@@ -93,6 +93,15 @@ class SalesModel extends Model
         return true;
     }
 
+    public function getCar($receiptNumber)
+    {
+        $table = $this->db->table('car_sales');
+        $query = $table->select('*')->join('sales', 'car_sales.sales_id=sales.id', 'inner')->join('car', 'car_sales.car_id=car.id', 'inner')->join('car_brand', 'car.brand_id=car_brand.id')->where('receipt_number', $receiptNumber);
+
+        $car = $query->get()->getResultObject();
+        return $car;
+    }
+
     public function savePayment($data)
     {
         $table = $this->db->table('payment_sales');

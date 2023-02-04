@@ -1,12 +1,12 @@
-<?= $this->extend('Layout/index'); ?>
+<?php echo $this->extend('Layout/index'); ?>
 
 
-<?= $this->section('content'); ?>
+<?php echo $this->section('content'); ?>
 
 
 <div class="d-flex flex-column flex-column-fluid">
     <!--begin::Toolbar-->
-    <?php include('Toolbar/toolbar.php') ?>
+    <?php require 'Toolbar/toolbar.php' ?>
     <!--end::Toolbar-->
     <!--begin::Content-->
     <div id="kt_app_content" class="app-content flex-column-fluid">
@@ -32,7 +32,7 @@
                                 <div class="form-group">
                                     <label class="form-label" for="date">Tanggal</label>
                                     <input type="date" class="form-control mb-2" name="date" id="date" readonly
-                                        value="<?= date('Y-m-d'); ?>">
+                                        value="<?php echo date('Y-m-d'); ?>">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -388,4 +388,4 @@
 </script>
 
 
-<?= $this->endSection(); ?>
+<?php echo $this->endSection(); ?>

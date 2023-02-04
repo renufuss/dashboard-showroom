@@ -8,7 +8,7 @@ $routes = Services::routes();
 // Load the system's routing file first, so that the app and ENVIRONMENT
 // can override as needed.
 if (is_file(SYSTEMPATH . 'Config/Routes.php')) {
-    require SYSTEMPATH . 'Config/Routes.php';
+    include SYSTEMPATH . 'Config/Routes.php';
 }
 
 /*
@@ -72,6 +72,11 @@ $routes->post('/penjualan/payment', 'Sales::savePayment');
 $routes->post('/penjualan/payment/discount', 'Sales::setDiscount');
 $routes->post('/penjualan/payment/over', 'Sales::setOver');
 
+$routes->get('/penjualan/riwayat', 'Sales::pageSalesHistory');
+$routes->post('/penjualan/riwayat', 'Sales::getSalesHistory');
+$routes->get('/penjualan/riwayat/(:alphanum)', 'Sales::pageSalesHistoryDetail/$1');
+$routes->get('/penjualan/riwayat/(:alphanum)/pembayaran', 'Sales::pageSalesHistoryPayment/$1');
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing
@@ -86,5 +91,5 @@ $routes->post('/penjualan/payment/over', 'Sales::setOver');
  * needing to reload it.
  */
 if (is_file(APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php')) {
-    require APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php';
+    include APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php';
 }

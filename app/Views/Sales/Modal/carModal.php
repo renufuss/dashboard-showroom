@@ -7,8 +7,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                <input type="hidden" name="keyword" id="keyword" value="<?= $keyword; ?>">
-                <?php include(APPPATH.'Views/Sales/Table/carTable.php'); ?>
+                <input type="hidden" name="keyword" id="keyword" value="<?php echo $keyword; ?>">
+                <?php require APPPATH.'Views/Sales/Table/carTable.php'; ?>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"

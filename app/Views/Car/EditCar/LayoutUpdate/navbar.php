@@ -14,7 +14,7 @@
             <div class="col-lg-3 col-xxl-2 col-md-3 col-12 mb-3 text-center-mobile">
                 <div class="symbol symbol-100px symbol-lg-custom symbol-fixed">
                     <?php if($car->car_image != null) : ?>
-                    <img src="data:image/png;base64,<?= $car->car_image; ?>" alt="Car Image">
+                    <img src="data:image/png;base64,<?php echo $car->car_image; ?>" alt="Car Image">
                     <?php else : ?>
                     <div class="symbol symbol-50px">
                         <div class="symbol-label fs-3x fw-semibold bg-primary text-inverse-danger">as</div>
@@ -31,7 +31,7 @@
                     <!--begin::Name-->
                     <div class="col-md-12 col-12 mb-4">
                         <a href="#"
-                            class="text-gray-900 text-hover-primary fs-2 fw-bold me-1"><?= $car->car_name; ?></a>
+                            class="text-gray-900 text-hover-primary fs-2 fw-bold me-1"><?php echo $car->car_name; ?></a>
                     </div>
                     <!--end::Name-->
                     <!--begin::Info-->
@@ -48,7 +48,7 @@
                                     </svg>
                                 </span>
                                 <!--end::Svg Icon-->
-                                <?= $car->license_number; ?>
+                                <?php echo $car->license_number; ?>
                             </a>
                         </div>
                         <div class="col-md-12 col-12">
@@ -71,7 +71,7 @@
                                 </span>
                                 <!--end::Svg Icon-->
                                 <!--end::Svg Icon-->
-                                <!--end::Svg Icon--><?= $car->car_year; ?>
+                                <!--end::Svg Icon--><?php echo $car->car_year; ?>
                             </a>
                         </div>
                     </div>
@@ -87,7 +87,7 @@
         <!-- mobile -->
         <div class="row fs-5 text-gray-500 fw-bold text-center mobile-only" style="padding-left:15px">
             <div class="col-md-4 col-4 mt-2">
-                <a href="<?= base_url(); ?>/mobil/<?= $car->id; ?>/umum" class="nav-link text-active-primary ms-0 me-10 py-5 <?= (url_is('mobil/*/umum')) ? 'active' : ''; ?>">
+                <a href="<?php echo base_url(); ?>/mobil/<?php echo $car->id; ?>/umum" class="nav-link text-active-primary ms-0 me-10 py-5 <?php echo (url_is('mobil/*/umum')) ? 'active' : ''; ?>">
                     <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/ecommerce/ecm006.svg-->
                     <span class="svg-icon svg-icon-muted svg-icon-2x"><svg width="24" height="24" viewBox="0 0 24 24"
                             fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -103,7 +103,7 @@
                 </a>
             </div>
             <div class="col-md-4 col-4 mt-2">
-                <a href="<?= base_url(); ?>/mobil/<?= $car->id; ?>/biaya" class="nav-link text-active-primary ms-0 me-10 py-5 <?= (url_is('mobil/*/biaya')) ? 'active' : ''; ?>">
+                <a href="<?php echo base_url(); ?>/mobil/<?php echo $car->id; ?>/biaya" class="nav-link text-active-primary ms-0 me-10 py-5 <?php echo (url_is('mobil/*/biaya')) ? 'active' : ''; ?>">
                     <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/general/gen005.svg-->
                     <span class="svg-icon svg-icon-muted svg-icon-2x"><svg width="24" height="24" viewBox="0 0 24 24"
                             fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -120,7 +120,7 @@
                 </a>
             </div>
             <div class="col-md-4 col-4 mt-2">
-                <a href="<?= base_url('mobil'); ?>" class="nav-link text-active-primary ms-0 me-10 py-5">
+                <a href="<?php echo base_url('mobil'); ?>" class="nav-link text-active-primary ms-0 me-10 py-5">
                     <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/arrows/arr079.svg-->
                     <span class="svg-icon svg-icon-muted svg-icon-2x"><svg width="24" height="24" viewBox="0 0 24 24"
                             fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -141,20 +141,20 @@
         <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold desktop-only">
             <!--begin::Nav item-->
             <li class="nav-item mt-2">
-                <a class="nav-link text-active-primary ms-0 me-10 py-5 <?= (url_is('mobil/*/umum')) ? 'active' : ''; ?>"
-                    href="<?= base_url(); ?>/mobil/<?= $car->id; ?>/umum">Umum</a>
+                <a class="nav-link text-active-primary ms-0 me-10 py-5 <?php echo (url_is('mobil/*/umum')) ? 'active' : ''; ?>"
+                    href="<?php echo base_url(); ?>/mobil/<?php echo $car->id; ?>/umum">Umum</a>
             </li>
             <!--end::Nav item-->
             <!--begin::Nav item-->
             <li class="nav-item mt-2">
-                <a class="nav-link text-active-primary ms-0 me-10 py-5 <?= (url_is('mobil/*/biaya')) ? 'active' : ''; ?>"
-                    href="<?= base_url(); ?>/mobil/<?= $car->id; ?>/biaya">Biaya Tambahan</a>
+                <a class="nav-link text-active-primary ms-0 me-10 py-5 <?php echo (url_is('mobil/*/biaya')) ? 'active' : ''; ?>"
+                    href="<?php echo base_url(); ?>/mobil/<?php echo $car->id; ?>/biaya">Biaya Tambahan</a>
             </li>
             <!--end::Nav item-->
             <!--begin::Nav item-->
             <li class="nav-item mt-2">
                 <a class="nav-link text-active-primary ms-0 me-10 py-5"
-                    href="<?= base_url(); ?>/mobil">
+                    href="<?php echo base_url(); ?>/mobil">
                     <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/arrows/arr079.svg-->
                     <span class="svg-icon svg-icon-muted svg-icon-3"><svg width="24" height="24" viewBox="0 0 24 24"
                             fill="none" xmlns="http://www.w3.org/2000/svg">

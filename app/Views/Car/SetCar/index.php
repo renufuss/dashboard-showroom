@@ -1,12 +1,12 @@
-<?= $this->extend('Layout/index'); ?>
+<?php echo $this->extend('Layout/index'); ?>
 
 
-<?= $this->section('content'); ?>
+<?php echo $this->section('content'); ?>
 
 
 <div class="d-flex flex-column flex-column-fluid">
     <!--begin::Toolbar-->
-    <?php include('Toolbar/toolbar.php') ?>
+    <?php require 'Toolbar/toolbar.php' ?>
     <!--end::Toolbar-->
     <!--begin::Content-->
     <div id="kt_app_content" class="app-content flex-column-fluid">
@@ -100,7 +100,7 @@
                                     <?php $firstYear = 1945; ?>
                                     <?php $lastYear = date('Y'); ?>
                                     <?php for($x=$lastYear; $x>=$firstYear; $x--) :?>
-                                    <option value="<?= $x; ?>"><?= $x; ?></option>n
+                                    <option value="<?php echo $x; ?>"><?php echo $x; ?></option>n
                                     <?php endfor; ?>
                                 </select>
                                 <!--end::Input-->
@@ -126,7 +126,7 @@
                                     data-placeholder="Pilih Brand Mobil" id="car_brand" name="car_brand">
                                     <option value="">Pilih Brand Mobil</option>
                                     <?php foreach($brands as $brand) : ?>
-                                    <option value="<?= $brand->id; ?>"><?= $brand->brand_name; ?></option>
+                                    <option value="<?php echo $brand->id; ?>"><?php echo $brand->brand_name; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                                 <!--end::Select2-->
@@ -376,7 +376,7 @@
 
                     <div class="d-flex justify-content-end">
                         <!--begin::Button-->
-                        <a href="<?= base_url('mobil'); ?>" class="btn btn-sm btn-light btn-active-light-primary me-5"
+                        <a href="<?php echo base_url('mobil'); ?>" class="btn btn-sm btn-light btn-active-light-primary me-5"
                             style="border: 1px solid">Batal</a>
                         <!--end::Button-->
                         <!--begin::Button-->
@@ -486,10 +486,10 @@
                 $("#btnSaveTempAdditionalCost").prop("disabled", true);
                 $("#btnSaveTempAdditionalCost").html(`
                 <div class="loader">
-    			<span class="bar"></span>
-    			<span class="bar"></span>
-    			<span class="bar"></span>
-				</div>`);
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                </div>`);
             },
             complete: function () {
                 $("#btnSaveTempAdditionalCost").prop("disabled", false);
@@ -543,10 +543,10 @@
                 $("#btnSave").prop("disabled", true);
                 $("#btnSave").html(`
                 <div class="loader">
-    			<span class="bar"></span>
-    			<span class="bar"></span>
-    			<span class="bar"></span>
-				</div>`);
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                </div>`);
             },
             complete: function () {
                 $("#btnSave").prop("disabled", false);
@@ -599,10 +599,10 @@
             beforeSend: function () {
                 $("#additionalCostTable").html(`
                 <svg class="pl" width="240" height="240" viewBox="0 0 240 240">
-	                <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
-	                <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
-	                <circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
-	                <circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+                    <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+                    <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+                    <circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+                    <circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
                 </svg>
                 `);
             },
@@ -751,4 +751,4 @@
     });
 </script>
 
-<?= $this->endSection(); ?>
+<?php echo $this->endSection(); ?>

@@ -1,6 +1,6 @@
-<?= $this->extend('Car/EditCar/LayoutUpdate/index'); ?>
+<?php echo $this->extend('Car/EditCar/LayoutUpdate/index'); ?>
 
-<?= $this->section('boxBawah'); ?>
+<?php echo $this->section('boxBawah'); ?>
 
 <!--begin::Basic info-->
 <div class="card mb-5 mb-xl-10">
@@ -27,13 +27,13 @@
                     <!--begin::Col-->
                     <div class="col-lg-8">
                         <!--begin::Image input-->
-                        <div class="image-input image-input-outline <?= ($car->car_image == null) ? 'image-input-empty' : ''; ?>"
+                        <div class="image-input image-input-outline <?php echo ($car->car_image == null) ? 'image-input-empty' : ''; ?>"
                             data-kt-image-input="true"
                             style="background-image: url('/assets/media/svg/avatars/blank.svg')">
                             <!--begin::Preview existing avatar-->
                             <?php if ($car->car_image != null) : ?>
                             <div class="image-input-wrapper w-200px h-120px"
-                                style="background-image: url(data:image/png;base64,<?= $car->car_image; ?>)">
+                                style="background-image: url(data:image/png;base64,<?php echo $car->car_image; ?>)">
                             </div>
                             <?php else : ?>
                             <div class="image-input-wrapper w-125px h-125px" style="background-image: none"></div>
@@ -86,7 +86,7 @@
                             <div class="col-lg-12 fv-row fv-plugins-icon-container">
                                 <input type="text" name="car_name" id="car_name"
                                     class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
-                                    value="<?= $car->car_name; ?>" autocomplete="off">
+                                    value="<?php echo $car->car_name; ?>" autocomplete="off">
                                 <div class="fv-plugins-message-container invalid-feedback" id="car_name-feedback">
                                 </div>
                             </div>
@@ -110,7 +110,7 @@
                             <div class="col-lg-12 fv-row fv-plugins-icon-container">
                                 <input type="text" name="license_number" id="license_number"
                                     class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
-                                    value="<?= $car->license_number; ?>" autocomplete="off">
+                                    value="<?php echo $car->license_number; ?>" autocomplete="off">
                                 <div class="fv-plugins-message-container invalid-feedback" id="license_number-feedback">
                                 </div>
                             </div>
@@ -134,7 +134,7 @@
                             <div class="col-lg-12 fv-row fv-plugins-icon-container">
                                 <input type="text" name="car_color" id="car_color"
                                     class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
-                                    value="<?= $car->car_color; ?>" autocomplete="off">
+                                    value="<?php echo $car->car_color; ?>" autocomplete="off">
                                 <div class="fv-plugins-message-container invalid-feedback" id="car_color-feedback">
                                 </div>
                             </div>
@@ -163,8 +163,8 @@
                                     <?php $firstYear = 1945; ?>
                                     <?php $lastYear = date('Y'); ?>
                                     <?php for($x=$lastYear; $x>=$firstYear; $x--) :?>
-                                    <option value="<?= $x; ?>" <?= ($car->car_year == $x) ? 'selected' : ''; ?>>
-                                        <?= $x; ?></option>n
+                                    <option value="<?php echo $x; ?>" <?php echo ($car->car_year == $x) ? 'selected' : ''; ?>>
+                                        <?php echo $x; ?></option>n
                                     <?php endfor; ?>
                                 </select>
                                 <!--end::Input-->
@@ -194,9 +194,9 @@
                                     id="car_brand" name="car_brand">
                                     <option value="">Pilih Brand Mobil</option>
                                     <?php foreach($brands as $brand) : ?>
-                                    <option value="<?= $brand->id; ?>"
-                                        <?= ($brand->brand_name == $car->car_brand) ? 'selected' : ''; ?>>
-                                        <?= $brand->brand_name; ?></option>
+                                    <option value="<?php echo $brand->id; ?>"
+                                        <?php echo ($brand->brand_name == $car->car_brand) ? 'selected' : ''; ?>>
+                                        <?php echo $brand->brand_name; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                                 <!--end::Select2-->
@@ -222,7 +222,7 @@
                             <div class="col-lg-12 fv-row fv-plugins-icon-container">
                                 <input type="text" name="capital_price" id="capital_price"
                                     class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
-                                    value="<?= 'Rp '.number_format(($car->capital_price), '0', ',', '.'); ?>"
+                                    value="<?php echo 'Rp '.number_format(($car->capital_price), '0', ',', '.'); ?>"
                                     autocomplete="off">
                                 <div class="fv-plugins-message-container invalid-feedback" id="capital_price-feedback">
                                 </div>
@@ -247,7 +247,7 @@
                             <div class="col-lg-12 fv-row fv-plugins-icon-container">
                                 <input type="text" name="car_price" id="car_price"
                                     class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
-                                    value="<?= 'Rp '.number_format(($car->car_price), '0', ',', '.'); ?>"
+                                    value="<?php echo 'Rp '.number_format(($car->car_price), '0', ',', '.'); ?>"
                                     autocomplete="off">
                                 <div class="fv-plugins-message-container invalid-feedback" id="car_price-feedback">
                                 </div>
@@ -285,7 +285,7 @@
             <!--end::Card body-->
             <!--begin::Actions-->
             <div class="card-footer d-flex justify-content-end py-6 px-9">
-                <input type="hidden" name="id" id="id" value="<?= $car->id; ?>">
+                <input type="hidden" name="id" id="id" value="<?php echo $car->id; ?>">
                 <button type="button" class="btn btn-primary" id="btnSave">Simpan</button>
             </div>
             <!--end::Actions-->
@@ -301,8 +301,8 @@
         autoNumeric();
 
         // load File to Input Form
-        loadURLToInputField('data:image/png;base64,<?= $car->car_image; ?>', '#car_image', '<?= $car->car_name; ?>car_image.jpg')
-        loadURLToInputField('data:image/png;base64,<?= $car->receipt; ?>', '#receipt', '<?= $car->car_name; ?>_receipt.jpg')
+        loadURLToInputField('data:image/png;base64,<?php echo $car->car_image; ?>', '#car_image', '<?php echo $car->car_name; ?>car_image.jpg')
+        loadURLToInputField('data:image/png;base64,<?php echo $car->receipt; ?>', '#receipt', '<?php echo $car->car_name; ?>_receipt.jpg')
     });
 
     function toastConfig() {
@@ -371,10 +371,10 @@
                 $("#btnSave").prop("disabled", true);
                 $("#btnSave").html(`
                 <div class="loader">
-    			<span class="bar"></span>
-    			<span class="bar"></span>
-    			<span class="bar"></span>
-				</div>`);
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                </div>`);
             },
             complete: function () {
                 $("#btnSave").prop("disabled", false);
@@ -452,4 +452,4 @@
     //End load File to Input Form
 </script>
 
-<?= $this->endSection(); ?>
+<?php echo $this->endSection(); ?>

@@ -1,12 +1,12 @@
-<?= $this->extend('Layout/index'); ?>
+<?php echo $this->extend('Layout/index'); ?>
 
 
-<?= $this->section('content'); ?>
+<?php echo $this->section('content'); ?>
 
 
 <div class="d-flex flex-column flex-column-fluid">
     <!--begin::Toolbar-->
-    <?php include('Toolbar/toolbar.php') ?>
+    <?php require 'Toolbar/toolbar.php' ?>
     <!--end::Toolbar-->
     <!--begin::Content-->
     <div id="kt_app_content" class="app-content flex-column-fluid">
@@ -33,7 +33,7 @@
                                 data-kt-image-input="true">
                                 <!--begin::Preview existing avatar-->
                                 <img class="image-input-wrapper w-200px"
-                                    src="data:image/png;base64,<?= $car->car_image; ?>" alt="Car Image">
+                                    src="data:image/png;base64,<?php echo $car->car_image; ?>" alt="Car Image">
                                 <!--end::Preview existing avatar-->
                             </div>
                             <div class="text-muted fs-7">Foto Mobil</div>
@@ -54,7 +54,7 @@
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="car_year" id="car_year" class="form-control mb-2"
-                                    autocomplete="off" value="<?= $car->car_year; ?>" readonly />
+                                    autocomplete="off" value="<?php echo $car->car_year; ?>" readonly />
                                 <!--end::Input-->
                                 <div class="invalid-feedback" id="car_year-feedback"></div>
                             </div>
@@ -75,7 +75,7 @@
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="car_brand" id="car_brand" class="form-control mb-2"
-                                    autocomplete="off" value="<?= $car->car_brand; ?>" readonly />
+                                    autocomplete="off" value="<?php echo $car->car_brand; ?>" readonly />
                                 <!--end::Input-->
                                 <div class="invalid-feedback" id="car_brand-feedback"></div>
                             </div>
@@ -106,7 +106,7 @@
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="car_name" id="car_name" class="form-control mb-2"
-                                    autocomplete="off" value="<?= $car->car_name; ?>" readonly />
+                                    autocomplete="off" value="<?php echo $car->car_name; ?>" readonly />
                                 <!--end::Input-->
                                 <div class="invalid-feedback" id="car_name-feedback"></div>
                             </div>
@@ -119,7 +119,7 @@
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="license_number" id="license_number" class="form-control mb-2"
-                                    autocomplete="off" value="<?= $car->license_number; ?>" readonly />
+                                    autocomplete="off" value="<?php echo $car->license_number; ?>" readonly />
                                 <!--end::Input-->
                                 <div class="invalid-feedback" id="license_number-feedback"></div>
                             </div>
@@ -132,7 +132,7 @@
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="car_color" id="car_color" class="form-control mb-2"
-                                    autocomplete="off" value="<?= $car->car_color; ?>" readonly />
+                                    autocomplete="off" value="<?php echo $car->car_color; ?>" readonly />
                                 <!--end::Input-->
                                 <div class="invalid-feedback" id="car_color-feedback"></div>
                             </div>
@@ -161,7 +161,7 @@
                                 <!--begin::Input-->
                                 <input type="text" class="form-control mb-2" name="capital_price" id="capital_price"
                                     autocomplete="off"
-                                    value="<?= 'Rp '.number_format(($car->capital_price), '0', ',', '.'); ?>"
+                                    value="<?php echo 'Rp '.number_format(($car->capital_price), '0', ',', '.'); ?>"
                                     readonly />
                                 <!--end::Input-->
                                 <div class="invalid-feedback" id="capital_price-feedback"></div>
@@ -176,7 +176,7 @@
                                 <!--begin::Receipt-->
                                 <div class="col-12">
                                     <img class="image-input-wrapper w-300px"
-                                        src="data:image/png;base64,<?= $car->receipt; ?>" alt="Car Image">
+                                        src="data:image/png;base64,<?php echo $car->receipt; ?>" alt="Car Image">
                                 </div>
                             </div>
                             <!--end::Input group-->
@@ -195,14 +195,14 @@
                         <!--end::Card header-->
                         <!--begin::Card body-->
                         <div class="card-body pt-0">
-                            <?php include('Table/additionalCostTable.php'); ?>
+                            <?php require 'Table/additionalCostTable.php'; ?>
                             <div class="row mt-5">
                                 <div class="col-12 mt-5">
                                     <div class="form-group">
                                         <label for="totalTempAdditionalCost">Total Pengeluaran Tambahan</label>
                                         <input type="text" class="form-control form-control-lg"
                                             style="text-align: right; color:orange; font-weight : bold; font-size:12pt;"
-                                            value="<?= 'Rp '.number_format(($car->totalAdditionalCost), '0', ',', '.'); ?>" id="totalTempAdditionalCost" readonly>
+                                            value="<?php echo 'Rp '.number_format(($car->totalAdditionalCost), '0', ',', '.'); ?>" id="totalTempAdditionalCost" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -227,7 +227,7 @@
                                         <label for="totalTempAdditionalCost">Total Pengeluaran (Harga Mobil + Pengeluaran Tambahan)</label>
                                         <input type="text" class="form-control form-control-lg"
                                             style="text-align: right; color:red; font-weight : bold; font-size:12pt;"
-                                            value="<?= 'Rp '.number_format(($car->totalAdditionalCost + $car->capital_price), '0', ',', '.'); ?>" id="totalTempAdditionalCost" readonly>
+                                            value="<?php echo 'Rp '.number_format(($car->totalAdditionalCost + $car->capital_price), '0', ',', '.'); ?>" id="totalTempAdditionalCost" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -245,4 +245,4 @@
 </div>
 <script src="https://netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.2.0/js/bootstrap-datepicker.min.js"></script>
-<?= $this->endSection(); ?>
+<?php echo $this->endSection(); ?>

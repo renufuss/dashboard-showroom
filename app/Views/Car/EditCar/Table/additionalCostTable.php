@@ -44,7 +44,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "/mobil/<?= $car->id; ?>/biaya",
+                "url": "/mobil/<?php echo $car->id; ?>/biaya",
                 "type": "POST"
             },
             'columnDefs': [{

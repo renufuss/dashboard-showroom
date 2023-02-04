@@ -17,7 +17,7 @@
 <!--end::sidebar mobile toggle-->
 <!--begin::Mobile logo-->
 <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
-    <a href="<?= base_url(); ?>" class="d-lg-none">
+    <a href="<?php echo base_url(); ?>" class="d-lg-none">
         <div class="h-20px app-sidebar-logo-minimize sidebar-brand">AW</div>
     </a>
 </div>

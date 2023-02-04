@@ -88,7 +88,7 @@ class CarModel extends Model
     {
         $table = $this->db->table('car');
         $query = $table->select('*')->orderBy('car_name', 'ASC')
-                ->where('deleted_at', null);
+            ->where('deleted_at', null);
 
         if ($keywords != null) {
             $keyword = explode(' ', $keywords);
