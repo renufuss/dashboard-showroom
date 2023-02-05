@@ -77,6 +77,9 @@ $routes->post('/penjualan/riwayat', 'Sales::getSalesHistory');
 $routes->get('/penjualan/riwayat/(:alphanum)', 'Sales::pageSalesHistoryDetail/$1');
 $routes->get('/penjualan/riwayat/(:alphanum)/pembayaran', 'Sales::pageSalesHistoryPayment/$1');
 
+$routes->get('/pengeluaran', 'Spend::index');
+
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing

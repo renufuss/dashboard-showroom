@@ -917,4 +917,27 @@ class Car extends BaseController
 
         return $this->CarModel->findCarReady($keyword, $licenseNumber);
     }
+
+     /**
+     * Looking for a car that is ready for sale.
+     *
+     * @param $carId car id
+     * @param $status status ready = 0, sold = 1
+     *
+     * @return boolean
+     */
+    public function updateCarStatus($carId, $status)
+    {
+        $car = $this->CarModel->find($carId);
+
+        if ($car != null) {
+            $data = [
+                'id' => $car->id,
+                'status' => $status,
+            ];
+            $this->CarModel->save($data);
+            return true;
+        }
+        return false;
+    }
 }

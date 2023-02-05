@@ -3,7 +3,6 @@
 
 <?php echo $this->section('content'); ?>
 
-
 <div class="d-flex flex-column flex-column-fluid">
     <!--begin::Toolbar-->
     <?php require 'Toolbar/toolbar.php' ?>
@@ -84,7 +83,5 @@
         };
     }
 </script>
-
-
 
 <?php echo $this->endSection(); ?>

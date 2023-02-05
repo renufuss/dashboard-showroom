@@ -14,7 +14,7 @@ class CarModel extends Model
     protected $returnType     = 'object';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['car_name', 'license_number', 'car_color', 'car_year', 'brand_id', 'capital_price', 'car_price', 'receipt', 'car_image', 'deleted_at'];
+    protected $allowedFields = ['car_name', 'license_number', 'car_color', 'car_year', 'brand_id', 'capital_price', 'car_price', 'status', 'receipt', 'car_image', 'deleted_at'];
 
     protected $useTimestamps = true;
     protected $createdField  = null;
@@ -220,11 +220,13 @@ class CarModel extends Model
     public function findCarReady($keyword, $licenseNumber)
     {
         $table = $this->db->table('car');
-        $query = $table->select('*')->like('car_name', $keyword)->where('deleted_at', null)->where('status', 0);
-
+        $query = $table->select('*')->where('deleted_at', null)->where('status', 0);
+        $table->groupStart();
+        $query->like('car_name', $keyword);
         if ($licenseNumber != false) {
             $query->orLike('license_number', $licenseNumber);
         }
+        $query->groupEnd();
 
         $data['car'] = $query->get()->getResultObject();
         $data['totalCar'] = 0;

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Car Class Doc Comment
+ * Sales Class Doc Comment
  *
  * PHP Version 8.0.13
  *
@@ -20,7 +20,7 @@ use App\Models\DataTable\SalesModel as DataTableSalesModel;
 use Config\Services;
 
 /**
- * Car Class Doc Comment
+ * Sales Class Doc Comment
  *
  * PHP Version 8.0.13
  *
@@ -162,6 +162,25 @@ class Sales extends BaseController
 
             return json_encode($response);
         }
+    }
+
+        /**
+     * Format phone number.
+     *
+     * @param string $phoneNumber string number
+     *
+     * @return string $phoneNumber
+     */
+    public function formatPhoneNumber($phoneNumber)
+    {
+        $isZero = substr($phoneNumber, 0, 1) == '0';
+        $is62 = substr($phoneNumber, 0, 2) == '62';
+        if ($isZero) {
+            $phoneNumber = substr_replace($phoneNumber, "+62", 0, 1);
+        } elseif ($is62) {
+            $phoneNumber = substr_replace($phoneNumber, "+62", 0, 2);
+        }
+        return $phoneNumber;
     }
 
     /**
@@ -351,9 +370,9 @@ class Sales extends BaseController
     {
         if ($this->request->isAJAX()) {
             $sales['receipt_number'] = $this->getReceiptNumber();
-            $sales['full_name'] = $this->request->getPost('full_name');
+            $sales['full_name'] = ucwords(strtolower($this->request->getVar('full_name')));
             $sales['identity_id'] = $this->request->getPost('identity_id');
-            $sales['phone_number'] = $this->request->getPost('phone_number');
+            $sales['phone_number'] = $this->formatPhoneNumber($this->request->getPost('phone_number'));
             $sales['address'] = $this->request->getPost('address');
             $sales['identity_card'] = $this->request->getFile('identity_card');
             $sales['real_price'] = $this->TempSalesModel->getTotalTempPrice();
@@ -366,12 +385,25 @@ class Sales extends BaseController
             $payment['amount_of_money'] = str_replace([',', '.', 'Rp', ' '], '', $this->request->getPost('amount_of_money'));
             $sales['sales_date'] = date('Y-m-d H:i:s');
 
+            $isDiscountValid = ($sales['discount'] <= $sales['real_price']);
+            $isAmountOfMoneyValid = ($payment['amount_of_money'] <= $sales['total_price']);
+
             $isValid = ($this->validateData($sales, $this->SalesModel->getValidationRules(), $this->SalesModel->getValidationMessages()) && $payment['amount_of_money'] != null);
-            if (!$isValid) {
+            if (!$isValid || !$isDiscountValid || !$isAmountOfMoneyValid) {
                 $error = $this->validator->getErrors();
 
                 if ($payment['amount_of_money'] == null) {
                     $errorPayment = ['amount_of_money' => 'Jumlah uang tidak boleh kosong'];
+                    $error = array_merge($error, $errorPayment);
+                }
+
+                if (!$isDiscountValid) {
+                    $errorPayment = ['discount' => 'Diskon tidak boleh melebihi harga asli'];
+                    $error = array_merge($error, $errorPayment);
+                }
+
+                if (!$isAmountOfMoneyValid) {
+                    $errorPayment = ['amount_of_money' => 'Jumlah uang tidak boleh melebihi total harga'];
                     $error = array_merge($error, $errorPayment);
                 }
 
@@ -397,6 +429,9 @@ class Sales extends BaseController
                 ];
 
                 array_push($carData, $data);
+                // Update Car To Sold
+                $cars = new Car();
+                $cars->updateCarStatus($car->id, 1);
             }
 
             $this->SalesModel->saveCar($carData);
@@ -410,6 +445,9 @@ class Sales extends BaseController
             $this->SalesModel->savePayment($payment);
 
             $response['success'] = 'Berhasil menyimpan pembayaran';
+
+            // Reset Temp
+            $this->resetTemp();
             return json_encode($response);
         }
     }
@@ -434,13 +472,14 @@ class Sales extends BaseController
     {
         ini_set('memory_limit', '-1');
         $sales = $this->SalesModel->where('receipt_number', $receiptNumber)->first();
-        $cars = $this->SalesModel->getCar($receiptNumber);
-
         if ($sales != null) {
+            $cars = $this->SalesModel->getCar($receiptNumber);
+            $paid = $this->SalesModel->getPaid($receiptNumber);
             $data = [
                 'title' => 'Detail | '. $sales->receipt_number,
                 'sales' => $sales,
                 'cars' => $cars,
+                'paid' => $paid,
             ];
             return view('Sales/History/Detail/Tab/detail', $data);
         }
@@ -461,13 +500,22 @@ class Sales extends BaseController
             $sales = $salesModel->get_datatables();
             $data = [];
             foreach ($sales as $sale) {
+                $paid = $this->SalesModel->getPaid($sale->receipt_number);
+                $isPaid = ($sale->total_price - $paid <= 0);
+                $paidBadge = 'danger';
+                $paidDescription = 'Belum Lunas';
+                if ($isPaid) {
+                    $paidBadge = 'success';
+                    $paidDescription = 'Lunas';
+                }
+
                 // Row Table
                 $row = [];
                 $row[] = $sale->sales_date;
                 $row[] = $sale->receipt_number;
                 $row[] = $sale->full_name;
                 $row[] = $sale->phone_number;
-                $row[] = 'Status';
+                $row[] = "<span class=\"badge badge-light-$paidBadge fs-7 fw-bold\">$paidDescription</span>";
                 $row[] = "Rp " . number_format($sale->total_price, '0', ',', '.');
                 $urlDetail = base_url()."/penjualan/riwayat/".$sale->receipt_number;
                 $row[] = "<div class=\"text-end\"><a href=\"$urlDetail\" target=_blank class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
@@ -505,13 +553,15 @@ class Sales extends BaseController
     public function pageSalesHistoryPayment($receiptNumber)
     {
         $sales = $this->SalesModel->where('receipt_number', $receiptNumber)->first();
-        $cars = $this->SalesModel->getCar($receiptNumber);
 
         if ($sales != null) {
+            $paid = $this->SalesModel->getPaid($receiptNumber);
+            $payments = $this->SalesModel->getPayment($receiptNumber);
             $data = [
                 'title' => 'Pembayaran | '. $sales->receipt_number,
                 'sales' => $sales,
-                'cars' => $cars,
+                'paid' => $paid,
+                'payments' => $payments,
             ];
             return view('Sales/History/Detail/tab/payment', $data);
         }

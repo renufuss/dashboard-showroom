@@ -286,7 +286,6 @@
 
                 if (response.success) {
                     toastr.success(response.success, "Sukses");
-                    resetTemp();
                     setTimeout(function () {
                         window.location = "/penjualan";
                     }, 1200);
