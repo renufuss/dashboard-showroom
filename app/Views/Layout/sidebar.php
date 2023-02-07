@@ -119,8 +119,8 @@
             <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
-                <a class="menu-link  <?php echo (url_is('pengeluaran')) ? 'active' : ''; ?>"
-                    href="<?php echo base_url('pengeluaran'); ?>">
+                <a class="menu-link  <?php echo (url_is('transaksi')) ? 'active' : ''; ?>"
+                    href="<?php echo base_url('transaksi'); ?>">
                     <span class="menu-icon">
                         <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/finance/fin010.svg-->
                         <span class="svg-icon svg-icon-muted svg-icon-2hx"><svg width="24" height="24"
@@ -135,7 +135,7 @@
                         </span>
                         <!--end::Svg Icon-->
                     </span>
-                    <span class="menu-title">Pengeluaran Umum</span>
+                    <span class="menu-title">Transaksi Umum</span>
                 </a>
                 <!--end:Menu link-->
             </div>

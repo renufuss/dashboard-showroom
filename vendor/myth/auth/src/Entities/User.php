@@ -277,6 +277,24 @@ class User extends Entity
         return $this->roles;
     }
 
+    // custom getRole
+    public function getRole()
+    {
+        if (empty($this->id)) {
+            throw new RuntimeException('Users must be created before getting roles.');
+        }
+
+        if (empty($this->roles)) {
+            $groups = model(GroupModel::class)->getGroupsForUser($this->id);
+
+            foreach ($groups as $group) {
+                $this->roles['name'] = strtolower($group['name']);
+                $this->roles['badge'] = strtolower($group['badge']);
+            }
+        }
+        return $this->roles;
+    }
+
     /**
      * Warns the developer it won't work, so they don't spend
      * hours tracking stuff down.

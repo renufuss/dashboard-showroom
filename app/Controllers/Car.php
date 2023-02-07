@@ -179,16 +179,39 @@ class Car extends BaseController
             }
 
             $this->CarModel->save($data);
+            $carId = $this->CarModel->getInsertID();
+
+            // Save Car Transaction
+            $transaction = new Transaction();
+            $data = [
+                'car_id' => $carId,
+                'status' => 1,
+            ];
+
+            $transaction->setTransaction($data);
 
             if ($input['id'] == null) {
                 // Insert Temp Additional Cost
                 $tempSession = $this->request->getPost('temp_session');
                 $tempAdditionalCost = $this->CarModel->getTempAdditionalCost(user()->id, null, $tempSession);
-                $carId = $this->CarModel->getInsertID();
                 if ($tempAdditionalCost != null) {
                     $this->CarModel->setAdditionalCost($tempAdditionalCost, $carId);
                 }
+                // save transaction temp additional cost
+
+                $additionalCosts = $this->CarModel->getAdditionalCost($carId);
+                foreach ($additionalCosts as $additionalCost) {
+                    // Save Additional Cost Transaction
+                    $data = [
+                        'car_id' => $carId,
+                        'car_additional_cost_id' => $additionalCost->id,
+                        'status' => 1,
+                    ];
+
+                    $transaction->setTransaction($data);
+                }
             }
+
 
             $response['success'] = 'Berhasil menyimpan mobil';
             return json_encode($response);
@@ -264,8 +287,8 @@ class Car extends BaseController
                 // Row Table
                 $row = [];
                 $row[] = $no;
-                $row[] = $additionalCost->cost_name;
-                $row[] = "Rp " . number_format($additionalCost->additional_price, '0', ',', '.');
+                $row[] = $additionalCost->description;
+                $row[] = "Rp " . number_format($additionalCost->amount_of_money, '0', ',', '.');
                 if ($additionalCost->additional_receipt != null) {
                     $row[] = "<button class=\"btn btn-icon btn-bg-light btn-active-color-success btn-sm\"
                     onclick=\"getImage('$additionalCost->id');return false;\"><span class=\"svg-icon svg-icon-muted svg-icon-2hx\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"
@@ -286,7 +309,7 @@ class Car extends BaseController
                 }
                 $row[] = $additionalCost->paid_by;
                 $row[] = "<div class=\"d-flex justify-content-end flex-shrink-0\">
-                    <a href=\"a\" target=_blank class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
+                    <button type=\"button\" class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\" onclick=\"openAdditionalCostModal('$additionalCost->id')\">
                         <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
                         <span class=\"svg-icon svg-icon-3\">
                             <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
@@ -300,7 +323,7 @@ class Car extends BaseController
                             </svg>
                         </span>
                         <!--end::Svg Icon-->
-                    </a>
+                    </button>
                     <button class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm\" onclick=\"alertCarDelete('b')\">
                         <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
                         <span class=\"svg-icon svg-icon-3\">
@@ -652,18 +675,18 @@ class Car extends BaseController
     {
         if ($this->request->isAJAX()) {
             $validationRules = [
-                'cost_name' => 'required|alpha_numeric_space',
-                'additional_price' => 'required|numeric',
+                'description' => 'required|alpha_numeric_space',
+                'amount_of_money' => 'required|numeric',
                 'additional_receipt' => 'max_size[additional_receipt,5120]|is_image[additional_receipt]|mime_in[additional_receipt,image/jpg,image/jpeg,image/png]',
                 'paid_by' => 'required|in_list[Sam un, Hereansyah]',
             ];
 
             $validationMessages = [
-                'cost_name' => [
+                'description' => [
                     'required' => 'Nama pengeluaran tidak boleh kosong.',
                     'alpha_numeric_space' => 'Nama pengeluaran hanya boleh angka atau huruf',
                 ],
-                'additional_price' => [
+                'amount_of_money' => [
                     'required' => 'Jumlah pengeluaran tidak boleh kosong',
                     'numeric' => 'Jumlah pengeluaran hanya boleh angka',
                 ],
@@ -679,8 +702,8 @@ class Car extends BaseController
             ];
 
             $input = [
-                'cost_name' => $this->request->getPost('cost_name'),
-                'additional_price' => str_replace([',', '.', 'Rp', ' '], '', $this->request->getPost('additional_price')),
+                'description' => $this->request->getPost('description'),
+                'amount_of_money' => str_replace([',', '.', 'Rp', ' '], '', $this->request->getPost('amount_of_money')),
                 'additional_receipt' => $this->request->getFile('additional_receipt'),
                 'paid_by' => $this->request->getPost('paid_by'),
                 'temp_session' => $this->request->getPost('temp_session'),
@@ -704,8 +727,8 @@ class Car extends BaseController
 
             // Insert to Database
             $data = [
-                'cost_name' => ucfirst(strtolower($input['cost_name'])),
-                'additional_price' => $input['additional_price'],
+                'description' => ucfirst(strtolower($input['description'])),
+                'amount_of_money' => $input['amount_of_money'],
                 'additional_receipt' => $additionalReceipt,
                 'paid_by' => $input['paid_by'],
                 'user_id' => user()->id,
@@ -775,7 +798,7 @@ class Car extends BaseController
 
             $response['success'] = 'Berhasil mendownload image';
             $response['blobBase64'] = $additionalCost->additional_receipt;
-            $response['fileName'] = $additionalCost->cost_name;
+            $response['fileName'] = $additionalCost->description;
             return json_encode($response);
         }
     }
@@ -803,7 +826,7 @@ class Car extends BaseController
 
             $response['success'] = 'Berhasil mendownload image';
             $response['blobBase64'] = $tempAdditionalCost->additional_receipt;
-            $response['fileName'] = $tempAdditionalCost->cost_name;
+            $response['fileName'] = $tempAdditionalCost->description;
             return json_encode($response);
         }
     }
@@ -848,7 +871,7 @@ class Car extends BaseController
             }
 
             $response = [
-                'costName' => $tempAdditionalCost->cost_name,
+                'costName' => $tempAdditionalCost->description,
             ];
 
             return json_encode($response);
@@ -939,5 +962,146 @@ class Car extends BaseController
             return true;
         }
         return false;
+    }
+
+     /**
+     * Opens a modal pop up to update additional cost.
+     *
+     * @return jsonResponse
+     */
+    public function additionalCostModal()
+    {
+        if ($this->request->isAJAX()) {
+            $carId = $this->request->getPost('carId');
+            $car = $this->CarModel->find($carId);
+
+            $isCar = ($car != null);
+            if (!$isCar) {
+                $response = [
+                    'error' => 'Data tidak ditemukan',
+                ];
+                return json_encode($response);
+            }
+
+            $data = [
+                'titleModal' => 'Tambah Biaya',
+                'car' => $car,
+                'additionalCost' => null,
+            ];
+
+            $additionalCostId = $this->request->getPost('additionalCostId');
+            $isUpdate = ($additionalCostId != null);
+            if ($isUpdate) {
+                $data = [
+                    'titleModal' => 'Edit Biaya',
+                    'car' => $car,
+                    'additionalCost' => $this->CarModel->getAdditionalCost(null, $additionalCostId),
+                ];
+            }
+
+            $response = [
+                'additionalCostModal' => view('Car/Modal/additionalCostModal', $data),
+            ];
+
+
+            return json_encode($response);
+        }
+    }
+
+    /**
+     * Save the car surcharge.
+     *
+     * @return jsonResponse
+     */
+    public function setAdditionalCost($carId, $additionalCostId = null)
+    {
+        if ($this->request->isAJAX()) {
+            $car = $this->CarModel->find($carId);
+
+            $isCar = ($car != null);
+            if (!$isCar) {
+                $response = [
+                    'error' => 'Data tidak ditemukan',
+                ];
+                return json_encode($response);
+            }
+
+            if ($additionalCostId != null) {
+                $additionalCost = $this->CarModel->getAdditionalCost($carId, $additionalCostId);
+
+                $isAdditionalCost = ($additionalCost != null);
+                if (!$isAdditionalCost) {
+                    $response = [
+                        'error' => 'Data tidak ditemukan',
+                    ];
+                    return json_encode($response);
+                }
+            }
+
+
+            $validationRules = [
+                'description' => 'required|alpha_numeric_space',
+                'amount_of_money' => 'required|numeric',
+                'additional_receipt' => 'max_size[additional_receipt,5120]|is_image[additional_receipt]|mime_in[additional_receipt,image/jpg,image/jpeg,image/png]',
+                'paid_by' => 'required|in_list[Sam un, Hereansyah]',
+            ];
+
+            $validationMessages = [
+                'description' => [
+                    'required' => 'Nama pengeluaran tidak boleh kosong.',
+                    'alpha_numeric_space' => 'Nama pengeluaran hanya boleh angka atau huruf',
+                ],
+                'amount_of_money' => [
+                    'required' => 'Jumlah pengeluaran tidak boleh kosong',
+                    'numeric' => 'Jumlah pengeluaran hanya boleh angka',
+                ],
+                'additional_receipt' => [
+                    'max_size' => 'Ukuran gambar tidak boleh melebihi 5 MB',
+                    'is_image' => 'Yang anda pilih bukan gambar',
+                    'mime_in' => 'Yang anda pilih bukan gambar',
+                ],
+                'paid_by' => [
+                    'required' => 'Pembayaran tidak boleh kosong.',
+                    'in_list' => 'Pembayaran yang anda pilih, tidak ada didalam list',
+                ],
+            ];
+
+            $input = [
+                'description' => $this->request->getPost('description'),
+                'amount_of_money' => str_replace([',', '.', 'Rp', ' '], '', $this->request->getPost('amount_of_money')),
+                'additional_receipt' => $this->request->getFile('additional_receipt'),
+                'paid_by' => $this->request->getPost('paid_by'),
+            ];
+
+            // Validation
+            $isValid = $this->validateData($input, $validationRules, $validationMessages);
+            if (!$isValid) {
+                $response = [
+                    'error' => $this->validator->getErrors(),
+                    'errorMsg' => 'Gagal menyimpan pengeluaran',
+                ];
+                return json_encode($response);
+            }
+
+            // Additional Receipt
+            $additionalReceipt = null;
+            if ($input['additional_receipt']->getError() != 4) {
+                $additionalReceipt = $this->blobImage($input['additional_receipt']);
+            }
+
+            // Insert to Database
+            $data = [
+                'id' => $additionalCostId,
+                'description' => ucfirst(strtolower($input['description'])),
+                'amount_of_money' => $input['amount_of_money'],
+                'additional_receipt' => $additionalReceipt,
+                'paid_by' => $input['paid_by'],
+                'car_id' => $carId
+            ];
+            $this->CarModel->setAdditionalCost($data, null, false, $additionalCostId);
+
+            $response['success'] = 'Berhasil menambahkan pengeluaran';
+            return json_encode($response);
+        }
     }
 }

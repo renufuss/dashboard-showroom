@@ -18,16 +18,55 @@ class UserModel extends Model
     protected $useSoftDeletes = true;
     protected $allowedFields  = [
         'email', 'username', 'password_hash', 'reset_hash', 'reset_at', 'reset_expires', 'activate_hash',
-        'status', 'status_message', 'active', 'force_pass_reset', 'permissions', 'deleted_at',
+        'status', 'status_message', 'active', 'force_pass_reset', 'permissions', 'deleted_at' ,'first_name', 'last_name', 'image_profile',
     ];
     protected $useTimestamps   = true;
     protected $validationRules = [
         'email'         => 'required|valid_email|is_unique[users.email,id,{id}]',
-        'username'      => 'required|alpha_numeric_punct|min_length[3]|max_length[30]|is_unique[users.username,id,{id}]',
-        'password_hash' => 'required',
+        'username'      => 'required|is_unique[users.username,id,{id}]|alpha_numeric|min_length[5]|max_length[30]',
+        'password_hash' => 'required|min_length[8]',
+        'first_name' => 'required|min_length[3]|alpha_space',
+        'last_name' => 'required|min_length[3]|alpha_space',
+        'role'=>'required',
+        'image_profile' => 'max_size[image_profile,1024]|is_image[image_profile]|mime_in[image_profile,image/jpg,image/jpeg,image/png]',
     ];
-    protected $validationMessages = [];
-    protected $skipValidation     = false;
+    protected $validationMessages = [
+        'email' => [
+            'required' => 'Email tidak boleh kosong',
+            'valid_email' => 'Email tidak valid',
+            'is_unique' => 'Email sudah terdaftar',
+        ],
+        'username' => [
+            'required' => 'Username tidak boleh kosong',
+            'is_unique' => 'Username sudah terdaftar',
+            'alpha_numeric' => 'Username tidak valid',
+            'min_length' => 'Username minimal berjumlah 5 karakter',
+            'max_length' => 'Username tidak boleh lebih dari 30 karakter',
+        ],
+        'password_hash' => [
+            'required' => 'Password tidak valid',
+            'min_length' => 'Password minimal berjumlah 8 karakter',
+        ],
+        'first_name' => [
+            'required' => 'Nama depan tidak boleh kosong',
+            'min_length' => 'Nama depan minimal berjumlah 3 karakter',
+            'alpha_space' => 'Nama depan tidak valid',
+        ],
+        'last_name' => [
+            'required' => 'Nama belakang tidak boleh kosong',
+            'min_length' => 'Nama belakang minimal berjumlah 3 karakter',
+            'alpha_space' => 'Nama belakang tidak valid',
+        ],
+        'role' => [
+            'required' => 'Role tidak boleh kosong',
+        ],
+        'image_profile' => [
+            'max_size' => 'Ukuran gambar tidak boleh melebihi 1 MB',
+            'is_image' => 'Yang anda pilih bukan gambar',
+            'mime_in' => 'Yang anda pilih bukan gambar',
+        ],
+    ];
+    protected $skipValidation     = true;
     protected $afterInsert        = ['addToGroup'];
 
     /**
@@ -120,5 +159,17 @@ class UserModel extends Model
             'username' => $faker->userName,
             'password' => bin2hex(random_bytes(16)),
         ]);
+    }
+
+    public function showUser($username = null)
+    {
+        $table = $this->db->table($this->table);
+        $query = $table->select('users.*, auth_groups.name as role, badge')->join('auth_groups_users', 'auth_groups_users.user_id=users.id', 'left')->join('auth_groups', 'auth_groups.id=auth_groups_users.group_id', 'left')->orderBy('auth_groups.id', 'asc')->orderBy('username', 'asc')->where('deleted_at', null);
+        if ($username != null) {
+            $data = $query->where('username', $username)->get()->getFirstRow();
+        } else {
+            $data = $query->get()->getResultObject();
+        }
+        return $data;
     }
 }

@@ -96,7 +96,7 @@ class GroupModel extends Model
     {
         if (null === $found = cache("{$userId}_groups")) {
             $found = $this->builder()
-                ->select('auth_groups_users.*, auth_groups.name, auth_groups.description')
+                ->select('auth_groups_users.*, auth_groups.name, auth_groups.description, auth_groups.badge')
                 ->join('auth_groups_users', 'auth_groups_users.group_id = auth_groups.id', 'left')
                 ->where('user_id', $userId)
                 ->get()->getResultArray();

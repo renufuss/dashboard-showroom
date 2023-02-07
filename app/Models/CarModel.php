@@ -17,8 +17,8 @@ class CarModel extends Model
     protected $allowedFields = ['car_name', 'license_number', 'car_color', 'car_year', 'brand_id', 'capital_price', 'car_price', 'status', 'receipt', 'car_image', 'deleted_at'];
 
     protected $useTimestamps = true;
-    protected $createdField  = null;
-    protected $updatedField  = null;
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
     protected $deletedField  = 'deleted_at';
 
     protected $validationRules    = [
@@ -149,7 +149,7 @@ class CarModel extends Model
     public function getTotalTempAdditionalCost($userId, $tempSession = null)
     {
         $table = $this->db->table('temp_additional_cost');
-        $query = $table->select('SUM(additional_price) as totalAdditionalCost');
+        $query = $table->select('SUM(amount_of_money) as totalAdditionalCost');
         $query->where('user_id', $userId);
         if ($tempSession !=null) {
             $query->where('temp_session', $tempSession);
@@ -166,24 +166,35 @@ class CarModel extends Model
         return true;
     }
 
-    public function setAdditionalCost($tempAdditionalCosts  = [], $carId = null)
+    public function setAdditionalCost($tempAdditionalCosts  = [], $carId = null, $temp = true)
     {
-        $data = [];
-        foreach ($tempAdditionalCosts as $tempAdditionalCost) {
-            $temp = [
-                'cost_name' => $tempAdditionalCost->cost_name,
-                'additional_price' => $tempAdditionalCost->additional_price,
-                'additional_receipt' => $tempAdditionalCost->additional_receipt,
-                'paid_by' => $tempAdditionalCost->paid_by,
-                'car_id' => $carId,
-            ];
-            array_push($data, $temp);
+        if ($temp) {
+            $data = [];
+            foreach ($tempAdditionalCosts as $tempAdditionalCost) {
+                $temp = [
+                    'description' => $tempAdditionalCost->description,
+                    'amount_of_money' => $tempAdditionalCost->amount_of_money,
+                    'additional_receipt' => $tempAdditionalCost->additional_receipt,
+                    'paid_by' => $tempAdditionalCost->paid_by,
+                    'additional_date' => date('Y-m-d H:i:s'),
+                    'car_id' => $carId,
+                ];
+                array_push($data, $temp);
 
-            $this->deleteTempAdditionalCost($tempAdditionalCost->user_id, $tempAdditionalCost->id);
+                $this->deleteTempAdditionalCost($tempAdditionalCost->user_id, $tempAdditionalCost->id);
+            }
+
+            $table = $this->db->table('car_additional_cost');
+            return $table->insertBatch($data);
         }
-
+        $data = $tempAdditionalCosts;
         $table = $this->db->table('car_additional_cost');
-        return $table->insertBatch($data);
+
+        if ($data['id'] != null) {
+            $table->where('id', $data['id']);
+            return $table->update($data);
+        }
+        return $table->insert($data);
     }
 
     public function getAdditionalCost($carId = null, $additionalId = null)
@@ -205,7 +216,7 @@ class CarModel extends Model
     public function getTotalAdditionalCost($carId = null)
     {
         $table = $this->db->table('car_additional_cost');
-        $query = $table->select('SUM(additional_price) as totalAdditionalCost');
+        $query = $table->select('SUM(amount_of_money) as totalAdditionalCost');
         if ($carId != null) {
             $query->where('car_id', $carId);
         }

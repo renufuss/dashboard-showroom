@@ -31,7 +31,7 @@ class SalesModel extends Model
         'real_price' => 'required|numeric',
         'discount' => 'required|numeric|greater_than_equal_to[0]',
         'total_price' => 'required|numeric|greater_than_equal_to[0]',
-        'sales_date' => 'required|greater_than_equal_to[0]',
+        'sales_date' => 'required',
     ];
     protected $validationMessages = [
         'receipt_number' => [
@@ -131,6 +131,6 @@ class SalesModel extends Model
         $table = $this->db->table('payment_sales');
         $table->insert($data);
 
-        return true;
+        return $this->db->insertID();
     }
 }

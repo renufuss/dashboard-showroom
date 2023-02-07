@@ -261,9 +261,9 @@
                                         <label class="form-label">Nama Pengeluaran</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input type="text" name="cost_name" id="cost_name" class="form-control mb-2"
+                                        <input type="text" name="description" id="description" class="form-control mb-2"
                                             autocomplete="off" />
-                                        <div class="invalid-feedback" id="cost_name-feedback"></div>
+                                        <div class="invalid-feedback" id="description-feedback"></div>
                                         <!--end::Input-->
                                     </div>
                                     <!--end::Input group-->
@@ -275,9 +275,9 @@
                                         <label class="form-label">Jumlah Pengeluaran</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input type="text" name="additional_price" id="additional_price"
+                                        <input type="text" name="amount_of_money" id="amount_of_money"
                                             class="form-control mb-2" autocomplete="off" />
-                                        <div class="invalid-feedback" id="additional_price-feedback"></div>
+                                        <div class="invalid-feedback" id="amount_of_money-feedback"></div>
                                         <!--end::Input-->
                                     </div>
                                     <!--end::Input group-->
@@ -420,7 +420,7 @@
     }
 
     function autoNumeric() {
-        [additionalPrice, capitalPrice, carPrice] = AutoNumeric.multiple(['#additional_price', '#capital_price', '#car_price'], {
+        [additionalPrice, capitalPrice, carPrice] = AutoNumeric.multiple(['#amount_of_money', '#capital_price', '#car_price'], {
             digitGroupSeparator: '.',
             decimalPlaces: 0,
             decimalCharacter: ',',
@@ -499,8 +499,8 @@
                 toastConfig();
                 // Remove Feedback
                 form = {
-                    cost_name,
-                    additional_price,
+                    description,
+                    amount_of_money,
                     additional_receipt,
                     paid_by,
                 };
@@ -513,7 +513,7 @@
                 }
 
                 if (response.success) {
-                    $('#cost_name').val('');
+                    $('#description').val('');
                     additionalPrice.clear();
                     $('#additional_receipt').val('');
                     getTempAdditionalCost();

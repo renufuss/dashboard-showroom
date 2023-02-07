@@ -8,9 +8,9 @@ use CodeIgniter\Model;
 class AdditionalCostModel extends Model
 {
     protected $table = "car_additional_cost";
-    protected $column_order = array(null, 'cost_name', 'additional_price', null, 'paid_by', null);
-    protected $column_search = array('cost_name', 'additional_price', 'paid_by');
-    protected $order = array('cost_name' => 'asc', 'additional_price' => 'asc', 'paid_by' => 'asc');
+    protected $column_order = array(null, 'description', 'amount_of_money', null, 'paid_by', null);
+    protected $column_search = array('description', 'amount_of_money', 'paid_by');
+    protected $order = array('description' => 'asc', 'amount_of_money' => 'asc', 'paid_by' => 'asc');
     protected $request;
     protected $db;
     protected $dt;

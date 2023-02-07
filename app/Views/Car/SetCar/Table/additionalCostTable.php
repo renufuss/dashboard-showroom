@@ -29,16 +29,16 @@
             <!--begin::PLAT=-->
             <td class="pe-0">
                 <div class="d-flex flex-column">
-                    <span class="fw-bold text-dark"><?php echo $additionalCost->cost_name; ?></span>
+                    <span class="fw-bold text-dark"><?php echo $additionalCost->description; ?></span>
                     <span class="mobile-only">Rp
-                        <?php echo number_format($additionalCost->additional_price, '0', ',', '.'); ?></span>
+                        <?php echo number_format($additionalCost->amount_of_money, '0', ',', '.'); ?></span>
                 </div>
             </td>
             <!--end::PLAT=-->
             <!--begin::Price=-->
             <td class="pe-0 desktop-only text-end">
                 <span class="fw-bold text-dark">Rp
-                    <?php echo number_format($additionalCost->additional_price, '0', ',', '.'); ?></span>
+                    <?php echo number_format($additionalCost->amount_of_money, '0', ',', '.'); ?></span>
             </td>
             <!--end::Price=-->
             <td class="text-center">

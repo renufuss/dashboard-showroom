@@ -54,7 +54,7 @@ class Sales extends BaseController
      */
     public function index()
     {
-        $data['title'] = 'Layout';
+        $data['title'] = 'Penjualan';
         return view('Sales/index', $data);
     }
 
@@ -436,13 +436,24 @@ class Sales extends BaseController
 
             $this->SalesModel->saveCar($carData);
 
+            // save payment
             $payment = [
                 'sales_id' => $salesId,
                 'amount_of_money' => $payment['amount_of_money'],
+                'description' => 'Pembayaran Awal',
                 'payment_date' => date('Y-m-d H:i:s'),
             ];
 
-            $this->SalesModel->savePayment($payment);
+            $paymentId = $this->SalesModel->savePayment($payment);
+
+            // Save payment transaction
+            $transaction = new Transaction();
+            $data = [
+               'payment_sales_id' => $paymentId,
+               'status' => 0,
+            ];
+
+            $transaction->setTransaction($data);
 
             $response['success'] = 'Berhasil menyimpan pembayaran';
 

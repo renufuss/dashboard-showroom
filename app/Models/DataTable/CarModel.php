@@ -9,7 +9,7 @@ class CarModel extends Model
 {
     protected $table = "car";
     protected $column_order = array('car_name', 'car_color', 'car_year', 'license_number', null, 'capital_price', 'car_price', null);
-    protected $column_search = array('car_name', 'car_color', 'car_year', 'license_number', 'capital_price', 'car_price');
+    protected $column_search = array('car_name', 'car_color', 'car_year', 'license_number', 'capital_price', 'car_price', 'brand_name');
     protected $order = array('car_name' => 'asc', 'car_color' => 'asc', 'car_year' => 'asc', 'license_number' => 'asc', 'capital_price' => 'asc', 'car_price' => 'asc');
     protected $request;
     protected $db;
