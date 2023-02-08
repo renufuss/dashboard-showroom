@@ -42,7 +42,7 @@
 					<div class="col-md-12 fv-row">
 						<!--begin::Label-->
 						<label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-							<span class="required">Bukti Pengeluaran</span>
+							<span>Bukti Pengeluaran</span>
 						</label>
 						<!--end::Label-->
 						<input type="file" class="form-control mb-2"

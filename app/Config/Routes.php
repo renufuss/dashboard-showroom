@@ -83,10 +83,13 @@ $routes->get('/penjualan/riwayat/(:alphanum)', 'Sales::pageSalesHistoryDetail/$1
 $routes->get('/penjualan/riwayat/(:alphanum)/pembayaran', 'Sales::pageSalesHistoryPayment/$1');
 $routes->post('/penjualan/riwayat/(:alphanum)/pembayaran/add', 'Sales::addPaymentModal/$1');
 $routes->post('/penjualan/riwayat/(:alphanum)/pembayaran', 'Sales::addPayment/$1');
+$routes->post('/penjualan/riwayat/(:alphanum)/paymentReceipt', 'Sales::downloadPaymentReceipt/$1');
+
 
 $routes->get('/transaksi', 'Transaction::index');
 $routes->post('/transaksi', 'Transaction::getTransaction');
 $routes->post('/transaksi/modal', 'Transaction::openTransactionModal');
+$routes->post('/transaksi/save', 'Transaction::saveTransaction');
 
 $routes->get('/pengguna', 'User::index');
 $routes->post('/pengguna/table', 'User::showTable');

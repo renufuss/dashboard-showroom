@@ -35,6 +35,7 @@
         <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
             <th>Tanggal</th>
             <th>Deskripsi</th>
+            <th>Bukti Transaksi</th>
             <th>Status</th>
             <th class="text-end">Jumlah Uang</th>
             <th class="text-end">Aksi</th>
@@ -50,6 +51,10 @@
 </table>
 
 <script>
+    $(document).ready(function () {
+        getTransaction();
+    });
+
     function getTransaction() {
         if(DataTable.isDataTable('#transactionTable')){
             $('#transactionTable').DataTable().destroy();
@@ -91,6 +96,10 @@
                 "target": 4,
                 "orderable": false,
             },
+            {
+                "target": 5,
+                "orderable": false,
+            },
         ],
         })
         // removeLoading
@@ -101,8 +110,13 @@
 
     }
 
+    function downloadImage(blobBase64, fileName) {
+        linkSource = `data:image/png;base64,${blobBase64}`;
+        downloadLink = document.createElement('a');
+        fileName = `${fileName}.png`;
+        downloadLink.href = linkSource;
+        downloadLink.download = fileName;
+        downloadLink.click();
+    }
 
-    $(document).ready(function () {
-        getTransaction();
-    });
 </script>

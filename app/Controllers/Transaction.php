@@ -78,10 +78,16 @@ class Transaction extends BaseController
 
                 if ($transaction->transactionStatus == 0) {
                     $statusBadge = 'success';
-                    $statusDescription = 'Masuk';
+                    $statusDescription = 'Masuk :: Mobil';
                 } elseif ($transaction->transactionStatus == 1) {
                     $statusBadge = 'danger';
-                    $statusDescription = 'Keluar';
+                    $statusDescription = 'Keluar :: Mobil';
+                } elseif ($transaction->transactionStatus == 2) {
+                    $statusBadge = 'primary';
+                    $statusDescription = 'Masuk :: Umum';
+                } elseif ($transaction->transactionStatus == 3) {
+                    $statusBadge = 'warning';
+                    $statusDescription = 'Keluar :: Umum';
                 }
 
                 // Row Table
@@ -89,6 +95,28 @@ class Transaction extends BaseController
                 if ($transaction->carId == null && $transaction->car_additional_cost_id == null  && $transaction->payment_sales_id == null) {
                     $row[] = $transaction->transactionDate;
                     $row[] = $transaction->transactionDescription;
+
+                    if ($transaction->transaction_receipt != null) {
+                        $row[] = "<button class=\"btn btn-icon btn-bg-light btn-active-color-success btn-sm\"
+                        onclick=\"downloadImage('$transaction->transaction_receipt', '$transaction->transactionDescription');return false;\">
+                        <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/files/fil021.svg-->
+                        <span class=\"svg-icon svg-icon-muted svg-icon-2hx\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"
+                                fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">
+                                <path opacity=\"0.3\"
+                                    d=\"M19 15C20.7 15 22 13.7 22 12C22 10.3 20.7 9 19 9C18.9 9 18.9 9 18.8 9C18.9 8.7 19 8.3 19 8C19 6.3 17.7 5 16 5C15.4 5 14.8 5.2 14.3 5.5C13.4 4 11.8 3 10 3C7.2 3 5 5.2 5 8C5 8.3 5 8.7 5.1 9H5C3.3 9 2 10.3 2 12C2 13.7 3.3 15 5 15H19Z\"
+                                    fill=\"currentColor\" />
+                                <path d=\"M13 17.4V12C13 11.4 12.6 11 12 11C11.4 11 11 11.4 11 12V17.4H13Z\"
+                                    fill=\"currentColor\" />
+                                <path opacity=\"0.3\" d=\"M8 17.4H16L12.7 20.7C12.3 21.1 11.7 21.1 11.3 20.7L8 17.4Z\"
+                                    fill=\"currentColor\" />
+                            </svg>
+                        </span>
+                        <!--end::Svg Icon-->
+                    </button>";
+                    } else {
+                        $row[] = "-";
+                    }
+
                     $row[] = "<span class=\"badge badge-light-$statusBadge fs-7 fw-bold\">$statusDescription</span>";
                     $row[] = "<div class=\"text-end\">$transactionAmountOfMoney</div>";
                     $row[] = "<div class=\"text-end\"> <button class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm\" onclick=\"alertCarDelete('2')\">
@@ -112,18 +140,85 @@ class Transaction extends BaseController
                 } elseif ($transaction->carId != null && $transaction->car_additional_cost_id == null) {
                     $row[] = $transaction->transactionDate;
                     $row[] = $transaction->carLicenseNumber." :: Pembelian";
+
+                    if ($transaction->car_receipt != null) {
+                        $row[] = "<button class=\"btn btn-icon btn-bg-light btn-active-color-success btn-sm\"
+                        onclick=\"downloadImage('$transaction->car_receipt', '$transaction->carLicenseNumber :: Pembelian');return false;\">
+                        <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/files/fil021.svg-->
+                        <span class=\"svg-icon svg-icon-muted svg-icon-2hx\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"
+                                fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">
+                                <path opacity=\"0.3\"
+                                    d=\"M19 15C20.7 15 22 13.7 22 12C22 10.3 20.7 9 19 9C18.9 9 18.9 9 18.8 9C18.9 8.7 19 8.3 19 8C19 6.3 17.7 5 16 5C15.4 5 14.8 5.2 14.3 5.5C13.4 4 11.8 3 10 3C7.2 3 5 5.2 5 8C5 8.3 5 8.7 5.1 9H5C3.3 9 2 10.3 2 12C2 13.7 3.3 15 5 15H19Z\"
+                                    fill=\"currentColor\" />
+                                <path d=\"M13 17.4V12C13 11.4 12.6 11 12 11C11.4 11 11 11.4 11 12V17.4H13Z\"
+                                    fill=\"currentColor\" />
+                                <path opacity=\"0.3\" d=\"M8 17.4H16L12.7 20.7C12.3 21.1 11.7 21.1 11.3 20.7L8 17.4Z\"
+                                    fill=\"currentColor\" />
+                            </svg>
+                        </span>
+                        <!--end::Svg Icon-->
+                    </button>";
+                    } else {
+                        $row[] = "-";
+                    }
+
                     $row[] = "<span class=\"badge badge-light-$statusBadge fs-7 fw-bold\">$statusDescription</span>";
                     $row[] = "<div class=\"text-end\">$carPrice</div>";
                     $row[] = "<div class=\"text-end\">-</div>";
                 } elseif ($transaction->carId != null && $transaction->car_additional_cost_id != null) {
                     $row[] = $transaction->transactionDate;
                     $row[] = $transaction->carLicenseNumber." :: Biaya tambahan :: ".$transaction->carAdditionalCostDescription;
+
+                    if ($transaction->additional_receipt != null) {
+                        $row[] = "<button class=\"btn btn-icon btn-bg-light btn-active-color-success btn-sm\"
+                        onclick=\"downloadImage('$transaction->additional_receipt', '$transaction->carLicenseNumber :: Biaya tambahan :: $transaction->carAdditionalCostDescription');return false\">
+                        <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/files/fil021.svg-->
+                        <span class=\"svg-icon svg-icon-muted svg-icon-2hx\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"
+                                fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">
+                                <path opacity=\"0.3\"
+                                    d=\"M19 15C20.7 15 22 13.7 22 12C22 10.3 20.7 9 19 9C18.9 9 18.9 9 18.8 9C18.9 8.7 19 8.3 19 8C19 6.3 17.7 5 16 5C15.4 5 14.8 5.2 14.3 5.5C13.4 4 11.8 3 10 3C7.2 3 5 5.2 5 8C5 8.3 5 8.7 5.1 9H5C3.3 9 2 10.3 2 12C2 13.7 3.3 15 5 15H19Z\"
+                                    fill=\"currentColor\" />
+                                <path d=\"M13 17.4V12C13 11.4 12.6 11 12 11C11.4 11 11 11.4 11 12V17.4H13Z\"
+                                    fill=\"currentColor\" />
+                                <path opacity=\"0.3\" d=\"M8 17.4H16L12.7 20.7C12.3 21.1 11.7 21.1 11.3 20.7L8 17.4Z\"
+                                    fill=\"currentColor\" />
+                            </svg>
+                        </span>
+                        <!--end::Svg Icon-->
+                    </button>";
+                    } else {
+                        $row[] = "-";
+                    }
+
                     $row[] = "<span class=\"badge badge-light-$statusBadge fs-7 fw-bold\">$statusDescription</span>";
                     $row[] = "<div class=\"text-end\">$carAdditionalCostAmountOfMoney</div>";
                     $row[] = "<div class=\"text-end\">-</div>";
                 } elseif ($transaction->payment_sales_id != null) {
                     $row[] = $transaction->transactionDate;
                     $row[] = $transaction->salesReceiptNumber." :: ".$transaction->paymentSalesDescription;
+
+                    if ($transaction->payment_receipt != null) {
+                        $row[] = "<button class=\"btn btn-icon btn-bg-light btn-active-color-success btn-sm\"
+                        onclick=\"downloadImage('$transaction->payment_receipt', '$transaction->salesReceiptNumber ::  $transaction->paymentSalesDescription');return false;\">
+                        <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/files/fil021.svg-->
+                        <span class=\"svg-icon svg-icon-muted svg-icon-2hx\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"
+                                fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">
+                                <path opacity=\"0.3\"
+                                    d=\"M19 15C20.7 15 22 13.7 22 12C22 10.3 20.7 9 19 9C18.9 9 18.9 9 18.8 9C18.9 8.7 19 8.3 19 8C19 6.3 17.7 5 16 5C15.4 5 14.8 5.2 14.3 5.5C13.4 4 11.8 3 10 3C7.2 3 5 5.2 5 8C5 8.3 5 8.7 5.1 9H5C3.3 9 2 10.3 2 12C2 13.7 3.3 15 5 15H19Z\"
+                                    fill=\"currentColor\" />
+                                <path d=\"M13 17.4V12C13 11.4 12.6 11 12 11C11.4 11 11 11.4 11 12V17.4H13Z\"
+                                    fill=\"currentColor\" />
+                                <path opacity=\"0.3\" d=\"M8 17.4H16L12.7 20.7C12.3 21.1 11.7 21.1 11.3 20.7L8 17.4Z\"
+                                    fill=\"currentColor\" />
+                            </svg>
+                        </span>
+                        <!--end::Svg Icon-->
+                    </button>";
+                    } else {
+                        $row[] = "-";
+                    }
+
+
                     $row[] = "<span class=\"badge badge-light-$statusBadge fs-7 fw-bold\">$statusDescription</span>";
                     $row[] = "<div class=\"text-end\">$paymentSalesAmountOfMoney</div>";
                     $row[] = "<div class=\"text-end\">-</div>";
@@ -165,5 +260,83 @@ class Transaction extends BaseController
         ];
 
         return json_encode($response);
+    }
+
+    /**
+     * Delete images from the application folder.
+     *
+     * @param string $imageName Image file name.
+     *
+     * @return void
+     */
+    protected function removeImage($imageName)
+    {
+        if (file_exists('assets/images/cars/' . $imageName)) {
+            unlink('assets/images/cars/' . $imageName); //Hapus image lama
+        }
+    }
+
+    /**
+     * Convert image to base64.
+     *
+     * @param object $image Image file object.
+     *
+     * @return base64Image
+     */
+    protected function blobImage($image)
+    {
+        $image->move('assets/images/sales');
+        $pathInfo = 'assets/images/sales/' . $image->getName();
+        $fileContent = file_get_contents($pathInfo);
+        $base64 = rtrim(base64_encode($fileContent));
+        $this->removeImage($image->getName());
+
+        return $base64;
+    }
+
+    /**
+     * Add New General Transaction.
+     *
+     * @return jsonResponse
+     */
+    public function saveTransaction()
+    {
+        if ($this->request->isAJAX()) {
+            $input = [
+                'description' => $this->request->getPost('description'),
+                'amount_of_money' => str_replace([',', '.', 'Rp', ' '], '', $this->request->getPost('amount_of_money')),
+                'transaction_receipt' => $this->request->getFile('transaction_receipt'),
+                'status' => $this->request->getPost('status'),
+            ];
+
+            // Validation
+            $isValid = $this->validateData($input, $this->TransactionModel->getValidationRules(), $this->TransactionModel->getValidationMessages());
+            if (!$isValid) {
+                $response = [
+                    'error' => $this->validator->getErrors(),
+                    'errorMsg' => 'Gagal menyimpan transaksi',
+                ];
+                return json_encode($response);
+            }
+
+            // Additional Receipt
+            $transactionReceipt = null;
+            if ($input['transaction_receipt']->getError() != 4) {
+                $transactionReceipt = $this->blobImage($input['transaction_receipt']);
+            }
+
+            $data = [
+                'description' => ucwords(strtolower($input['description'])),
+                'amount_of_money' => $input['amount_of_money'],
+                'transaction_receipt' => $transactionReceipt,
+                'status' => $input['status'],
+            ];
+
+            $this->TransactionModel->save($data);
+
+            $response['success'] = 'Berhasil menambahkan transaksi';
+
+            return json_encode($response);
+        }
     }
 }

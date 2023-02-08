@@ -517,7 +517,7 @@ class Car extends BaseController
                         <!--begin::Car details-->
                         <div class=\"d-flex flex-column\">
                             <a href=\"#\"
-                                class=\"text-gray-800 text-hover-primary mb-1\" target=\"_blank\">$car->car_name</a>
+                                class=\"text-gray-800 text-hover-primary mb-1\">$car->car_name</a>
                             <span>$car->license_number</span>
                         </div>
                         <!--begin::Car details-->

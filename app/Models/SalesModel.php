@@ -108,10 +108,15 @@ class SalesModel extends Model
         return $cars;
     }
 
-    public function getPayment($receiptNumber)
+    public function getPayment($receiptNumber, $paymentId = null)
     {
         $table = $this->db->table('payment_sales');
-        $query = $table->select('*')->join('sales', 'payment_sales.sales_id=sales.id', 'inner')->where('receipt_number', $receiptNumber)->orderBy('payment_date', 'asc');
+        $query = $table->select('*,payment_sales.id as paymentId')->join('sales', 'payment_sales.sales_id=sales.id', 'inner')->where('receipt_number', $receiptNumber)->orderBy('payment_date', 'asc');
+
+        if ($paymentId != null) {
+            $query->where('payment_sales.id', $paymentId);
+            return $query->get()->getFirstRow();
+        }
 
         $payments = $query->get()->getResultObject();
         return $payments;

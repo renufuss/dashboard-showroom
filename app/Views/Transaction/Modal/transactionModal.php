@@ -9,7 +9,7 @@
             </div>
             <?php helper('form'); ?>
             <!-- end modalheader -->
-            <?= form_open('/penjualan/riwayat/add', ['id' => 'formAddPayment']); ?>
+            <?= form_open('/transaksi', ['id' => 'formTransaction']); ?>
             <div class="modal-body">
                 <!--begin::Input group-->
                 <div class="row g-9">
@@ -41,7 +41,7 @@
                     <div class="col-md-12 fv-row">
                         <!--begin::Label-->
                         <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                            <span class="required">Bukti Transaksi</span>
+                            <span>Bukti Transaksi</span>
                         </label>
                         <!--end::Label-->
                         <input type="file" class="form-control mb-2" name="transaction_receipt" id="transaction_receipt"
@@ -57,8 +57,8 @@
                     <select class="form-select form-select-solid cursor-pointer mb-2" data-control="select2"
                         data-hide-search="false" data-placeholder="Pilih Status" id="status" name="status">
                         <option value="">Pilih Status</option>
-                        <option value="0">Uang Masuk</option>
-                        <option value="1">Uang Keluar</option>
+                        <option value="2">Uang Masuk Umum</option>
+                        <option value="3">Uang Keluar Umum</option>
                     </select>
                     <div class="invalid-feedback" id="status-feedback"></div>
                 </div>
@@ -111,13 +111,13 @@
         });
     }
 
-    function savePayment() {
-        var form = $("#formAddPayment")[0]; // You need to use standard javascript object here
+    function saveTransaction() {
+        var form = $("#formTransaction")[0]; // You need to use standard javascript object here
 
         var formData = new FormData(form);
         $.ajax({
             type: "post",
-            url: "/penjualan/riwayat/pembayaran",
+            url: "/transaksi/save",
             data: formData,
             dataType: "json",
             contentType: false,
@@ -144,6 +144,7 @@
                     description,
                     amount_of_money,
                     transaction_receipt,
+                    status,
                 };
                 removeFeedback(form);
 
@@ -168,6 +169,6 @@
 
     $('#btnSave').click(function (e) {
         e.preventDefault();
-        savePayment();
+        saveTransaction();
     });
 </script>

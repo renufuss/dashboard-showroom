@@ -70,7 +70,8 @@
             <!-- end::Person Who Pay -->
             <!--begin::Action=-->
             <td class="text-end">
-                <button class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" onclick="alertDeleteTempAdditionalCost('<?php echo $additionalCost->id; ?>');return false;">
+                <button class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
+                    onclick="alertDeleteTempAdditionalCost('<?php echo $additionalCost->id; ?>');return false;">
                     <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
                     <span class="svg-icon svg-icon-3">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -101,8 +102,8 @@
             type: "post",
             url: "/mobil/tambah/temp/download/additionalreceipt",
             data: {
-                tempId : tempId,
-                temp_session : sessionStorage.tab,
+                tempId: tempId,
+                temp_session: sessionStorage.tab,
             },
             dataType: "json",
             success: function (response) {
@@ -115,15 +116,14 @@
                 }
             }
         });
+    }
 
-        function downloadImage(blobBase64, fileName) {
-            linkSource = `data:image/png;base64,${blobBase64}`;
-            downloadLink = document.createElement('a');
-            fileName = `${fileName}.png`;
-            downloadLink.href = linkSource;
-            downloadLink.download = fileName;
-            downloadLink.click();
-        }
-
+    function downloadImage(blobBase64, fileName) {
+        linkSource = `data:image/png;base64,${blobBase64}`;
+        downloadLink = document.createElement('a');
+        fileName = `${fileName}.png`;
+        downloadLink.href = linkSource;
+        downloadLink.download = fileName;
+        downloadLink.click();
     }
 </script>

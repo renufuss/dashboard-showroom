@@ -660,13 +660,19 @@ class Sales extends BaseController
 
             $over = ($sales->total_price - $paid);
             $isAmountOfMoneyValid = ($input['amount_of_money'] <= $over);
+            $isAmountOfMoneyMinus = ($input['amount_of_money'] <= 0);
             // Validation
             $isValid = $this->validateData($input, $validationRules, $validationMessages);
-            if (!$isValid || !$isAmountOfMoneyValid) {
+            if (!$isValid || !$isAmountOfMoneyValid || $isAmountOfMoneyMinus) {
                 $error = $this->validator->getErrors();
 
                 if (!$isAmountOfMoneyValid) {
                     $errorPayment = ['amount_of_money' => 'Jumlah uang tidak boleh melebihi sisa pembayaran'];
+                    $error = array_merge($error, $errorPayment);
+                }
+
+                if ($isAmountOfMoneyMinus) {
+                    $errorPayment = ['amount_of_money' => 'Jumlah uang tidak valid'];
                     $error = array_merge($error, $errorPayment);
                 }
 
@@ -692,7 +698,7 @@ class Sales extends BaseController
             ];
             $paymentId = $this->SalesModel->savePayment($data);
 
-            $response['success'] = 'Berhasil menambahkan pengeluaran';
+            $response['success'] = 'Berhasil menambahkan pembayaran';
 
             // Save Car Transaction
             $transaction = new Transaction();
@@ -703,6 +709,32 @@ class Sales extends BaseController
 
             $transaction->setTransaction($data);
 
+            return json_encode($response);
+        }
+    }
+
+    /**
+     * Download image payment receipt.
+     *
+     * @return jsonResponse
+     */
+    public function downloadPaymentReceipt($receiptNumber)
+    {
+        if ($this->request->isAJAX()) {
+            $paymentId = $this->request->getPost('paymentId');
+            $payment = $this->SalesModel->getPayment($receiptNumber, $paymentId);
+
+            $isEmpty = ($payment == null);
+            if ($isEmpty) {
+                $response = [
+                    'error' => 'Data tidak ditemukan',
+                ];
+                return json_encode($response);
+            }
+
+            $response['success'] = 'Berhasil mendownload image';
+            $response['blobBase64'] = $payment->payment_receipt;
+            $response['fileName'] = $payment->description;
             return json_encode($response);
         }
     }
