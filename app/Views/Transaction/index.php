@@ -32,7 +32,7 @@
                             </span>
                             <!--end::Svg Icon-->
                             <input type="text" id="search"
-                                class="form-control form-control-solid w-250px ps-14" placeholder="Cari Transaksi" />
+                                class="form-control form-control-solid w-xl-250px w-150px ps-14" placeholder="Cari Transaksi" />
                         </div>
                         <!--end::Search-->
                     </div>
@@ -40,7 +40,7 @@
                     <!--begin::Card toolbar-->
                     <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
                         <!--begin::Add product-->
-                        <a href="<?php echo base_url('mobil/tambah'); ?>" class="btn btn-primary">Tambah Transaksi</a>
+                        <button type="button" class="btn btn-primary btn-sm" id="btnAddTransaction">Tambah Transaksi</button>
                         <!--end::Add product-->
                     </div>
                     <!--end::Card toolbar-->
@@ -62,6 +62,8 @@
     <!--end::Content-->
 </div>
 
+<div class="transactionModal"></div>
+
 <script>
     function toastConfig() {
         toastr.options = {
@@ -82,6 +84,28 @@
             "hideMethod": "fadeOut"
         };
     }
+
+    function openTransactionModal(){
+        $.ajax({
+            type: "post",
+            url: "/transaksi/modal",
+            data: {},
+            dataType: "json",
+            success: function (response) {
+                $('.transactionModal').html(response.transactionModal).show();
+
+                $('#transactionModal').modal('show');
+            },
+            error: function (xhr, thrownError) {
+                alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+            },
+        });
+    }
+
+    $('#btnAddTransaction').click(function (e) { 
+        e.preventDefault();
+        openTransactionModal();
+    });
 </script>
 
 <?php echo $this->endSection(); ?>

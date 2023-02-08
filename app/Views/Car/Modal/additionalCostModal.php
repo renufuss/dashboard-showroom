@@ -45,7 +45,7 @@
 							<span class="required">Bukti Pengeluaran</span>
 						</label>
 						<!--end::Label-->
-						<input type="file" class="form-control mb-2" placeholder="Masukkan nama belakang"
+						<input type="file" class="form-control mb-2"
 							name="additional_receipt" id="additional_receipt" autocomplete="off" />
 						<div class="invalid-feedback" id="additional_receipt-feedback"></div>
 					</div>
@@ -84,7 +84,7 @@
 <script>
 	$(document).ready(function () {
 		// load File to Input Form
-		loadURLToInputField('data:image/png;base64,<?= ($additionalCost) ? $additionalCost->additional_receipt : ''; ?>','<?= ($additionalCost) ? '#additional_receipt' : '#additionalCostModalLabel' ?>', '<?= ($additionalCost) ? $additionalCost->description : ''; ?>_receipt.jpg')
+		loadURLToInputField('data:image/png;base64,<?= ($additionalCost) ? ($additionalCost->additional_receipt != null) ? $additionalCost->additional_receipt : '' : ''; ?>','<?= ($additionalCost) ? ($additionalCost->additional_receipt != null) ? '#additional_receipt' : '#additionalCostModalLabel' : '#additionalCostModalLabel' ?>', '<?= ($additionalCost) ? $additionalCost->description : ''; ?>_receipt.jpg')
 		autoNumeric();
 	});
 	$('#btnSave').click(function (e) {
@@ -121,25 +121,6 @@
 	}
 	//End load File to Input Form
 
-	function toastConfig() {
-        toastr.options = {
-            "closeButton": true,
-            "debug": false,
-            "newestOnTop": true,
-            "progressBar": true,
-            "positionClass": "toastr-top-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "1500",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        };
-    }
 
     function autoNumeric() {
         [amount_of_money] = AutoNumeric.multiple(['#amount_of_money'], {
@@ -153,7 +134,6 @@
             currencySymbolPlacement: AutoNumeric.options.currencySymbolPlacement.prefix,
         });
     }
-
 
 	function removeFeedback(form) {
         Object.entries(form).forEach(entry => {

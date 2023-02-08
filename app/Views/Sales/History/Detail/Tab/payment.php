@@ -12,7 +12,7 @@
                 <!--begin::Card toolbar-->
                 <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
                     <!--begin::Add product-->
-                    <a href="#" class="btn btn-primary btn-sm">Tambah Pembayaran</a>
+                    <button type="button" id="btnAddPayment" class="btn btn-primary btn-sm">Tambah Pembayaran</button>
                     <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->
@@ -28,5 +28,51 @@
         </div>
     </div>
 </div>
+
+<div class="addPaymentModal"></div>
+
+<script>
+    function toastConfig() {
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toastr-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "1500",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+    }
+
+    $('#btnAddPayment').click(function (e) {
+        e.preventDefault();
+        openAddPaymentModal();
+    });
+
+    function openAddPaymentModal() {
+        $.ajax({
+            type: "post",
+            url: "/penjualan/riwayat/<?= $sales->receipt_number; ?>/pembayaran/add",
+            data: {},
+            dataType: "json",
+            success: function (response) {
+                $('.addPaymentModal').html(response.addPaymentModal).show();
+
+                $('#addPaymentModal').modal('show');
+            },
+            error: function (xhr, thrownError) {
+                alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+            },
+        });
+    }
+</script>
 
 <?php echo $this->endSection(); ?>

@@ -32,7 +32,7 @@
                             </span>
                             <!--end::Svg Icon-->
                             <input type="text" id="search"
-                                class="form-control form-control-solid w-250px ps-14" placeholder="Cari Mobil" />
+                                class="form-control form-control-solid w-xl-250px w-150px ps-14" placeholder="Cari Mobil" />
                         </div>
                         <!--end::Search-->
                     </div>
@@ -40,7 +40,7 @@
                     <!--begin::Card toolbar-->
                     <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
                         <!--begin::Add product-->
-                        <a href="<?php echo base_url('mobil/tambah'); ?>" class="btn btn-primary">Tambah Mobil</a>
+                        <a href="<?php echo base_url('mobil/tambah'); ?>" class="btn btn-primary btn-sm">Tambah Mobil</a>
                         <!--end::Add product-->
                     </div>
                     <!--end::Card toolbar-->

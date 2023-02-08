@@ -49,6 +49,8 @@ $routes->get('/mobil/(:num)/print', 'Car::printDetail/$1');
 $routes->post('/mobil/biaya/modal', 'Car::additionalCostModal');
 $routes->post('/mobil/biaya/(:num)', 'Car::setAdditionalCost/$1');
 $routes->post('/mobil/biaya/(:num)/(:num)', 'Car::setAdditionalCost/$1/$2');
+$routes->get('/mobil/biaya/(:num)/(:num)/alertDelete', 'Car::alertAdditionalCostDelete/$1/$2');
+$routes->post('/mobil/biaya/delete', 'Car::deleteAdditionalCost');
 
 $routes->post('/mobil/download/additionalreceipt', 'Car::downloadAdditionalReceipt');
 
@@ -79,9 +81,12 @@ $routes->get('/penjualan/riwayat', 'Sales::pageSalesHistory');
 $routes->post('/penjualan/riwayat', 'Sales::getSalesHistory');
 $routes->get('/penjualan/riwayat/(:alphanum)', 'Sales::pageSalesHistoryDetail/$1');
 $routes->get('/penjualan/riwayat/(:alphanum)/pembayaran', 'Sales::pageSalesHistoryPayment/$1');
+$routes->post('/penjualan/riwayat/(:alphanum)/pembayaran/add', 'Sales::addPaymentModal/$1');
+$routes->post('/penjualan/riwayat/(:alphanum)/pembayaran', 'Sales::addPayment/$1');
 
 $routes->get('/transaksi', 'Transaction::index');
 $routes->post('/transaksi', 'Transaction::getTransaction');
+$routes->post('/transaksi/modal', 'Transaction::openTransactionModal');
 
 $routes->get('/pengguna', 'User::index');
 $routes->post('/pengguna/table', 'User::showTable');

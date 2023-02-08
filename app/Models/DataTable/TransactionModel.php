@@ -35,7 +35,9 @@ class TransactionModel extends Model
         ->join('car_additional_cost', 'transaction.car_additional_cost_id=car_additional_cost.id', 'left')
         ->join('payment_sales', 'transaction.payment_sales_id=payment_sales.id', 'left')
         ->join('sales', 'payment_sales.sales_id=sales.id', 'left')
-        ->where('transaction.deleted_at', null);
+        ->where('transaction.deleted_at', null)
+        ->where('car.deleted_at', null)
+        ->where('car_additional_cost.deleted_at', null);
 
         if ($status != null) {
             $this->dt->where('transaction.status', $status);
@@ -85,7 +87,9 @@ class TransactionModel extends Model
         ->join('car_additional_cost', 'transaction.car_additional_cost_id=car_additional_cost.id', 'left')
         ->join('payment_sales', 'transaction.payment_sales_id=payment_sales.id', 'left')
         ->join('sales', 'payment_sales.sales_id=sales.id', 'left')
-        ->where('transaction.deleted_at', null);
+        ->where('transaction.deleted_at', null)
+        ->where('car.deleted_at', null)
+        ->where('car_additional_cost.deleted_at', null);
 
         if ($status != null) {
             $this->dt->where('transaction.status', $status);

@@ -192,9 +192,13 @@ class CarModel extends Model
 
         if ($data['id'] != null) {
             $table->where('id', $data['id']);
-            return $table->update($data);
+            $table->update($data);
+
+            return null;
         }
-        return $table->insert($data);
+        $table->insert($data);
+
+        return $this->db->insertID();
     }
 
     public function getAdditionalCost($carId = null, $additionalId = null)

@@ -23,7 +23,7 @@ class AdditionalCostModel extends Model
     }
     private function _get_datatables_query($carId = null)
     {
-        $this->dt = $this->db->table($this->table)->select('*');
+        $this->dt = $this->db->table($this->table)->select('*')->where('car_additional_cost.deleted_at', null);
 
         if ($carId != null) {
             $this->dt->where('car_id', $carId);
@@ -68,7 +68,7 @@ class AdditionalCostModel extends Model
     }
     public function count_all($carId = null)
     {
-        $tbl_storage = $this->db->table($this->table)->select('*');
+        $tbl_storage = $this->db->table($this->table)->select('*')->where('car_additional_cost.deleted_at', null);
 
         if ($carId != null) {
             $tbl_storage->where('car_id', $carId);

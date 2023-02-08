@@ -33,6 +33,60 @@
         getAdditionalCost();
     });
 
+    function deleteAdditionalCost(additionalCostId) {
+        $.ajax({
+            type: "post",
+            url: "/mobil/biaya/delete",
+            data: {
+                carId : <?= $car->id; ?>,
+                additionalCostId,
+            },
+            dataType: "JSON",
+            success: function (response) {
+                if (response.error) {
+                    toastr.error(response.error, "Error");
+                }
+
+                if (response.success) {
+                    toastr.success(response.success, "Sukses");
+                  getAdditionalCost();
+                }
+            }
+        });
+    }
+
+    function alertAdditionalCostDelete(additionalCostId) {
+        $.ajax({
+            type: "GET",
+            url: `/mobil/biaya/<?= $car->id; ?>/${additionalCostId}/alertDelete`,
+            dataType: "json",
+            success: function (response) {
+                if (!response.error) {
+                    Swal.fire({
+                        html: `Apakah kamu yakin ingin menghapus ${response.additionalCostName} ?`,
+                        icon: "warning",
+                        buttonsStyling: false,
+                        showCancelButton: true,
+                        confirmButtonText: "Iya, Hapus",
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true,
+                        customClass: {
+                            confirmButton: "btn btn-primary",
+                            cancelButton: 'btn btn-danger'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            deleteAdditionalCost(additionalCostId);
+                        }
+                    });
+                } else {
+                    toastConfig();
+                    toastr.error(response.error, "Error");
+                }
+            }
+        });
+    }
+
     function getAdditionalCost() {
         if(DataTable.isDataTable('#additionalCostTable')){
             $('#additionalCostTable').DataTable().destroy();

@@ -32,7 +32,7 @@
                             </span>
                             <!--end::Svg Icon-->
                             <input type="text" id="search"
-                                class="form-control form-control-solid w-250px ps-14" placeholder="Cari Riwayat Penjualan" />
+                                class="form-control form-control-solid w-xl-250px w-150px ps-14" placeholder="Cari Riwayat Penjualan" />
                         </div>
                         <!--end::Search-->
                     </div>

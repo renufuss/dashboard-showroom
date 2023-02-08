@@ -152,4 +152,18 @@ class Transaction extends BaseController
     {
         $this->TransactionModel->save($data);
     }
+
+    /**
+     * Set Transaction.
+     *
+     * @return View
+     */
+    public function openTransactionModal()
+    {
+        $response = [
+            'transactionModal' => view('Transaction/Modal/transactionModal'),
+        ];
+
+        return json_encode($response);
+    }
 }

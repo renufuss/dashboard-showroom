@@ -324,7 +324,7 @@ class Car extends BaseController
                         </span>
                         <!--end::Svg Icon-->
                     </button>
-                    <button class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm\" onclick=\"alertCarDelete('b')\">
+                    <button class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm\" onclick=\"alertAdditionalCostDelete('$additionalCost->id')\">
                         <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
                         <span class=\"svg-icon svg-icon-3\">
                             <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
@@ -964,7 +964,7 @@ class Car extends BaseController
         return false;
     }
 
-     /**
+    /**
      * Opens a modal pop up to update additional cost.
      *
      * @return jsonResponse
@@ -1010,6 +1010,9 @@ class Car extends BaseController
 
     /**
      * Save the car surcharge.
+     *
+     * @param int $carId car id
+     * @param int $additionalCostId additional cost id (optional)
      *
      * @return jsonResponse
      */
@@ -1098,9 +1101,100 @@ class Car extends BaseController
                 'paid_by' => $input['paid_by'],
                 'car_id' => $carId
             ];
-            $this->CarModel->setAdditionalCost($data, null, false, $additionalCostId);
+            $additionalCostId = $this->CarModel->setAdditionalCost($data, null, false, $additionalCostId);
 
             $response['success'] = 'Berhasil menambahkan pengeluaran';
+
+            $isUpdate = ($additionalCostId == null);
+
+            if (!$isUpdate) {
+                // Save Car Transaction
+                $transaction = new Transaction();
+                $data = [
+                    'car_id' => $carId,
+                    'car_additional_cost_id' => $additionalCostId,
+                    'status' => 1,
+                ];
+
+                $transaction->setTransaction($data);
+            }
+
+
+            return json_encode($response);
+        }
+    }
+
+    /**
+     * Displays an alert to remove temp additional costs.
+     *
+     * @param int $carId car id
+     * @param int $additionalCostId additional cost id
+     *
+     * @return jsonResponse
+     */
+    public function alertAdditionalCostDelete($carId, $additionalCostId)
+    {
+        if ($this->request->isAJAX()) {
+            $additionalCost = $this->CarModel->getAdditionalCost($carId, $additionalCostId);
+
+            $isAdditionalCost = ($additionalCost != null);
+            if (!$isAdditionalCost) {
+                $response = [
+                    'error' => 'Data tidak ditemukan',
+                ];
+                return json_encode($response);
+            }
+
+            $response = [
+                'additionalCostName' => $additionalCost->description,
+            ];
+
+            return json_encode($response);
+        }
+    }
+
+    /**
+     * Save the car surcharge.
+     *
+     * @param int $carId car id
+     * @param int $additionalCostId additional cost id
+     *
+     * @return jsonResponse
+     */
+    public function deleteAdditionalCost()
+    {
+        if ($this->request->isAJAX()) {
+            $carId = $this->request->getPost('carId');
+            $additionalCostId = $this->request->getPost('additionalCostId');
+
+            $car = $this->CarModel->find($carId);
+
+            $isCar = ($car != null);
+            if (!$isCar) {
+                $response = [
+                    'error' => 'Data tidak ditemukan',
+                ];
+                return json_encode($response);
+            }
+
+            $additionalCost = $this->CarModel->getAdditionalCost($car->id, $additionalCostId);
+
+            $isAdditionalCost = ($additionalCost != null);
+            if (!$isAdditionalCost) {
+                $response = [
+                    'error' => 'Data tidak ditemukan',
+                ];
+                return json_encode($response);
+            }
+
+            // Update Database
+            $data = [
+                'id' => $additionalCostId,
+                'deleted_at' => date('Y-m-d H:i:s'),
+            ];
+            $this->CarModel->setAdditionalCost($data, null, false, $additionalCostId);
+
+            $response['success'] = 'Berhasil menghapus biaya tambahan';
             return json_encode($response);
         }
     }

@@ -559,6 +559,8 @@ class Sales extends BaseController
     /**
      * Page Sales History Detail.
      *
+     * @param String $receiptNumber receipt number
+     *
      * @return view
      */
     public function pageSalesHistoryPayment($receiptNumber)
@@ -577,5 +579,131 @@ class Sales extends BaseController
             return view('Sales/History/Detail/tab/payment', $data);
         }
         return redirect()->to(base_url('penjualan/riwayat'));
+    }
+
+    /**
+     * Opens a modal pop up to update additional cost.
+     *
+     * @return jsonResponse
+     */
+    public function addPaymentModal($receiptNumber)
+    {
+        if ($this->request->isAJAX()) {
+            $sales = $this->SalesModel->where('receipt_number', $receiptNumber)->first();
+
+            $isEmpty = ($sales == null);
+            if ($isEmpty) {
+                $response = [
+                    'error' => 'Data tidak ditemukan',
+                ];
+                return json_encode($response);
+            }
+
+            $data['sales'] = $sales;
+            $response = [
+                'addPaymentModal' => view('Sales/History/Detail/Tab/Modal/addPaymentModal', $data),
+            ];
+
+            return json_encode($response);
+        }
+    }
+
+    /**
+     * Add Payment.
+     *
+     * @param String $receiptNumber receipt number
+     *
+     * @return jsonResponse
+     */
+    public function addPayment($receiptNumber)
+    {
+        if ($this->request->isAJAX()) {
+            $sales = $this->SalesModel->where('receipt_number', $receiptNumber)->first();
+
+            $isEmpty = ($sales == null);
+            if ($isEmpty) {
+                $response = [
+                    'error' => 'Data tidak ditemukan',
+                ];
+                return json_encode($response);
+            }
+
+            $validationRules = [
+                'description' => 'required|alpha_numeric_space',
+                'amount_of_money' => 'required|numeric',
+                'payment_receipt' => 'max_size[payment_receipt,5120]|is_image[payment_receipt]|mime_in[payment_receipt,image/jpg,image/jpeg,image/png]',
+            ];
+
+            $validationMessages = [
+                'description' => [
+                    'required' => 'Nama pengeluaran tidak boleh kosong.',
+                    'alpha_numeric_space' => 'Nama pengeluaran hanya boleh angka atau huruf',
+                ],
+                'amount_of_money' => [
+                    'required' => 'Jumlah pengeluaran tidak boleh kosong',
+                    'numeric' => 'Jumlah pengeluaran hanya boleh angka',
+                ],
+                'payment_receipt' => [
+                    'max_size' => 'Ukuran gambar tidak boleh melebihi 5 MB',
+                    'is_image' => 'Yang anda pilih bukan gambar',
+                    'mime_in' => 'Yang anda pilih bukan gambar',
+                ],
+            ];
+
+            $input = [
+                'description' => $this->request->getPost('description'),
+                'amount_of_money' => str_replace([',', '.', 'Rp', ' '], '', $this->request->getPost('amount_of_money')),
+                'payment_receipt' => $this->request->getFile('payment_receipt'),
+            ];
+
+            $paid = $this->SalesModel->getPaid($receiptNumber);
+
+            $over = ($sales->total_price - $paid);
+            $isAmountOfMoneyValid = ($input['amount_of_money'] <= $over);
+            // Validation
+            $isValid = $this->validateData($input, $validationRules, $validationMessages);
+            if (!$isValid || !$isAmountOfMoneyValid) {
+                $error = $this->validator->getErrors();
+
+                if (!$isAmountOfMoneyValid) {
+                    $errorPayment = ['amount_of_money' => 'Jumlah uang tidak boleh melebihi sisa pembayaran'];
+                    $error = array_merge($error, $errorPayment);
+                }
+
+                $response = [
+                    'error' => $error,
+                    'errorMsg' => 'Gagal menyimpan pembayaran',
+                ];
+                return json_encode($response);
+            }
+            // Additional Receipt
+            $paymentReceipt = null;
+            if ($input['payment_receipt']->getError() != 4) {
+                $paymentReceipt = $this->blobImage($input['payment_receipt']);
+            }
+
+            // Insert to Database
+            $data = [
+                'sales_id' => $sales->id,
+                'description' => ucfirst(strtolower($input['description'])),
+                'amount_of_money' => $input['amount_of_money'],
+                'payment_receipt' => $paymentReceipt,
+                'payment_date' => date('Y-m-d H:i:s')
+            ];
+            $paymentId = $this->SalesModel->savePayment($data);
+
+            $response['success'] = 'Berhasil menambahkan pengeluaran';
+
+            // Save Car Transaction
+            $transaction = new Transaction();
+            $data = [
+                'payment_sales_id' => $paymentId,
+                'status' => 0,
+            ];
+
+            $transaction->setTransaction($data);
+
+            return json_encode($response);
+        }
     }
 }
