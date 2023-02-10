@@ -135,7 +135,7 @@
                         </span>
                         <!--end::Svg Icon-->
                     </span>
-                    <span class="menu-title">Transaksi Umum</span>
+                    <span class="menu-title">Transaksi</span>
                 </a>
                 <!--end:Menu link-->
             </div>

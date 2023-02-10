@@ -197,9 +197,15 @@
             url: "/penjualan/payment",
             dataType: 'json',
             success: function (response) {
-                $('.paymentModal').html(response.paymentModal).show();
+                if(response.paymentModal){
+                    $('.paymentModal').html(response.paymentModal).show();
+    
+                    $('#paymentModal').modal('show');
+                }
 
-                $('#paymentModal').modal('show');
+                if (response.error) {
+                    toastr.error(response.error, "Error");
+                }
             },
             error: function (xhr, thrownError) {
                 alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);

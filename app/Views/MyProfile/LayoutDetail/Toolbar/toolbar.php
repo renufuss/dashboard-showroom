@@ -4,7 +4,7 @@
         <!--begin::Page title-->
         <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
             <!--begin::Title-->
-            <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">Pengguna
+            <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">Akun Saya
             </h1>
             <!--end::Title-->
             <!--begin::Breadcrumb-->
@@ -20,7 +20,7 @@
                 </li>
                 <!--end::Item-->
                 <!--begin::Item-->
-                <li class="breadcrumb-item text-muted">Pengguna</li>
+                <li class="breadcrumb-item text-muted">Akun Saya</li>
                 <!--end::Item-->
             </ul>
             <!--end::Breadcrumb-->

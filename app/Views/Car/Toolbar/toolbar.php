@@ -63,7 +63,9 @@
                             <!--end::Label-->
                             <!--begin::Input-->
                             <div>
-                                <select class="form-select form-select-solid" data-control="select2" data-placeholder="Semua Brand" id="car_brand" data-hide-search="true" data-allow-clear="true">
+                                <select class="form-select form-select-solid" data-control="select2"
+                                    data-placeholder="Semua Brand" id="car_brand" data-hide-search="true"
+                                    data-allow-clear="true">
                                     <option></option>
                                     <?php foreach($brands as $brand) : ?>
                                     <option value="<?php echo $brand->id; ?>"><?php echo $brand->brand_name; ?></option>
@@ -74,11 +76,12 @@
                         </div>
                         <!--end::Input group-->
                         <div class="mb-10">
-                             <!--begin::Label-->
-                             <label class="form-label fw-semibold">Status</label>
+                            <!--begin::Label-->
+                            <label class="form-label fw-semibold">Status</label>
                             <!--end::Label-->
-                             <!--begin::Select2-->
-                             <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" id="status" data-allow-clear="true" data-placeholder="Semua Status" >
+                            <!--begin::Select2-->
+                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+                                id="status" data-allow-clear="true" data-placeholder="Semua Status">
                                 <option></option>
                                 <option value="0">Ready</option>
                                 <option value="1">Terjual</option>
@@ -87,7 +90,8 @@
                         </div>
                         <!--begin::Actions-->
                         <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-sm btn-primary" id="btnApplyFilter" data-kt-menu-dismiss="true">Apply</button>
+                            <button type="button" class="btn btn-sm btn-primary" id="btnApplyFilter"
+                                data-kt-menu-dismiss="true">Apply</button>
                         </div>
                         <!--end::Actions-->
                     </div>
@@ -103,3 +107,11 @@
     </div>
     <!--end::Toolbar container-->
 </div>
+
+<script>
+    $('#btnApplyFilter').click(function (e) {
+        e.preventDefault();
+        getCar();
+        $('#search').val('');
+    });
+</script>

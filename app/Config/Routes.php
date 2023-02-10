@@ -96,9 +96,11 @@ $routes->post('/pengguna/table', 'User::showTable');
 $routes->post('/pengguna/save', 'User::save');
 $routes->post('/pengguna/confirm', 'User::confirmDelete');
 $routes->post('/pengguna/delete', 'User::deleteUser');
+$routes->get('/pengguna/detail/(:alphanum)', 'User::pageDetailProfile/$1');
 
 $routes->get('/profile', 'User::myProfile');
 $routes->get('/profile/setting', 'User::setMyProfile');
+
 
 
 /*

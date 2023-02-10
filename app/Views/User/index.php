@@ -64,7 +64,7 @@
     </div>
 </div>
 <!-- UserModal -->
-<?php include('Modals/userModal.php'); ?>
+<?php include('Modal/userModal.php'); ?>
 
 <script>
     function showTable() {

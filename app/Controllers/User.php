@@ -139,4 +139,17 @@ class User extends BaseController
     {
         return $this->UserModel->countAllResults();
     }
+
+    public function pageDetailProfile($username)
+    {
+        $user = $this->UserModel->showUser($username);
+        $data = [
+            'title' => 'Profil User',
+            'navDetail' => true,
+            'navPengaturan' => false,
+            'user' => $user,
+        ];
+
+        return view('User/Detail/index', $data);
+    }
 }

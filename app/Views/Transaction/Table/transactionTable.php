@@ -37,6 +37,7 @@
             <th>Deskripsi</th>
             <th>Bukti Transaksi</th>
             <th>Status</th>
+            <th>Dibayar</th>
             <th class="text-end">Jumlah Uang</th>
             <th class="text-end">Aksi</th>
         </tr>
@@ -68,7 +69,9 @@
             "ajax": {
                 "url": "/transaksi",
                 "type": "POST",
-                "data" : {}
+                "data" : {
+                    "transaction_status" : $('#status').val(),
+                }
             },
             "scrollX": true, // enables horizontal scrolling      
             "filter": true,

@@ -167,11 +167,5 @@
 
     $(document).ready(function () {
         getCar();
-
-        $('#btnApplyFilter').click(function (e) { 
-            e.preventDefault();
-             getCar();
-             $('#search').val('');
-        });
     });
 </script>

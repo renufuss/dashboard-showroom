@@ -119,6 +119,13 @@ class Sales extends BaseController
     public function paymentModal()
     {
         if ($this->request->isAJAX()) {
+            $selectedCar = $this->TempSalesModel->where('user_id', user()->id)->findAll();
+            $isEmpty = ($selectedCar == null);
+            if ($isEmpty) {
+                $response['error'] = 'Maaf, anda belum memilih mobil manapun...';
+                return json_encode($response);
+            }
+
             $totalTempPrice = 'Rp ' . number_format($this->TempSalesModel->getTotalTempPrice(), '0', ',', '.');
             $data = [
                 'totalPrice' => $totalTempPrice,
@@ -369,6 +376,14 @@ class Sales extends BaseController
     public function savePayment()
     {
         if ($this->request->isAJAX()) {
+            $cars = $this->TempSalesModel->getTempSales(user()->id);
+            $isEmptyCar = ($cars == null);
+            if ($isEmptyCar) {
+                $response['error'] = 'Maaf, anda belum memilih mobil manapun...';
+                $response['errorMsg'] = 'Maaf, anda belum memilih mobil manapun...';
+                return json_encode($response);
+            }
+
             $sales['receipt_number'] = $this->getReceiptNumber();
             $sales['full_name'] = ucwords(strtolower($this->request->getVar('full_name')));
             $sales['identity_id'] = $this->request->getPost('identity_id');
@@ -420,7 +435,6 @@ class Sales extends BaseController
             $salesId = $this->SalesModel->getInsertID();
 
             // Save Car
-            $cars = $this->TempSalesModel->getTempSales(user()->id);
             $carData = [];
             foreach ($cars as $car) {
                 $data = [

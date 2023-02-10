@@ -66,8 +66,9 @@ class Transaction extends BaseController
         ini_set('memory_limit', '-1');
         $request = Services::request();
         $transactionModel = new DataTableTransactionModel($request);
+        $transactionStatus = $this->request->getPost('transaction_status');
         if ($request->getMethod(true) == 'POST') {
-            $transactions = $transactionModel->get_datatables();
+            $transactions = $transactionModel->get_datatables($transactionStatus);
             $data = [];
             foreach ($transactions as $transaction) {
                 // Amount of money
@@ -118,6 +119,12 @@ class Transaction extends BaseController
                     }
 
                     $row[] = "<span class=\"badge badge-light-$statusBadge fs-7 fw-bold\">$statusDescription</span>";
+
+                    if ($transaction->transactionPaidBy != null) {
+                        $row[] = $transaction->transactionPaidBy;
+                    } else {
+                        $row[] = '-';
+                    }
                     $row[] = "<div class=\"text-end\">$transactionAmountOfMoney</div>";
                     $row[] = "<div class=\"text-end\"> <button class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm\" onclick=\"alertCarDelete('2')\">
                     <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
@@ -163,6 +170,7 @@ class Transaction extends BaseController
                     }
 
                     $row[] = "<span class=\"badge badge-light-$statusBadge fs-7 fw-bold\">$statusDescription</span>";
+                    $row[] = "-";
                     $row[] = "<div class=\"text-end\">$carPrice</div>";
                     $row[] = "<div class=\"text-end\">-</div>";
                 } elseif ($transaction->carId != null && $transaction->car_additional_cost_id != null) {
@@ -191,6 +199,7 @@ class Transaction extends BaseController
                     }
 
                     $row[] = "<span class=\"badge badge-light-$statusBadge fs-7 fw-bold\">$statusDescription</span>";
+                    $row[] = "-";
                     $row[] = "<div class=\"text-end\">$carAdditionalCostAmountOfMoney</div>";
                     $row[] = "<div class=\"text-end\">-</div>";
                 } elseif ($transaction->payment_sales_id != null) {
@@ -217,9 +226,8 @@ class Transaction extends BaseController
                     } else {
                         $row[] = "-";
                     }
-
-
                     $row[] = "<span class=\"badge badge-light-$statusBadge fs-7 fw-bold\">$statusDescription</span>";
+                    $row[] = "-";
                     $row[] = "<div class=\"text-end\">$paymentSalesAmountOfMoney</div>";
                     $row[] = "<div class=\"text-end\">-</div>";
                 }
@@ -228,8 +236,8 @@ class Transaction extends BaseController
             }
             $output = [
                 "draw" => $request->getPost('draw'),
-                "recordsTotal" => $transactionModel->count_all(),
-                "recordsFiltered" => $transactionModel->count_filtered(),
+                "recordsTotal" => $transactionModel->count_all($transactionStatus),
+                "recordsFiltered" => $transactionModel->count_filtered($transactionStatus),
                 "data" => $data,
             ];
             echo json_encode($output);
@@ -306,7 +314,8 @@ class Transaction extends BaseController
                 'description' => $this->request->getPost('description'),
                 'amount_of_money' => str_replace([',', '.', 'Rp', ' '], '', $this->request->getPost('amount_of_money')),
                 'transaction_receipt' => $this->request->getFile('transaction_receipt'),
-                'status' => $this->request->getPost('status'),
+                'transaction_status' => $this->request->getPost('transaction_status'),
+                'paid_by' => $this->request->getPost('paid_by'),
             ];
 
             // Validation
@@ -329,7 +338,8 @@ class Transaction extends BaseController
                 'description' => ucwords(strtolower($input['description'])),
                 'amount_of_money' => $input['amount_of_money'],
                 'transaction_receipt' => $transactionReceipt,
-                'status' => $input['status'],
+                'transaction_status' => $input['transaction_status'],
+                'paid_by' => $input['paid_by']
             ];
 
             $this->TransactionModel->save($data);

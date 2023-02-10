@@ -34,7 +34,13 @@ class CarModel extends Model
         }
 
         if ($keyword != null) {
-            $this->dt->like('license_number', $keyword['license_number'])->orLike('car_name', $keyword['car_name'])->where('car.status', $keyword['car_status']);
+            $this->dt->groupStart();
+            $this->dt->like('car_name', $keyword['car_name']);
+            if ($keyword['license_numbe'] != false) {
+                $this->dt->orLike('license_number', $keyword['license_number']);
+            }
+            $this->dt->groupEnd();
+            $this->dt->where('car.status', $keyword['car_status']);
         }
 
         $i = 0;

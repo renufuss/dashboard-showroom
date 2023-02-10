@@ -54,13 +54,24 @@
                 <!--begin::Input group-->
                 <div class="col-md-12 mt-7 fv-row">
                     <label class="required fs-6 fw-semibold mb-2">Status Transaksi</label>
-                    <select class="form-select form-select-solid cursor-pointer mb-2" data-control="select2"
-                        data-hide-search="false" data-placeholder="Pilih Status" id="status" name="status">
+                    <select class="form-select form-select-solid cursor-pointer mb-2" id="transaction_status"
+                        name="transaction_status">
                         <option value="">Pilih Status</option>
                         <option value="2">Uang Masuk Umum</option>
                         <option value="3">Uang Keluar Umum</option>
                     </select>
-                    <div class="invalid-feedback" id="status-feedback"></div>
+                    <div class="invalid-feedback" id="transaction_status-feedback">tesss</div>
+                </div>
+                <!-- end::Input group -->
+                <!--begin::Input group-->
+                <div class="col-md-12 mt-7 fv-row">
+                    <label class="required fs-6 fw-semibold mb-2">Pengeluaran</label>
+                    <select class="form-select form-select-solid cursor-pointer mb-2" id="paid_by" name="paid_by">
+                        <option value="">Pilih Pembayaran</option>
+                        <option value="Sam un">Sam un</option>
+                        <option value="Hereansyah">Hereansyah</option>
+                    </select>
+                    <div class="invalid-feedback" id="paid_by-feedback"></div>
                 </div>
                 <!-- end::Input group -->
             </div>
@@ -144,7 +155,8 @@
                     description,
                     amount_of_money,
                     transaction_receipt,
-                    status,
+                    transaction_status,
+                    paid_by,
                 };
                 removeFeedback(form);
 
