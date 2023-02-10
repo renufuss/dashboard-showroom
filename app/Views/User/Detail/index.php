@@ -1,4 +1,4 @@
-<?= $this->extend('MyProfile/LayoutDetail/index'); ?>
+<?= $this->extend('User/Detail/LayoutDetail/index'); ?>
 
 <?= $this->section('boxBawah'); ?>
 

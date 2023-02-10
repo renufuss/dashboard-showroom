@@ -36,11 +36,10 @@ class CarModel extends Model
         if ($keyword != null) {
             $this->dt->groupStart();
             $this->dt->like('car_name', $keyword['car_name']);
-            if ($keyword['license_numbe'] != false) {
+            if ($keyword['license_number'] != false) {
                 $this->dt->orLike('license_number', $keyword['license_number']);
             }
             $this->dt->groupEnd();
-            $this->dt->where('car.status', $keyword['car_status']);
         }
 
         $i = 0;
@@ -93,7 +92,12 @@ class CarModel extends Model
         }
 
         if ($keyword != null) {
-            $tbl_storage->like('license_number', $keyword['license_number'])->orLike('car_name', $keyword['car_name'])->where('car.status', $keyword['car_status']);
+            $tbl_storage->groupStart();
+            $tbl_storage->like('car_name', $keyword['car_name']);
+            if ($keyword['license_number'] != false) {
+                $tbl_storage->orLike('license_number', $keyword['license_number']);
+            }
+            $tbl_storage->groupEnd();
         }
 
         return $tbl_storage->countAllResults();

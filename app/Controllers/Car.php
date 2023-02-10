@@ -55,6 +55,9 @@ class Car extends BaseController
      */
     public function index()
     {
+        // dd($this->formatLicenseNumber('DA 123'));
+        dd($this->findCarReady('DA 123'));
+
         $data['title'] = 'Mobil';
         $data['brands'] = $this->CarModel->getBrands();
         return view('Car/index', $data);
@@ -390,6 +393,10 @@ class Car extends BaseController
                 return false;
             }
 
+            if (substr($licenseNumber, -1) === ' ') {
+                $licenseNumber= substr_replace($licenseNumber, '', -1);
+            }
+
             return $licenseNumber;
         }
 
@@ -415,16 +422,15 @@ class Car extends BaseController
             $keyword = [
                 'license_number' => $car->formatLicenseNumber($keywords),
                 'car_name' => $keywords,
-                'car_status' => 0, //Ready Car
             ];
         }
 
         $carModel = new DataTableCarModel($request);
         if ($request->getMethod(true) == 'POST') {
-            $cars = $carModel->get_datatables($status, $brandId, $keyword);
-            $data = [];
             // Menu Mobil
             if ($sales == null) {
+                $cars = $carModel->get_datatables($status, $brandId, $keyword);
+                $data = [];
                 foreach ($cars as $car) {
                     // Total Additional Cost
                     $totalAdditionalCost = $this->CarModel->getTotalAdditionalCost($car->id);
@@ -503,6 +509,8 @@ class Car extends BaseController
                     $data[] = $row;
                 }
             } else { //Menu penjualan mobil
+                $cars = $carModel->get_datatables(0, null, $keyword);
+                $data = [];
                 foreach ($cars as $car) {
                     // Row Table
                     $row = [];

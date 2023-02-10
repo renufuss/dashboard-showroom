@@ -144,7 +144,7 @@
             <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
-                <a class="menu-link  <?php echo (uri_string() == 'pengguna') ? 'active' : ''; ?>"
+                <a class="menu-link  <?php echo (url_is('pengguna*')) ? 'active' : ''; ?>"
                     href="<?php echo base_url('pengguna'); ?>">
                     <span class="menu-icon">
                         <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/technology/teh004.svg-->

@@ -101,7 +101,8 @@
                                             </span>
                                             <!--end::Svg Icon-->
                                         </button>
-                                        <button class="btn btn-icon btn-bg-light btn-active-color-success btn-sm" id="btnPayment">
+                                        <button class="btn btn-icon btn-bg-light btn-active-color-success btn-sm"
+                                            id="btnPayment">
                                             <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
                                             <span class="svg-icon svg-icon-3">
                                                 <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/ecommerce/ecm002.svg-->
@@ -197,9 +198,9 @@
             url: "/penjualan/payment",
             dataType: 'json',
             success: function (response) {
-                if(response.paymentModal){
+                if (response.paymentModal) {
                     $('.paymentModal').html(response.paymentModal).show();
-    
+
                     $('#paymentModal').modal('show');
                 }
 
@@ -268,7 +269,7 @@
             type: "post",
             url: "/penjualan/deleteTemp",
             data: {
-                tempId : tempId,
+                tempId: tempId,
             },
             dataType: "JSON",
             success: function (response) {
@@ -354,7 +355,7 @@
             },
         })
     }
-    
+
     function getTotalTempPrice() {
         $.ajax({
             type: "get",
@@ -387,10 +388,17 @@
         checkLicenseNumber();
     });
 
-    $('#btnPayment').click(function (e) { 
+    $('#btnPayment').click(function (e) {
         e.preventDefault();
         openPaymentModal();
     });
+
+    $('#keyword').keydown(function (e) {
+        if (e.keyCode == 13 || e.keyCode == 9) { // Tombol Enter dan Tab
+            e.preventDefault;
+            checkLicenseNumber();
+        }
+    })
 </script>
 
 
