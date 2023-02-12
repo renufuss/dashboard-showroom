@@ -59,13 +59,14 @@
                         <option value="">Pilih Status</option>
                         <option value="2">Uang Masuk Umum</option>
                         <option value="3">Uang Keluar Umum</option>
+                        <option value="4">Uang Masuk (Refund)</option>
                     </select>
                     <div class="invalid-feedback" id="transaction_status-feedback">tesss</div>
                 </div>
                 <!-- end::Input group -->
                 <!--begin::Input group-->
                 <div class="col-md-12 mt-7 fv-row">
-                    <label class="required fs-6 fw-semibold mb-2">Pengeluaran</label>
+                    <label class="fs-6 fw-semibold mb-2">Pembayaran</label>
                     <select class="form-select form-select-solid cursor-pointer mb-2" id="paid_by" name="paid_by">
                         <option value="">Pilih Pembayaran</option>
                         <option value="Sam un">Sam un</option>
@@ -74,6 +75,9 @@
                     <div class="invalid-feedback" id="paid_by-feedback"></div>
                 </div>
                 <!-- end::Input group -->
+                 <!--begin::Description-->
+                 <div class="text-muted fs-7">Jika status transaksi adalah uang masuk, silakan kosongkan pembayaran</div>
+                <!--end::Description-->
             </div>
             <!-- end modalbody -->
             <div class="modal-footer">

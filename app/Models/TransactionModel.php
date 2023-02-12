@@ -25,7 +25,7 @@ class TransactionModel extends Model
         'description' => 'required|alpha_numeric_space',
         'amount_of_money' => 'required|numeric',
         'transaction_receipt' => 'max_size[transaction_receipt,5120]|is_image[transaction_receipt]|mime_in[transaction_receipt,image/jpg,image/jpeg,image/png]',
-        'transaction_status' => 'required|in_list[2,3]',
+        'transaction_status' => 'required|in_list[2,3,4]',
         'paid_by' => 'required|in_list[Sam un,Hereansyah]',
     ];
     protected $validationMessages = [
@@ -47,7 +47,7 @@ class TransactionModel extends Model
             'in_list' => 'Status yang anda pilih, tidak ada didalam list',
         ],
         'paid_by' => [
-            'required' => 'Pembayaran tidak boleh kosong.',
+            'required' => 'Jika uang keluar, pembayaran tidak boleh kosong.',
             'in_list' => 'Pembayaran yang anda pilih, tidak ada didalam list',
         ],
     ];

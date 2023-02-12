@@ -89,6 +89,9 @@ class Transaction extends BaseController
                 } elseif ($transaction->transactionStatus == 3) {
                     $statusBadge = 'warning';
                     $statusDescription = 'Keluar :: Umum';
+                } elseif ($transaction->transactionStatus == 4) {
+                    $statusBadge = 'dark';
+                    $statusDescription = 'Masuk :: Refund';
                 }
 
                 // Row Table
@@ -318,8 +321,15 @@ class Transaction extends BaseController
                 'paid_by' => $this->request->getPost('paid_by'),
             ];
 
+            $except = null;
+            $isIncomingCash = ($input['transaction_status'] == 2 || $input['transaction_status'] == 4);
+            if ($isIncomingCash) {
+                $except = ['paid_by'];
+                $input['paid_by'] = null;
+            }
+
             // Validation
-            $isValid = $this->validateData($input, $this->TransactionModel->getValidationRules(), $this->TransactionModel->getValidationMessages());
+            $isValid = $this->validateData($input, $this->TransactionModel->getValidationRules(['except' => $except]), $this->TransactionModel->getValidationMessages());
             if (!$isValid) {
                 $response = [
                     'error' => $this->validator->getErrors(),
