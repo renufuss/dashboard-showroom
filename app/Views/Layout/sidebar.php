@@ -7,32 +7,7 @@
         <!--begin::Menu-->
         <div class="menu menu-column menu-rounded menu-sub-indention px-3" id="#kt_app_sidebar_menu" data-kt-menu="true"
             data-kt-menu-expand="false">
-            <!--begin:Menu item-->
-            <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link <?php echo (uri_string() == 'dashboard') ? 'active' : ''; ?>"
-                    href="<?php echo base_url('dashboard'); ?>">
-                    <span class="menu-icon">
-                        <!--begin::Svg Icon | path: C:/wamp64/www/keenthemes/core/html/src/media/icons/duotune/abstract/abs044.svg-->
-                        <span class="svg-icon svg-icon-muted svg-icon-2hx"><svg width="24" height="24"
-                                viewBox="-3 -3 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path opacity="0.3"
-                                    d="M8 2V16H2V8.60001C2 8.20001 2.2 7.8 2.5 7.5L8 2ZM16 8V22L21.5 16.5C21.8 16.2 22 15.8 22 15.4V8H16Z"
-                                    fill="currentColor" />
-                                <path
-                                    d="M22 8H8V2H15.4C15.8 2 16.2 2.2 16.5 2.5L22 8ZM2 16L7.5 21.5C7.8 21.8 8.20001 22 8.60001 22H16V16H2Z"
-                                    fill="currentColor" />
-                            </svg>
-                        </span>
-                        <!--end::Svg Icon-->
-                    </span>
-                    <span class="menu-title">Dashboard</span>
-                </a>
-                <!--end:Menu link-->
-            </div>
-            <!--end:Menu item-->
 
-            <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
                 <a class="menu-link  <?php echo (url_is('mobil*')) ? 'active' : ''; ?>"
@@ -57,6 +32,7 @@
             </div>
             <!--end:Menu item-->
 
+            <?php if(in_groups('Super Admin') || in_groups('Admin')) : ?>
             <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
@@ -87,7 +63,9 @@
                 <!--end:Menu link-->
             </div>
             <!--end:Menu item-->
-
+            <?php endif; ?>
+            
+            <?php if(!in_groups('Marketing')) : ?>
             <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
@@ -115,7 +93,9 @@
                 <!--end:Menu link-->
             </div>
             <!--end:Menu item-->
-
+            <?php endif ?>
+            
+            <?php if(in_groups('Super Admin') || in_groups('Keuangan')) : ?>
             <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
@@ -140,7 +120,9 @@
                 <!--end:Menu link-->
             </div>
             <!--end:Menu item-->
-
+            <?php endif ?>
+            
+            <?php if(in_groups('Super Admin')) : ?>
             <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
@@ -165,6 +147,7 @@
                 <!--end:Menu link-->
             </div>
             <!--end:Menu item-->
+            <?php endif ?>
 
             <!--begin:Menu item-->
             <div class="menu-item">

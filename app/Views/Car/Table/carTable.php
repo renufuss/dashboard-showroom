@@ -38,9 +38,13 @@
             <th>Tahun</th>
             <th>Plat Nomor</th>
             <th>Status</th>
+            <?php if(in_groups('Super Admin') || in_groups('Keuangan')) : ?>
             <th class="text-end">Modal</th>
+            <?php endif ?>
             <th class="text-end">Harga</th>
+            <?php if(in_groups('Super Admin') || in_groups('Keuangan')) : ?>
             <th class="text-end">Aksi</th>
+            <?php endif; ?>
         </tr>
         <!--end::Table row-->
     </thead>

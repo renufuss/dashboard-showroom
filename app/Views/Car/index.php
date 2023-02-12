@@ -38,11 +38,13 @@
                     </div>
                     <!--end::Card title-->
                     <!--begin::Card toolbar-->
+                    <?php if(in_groups('Super Admin') || in_groups('Keuangan')) : ?>
                     <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
                         <!--begin::Add product-->
                         <a href="<?php echo base_url('mobil/tambah'); ?>" class="btn btn-primary btn-sm">Tambah Mobil</a>
                         <!--end::Add product-->
                     </div>
+                    <?php endif; ?>
                     <!--end::Card toolbar-->
                 </div>
                 <!--end::Card header-->

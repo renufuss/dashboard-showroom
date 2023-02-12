@@ -39,7 +39,9 @@
             <th>Nomor HP</th>
             <th>Status</th>
             <th>Total Harga</th>
+            <?php if(in_groups('Super Admin') || in_groups('Keuangan')) : ?>
             <th class="text-end">Aksi</th>
+            <?php endif; ?>
         </tr>
         <!--end::Table row-->
     </thead>

@@ -16,7 +16,7 @@ class User extends BaseController
     {
         $this->UserModel = new UserModel();
         $this->GroupModel = new GroupModel();
-        $this->DefaultPassword = 'kebabturkiyem123';
+        $this->DefaultPassword = 'renufus123';
     }
 
     public function index()

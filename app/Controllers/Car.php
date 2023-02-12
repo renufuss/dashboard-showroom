@@ -364,37 +364,39 @@ class Car extends BaseController
      */
     public function formatLicenseNumber($licenseNumber)
     {
-        $licenseNumber = str_replace(' ', '', $licenseNumber);
-        $realNumber = [];
-        $convertNumber = [];
-        for ($i = 0; $i < strlen($licenseNumber); $i++) {
-            $char = $licenseNumber[$i];
-            if (is_numeric($char)) {
-                array_push($realNumber, $char);
-                array_push($convertNumber, $char);
-            }
-        }
-
-        // add space to convert number;
-        array_unshift($convertNumber, ' ');
-        array_push($convertNumber, ' ');
-
-        // Array To String
-        $realNumber = implode('', $realNumber);
-        $convertNumber = implode('', $convertNumber);
-
-        if (str_contains($licenseNumber, $realNumber)) {
-            $licenseNumber = str_replace($realNumber, $convertNumber, $licenseNumber);
-
-            if ($licenseNumber[0] === ' ' || ctype_alpha($licenseNumber)) { //user memasukkan angka duluan dan huruf semua
-                return false;
+        if ($licenseNumber != null) {
+            $licenseNumber = str_replace(' ', '', $licenseNumber);
+            $realNumber = [];
+            $convertNumber = [];
+            for ($i = 0; $i < strlen($licenseNumber); $i++) {
+                $char = $licenseNumber[$i];
+                if (is_numeric($char)) {
+                    array_push($realNumber, $char);
+                    array_push($convertNumber, $char);
+                }
             }
 
-            if (substr($licenseNumber, -1) === ' ') {
-                $licenseNumber= substr_replace($licenseNumber, '', -1);
-            }
+            // add space to convert number;
+            array_unshift($convertNumber, ' ');
+            array_push($convertNumber, ' ');
 
-            return $licenseNumber;
+            // Array To String
+            $realNumber = implode('', $realNumber);
+            $convertNumber = implode('', $convertNumber);
+
+            if (str_contains($licenseNumber, $realNumber)) {
+                $licenseNumber = str_replace($realNumber, $convertNumber, $licenseNumber);
+
+                if ($licenseNumber[0] === ' ' || ctype_alpha($licenseNumber)) { //user memasukkan angka duluan dan huruf semua
+                    return false;
+                }
+
+                if (substr($licenseNumber, -1) === ' ') {
+                    $licenseNumber= substr_replace($licenseNumber, '', -1);
+                }
+
+                return $licenseNumber;
+            }
         }
 
         return false;
@@ -463,11 +465,14 @@ class Car extends BaseController
                             $row[] = "<span class=\"badge badge-light-danger fs-7 fw-bold\">Sold</span>";
                     }
                     $carPrice = 'Rp ' . number_format($car->car_price, '0', ',', '.');
-                    $totalCost = 'Rp ' . number_format(($car->capital_price + $totalAdditionalCost), '0', ',', '.');
-                    $row[] = "<div class=\"text-end\">$totalCost</div>";
+                    if (in_groups('Super Admin') || in_groups('Keuangan')) {
+                        $totalCost = 'Rp ' . number_format(($car->capital_price + $totalAdditionalCost), '0', ',', '.');
+                        $row[] = "<div class=\"text-end\">$totalCost</div>";
+                    }
                     $row[] = "<div class=\"text-end\">$carPrice</div>";
-                    $urlEditGeneral = base_url() . '/mobil/' . $car->id . '/umum';
-                    $row[] = "<div class=\"d-flex justify-content-end flex-shrink-0\">
+                    if (in_groups('Super Admin') || in_groups('Keuangan')) {
+                        $urlEditGeneral = base_url() . '/mobil/' . $car->id . '/umum';
+                        $row[] = "<div class=\"d-flex justify-content-end flex-shrink-0\">
                     <a href=\"$urlEditGeneral\" target=_blank class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
                         <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
                         <span class=\"svg-icon svg-icon-3\">
@@ -502,11 +507,11 @@ class Car extends BaseController
                         <!--end::Svg Icon-->
                     </button>
                 </div>";
-
+                    }
                     $data[] = $row;
                 }
             } else { //Menu penjualan mobil
-                $cars = $carModel->get_datatables(0, null, $keyword);
+                $cars = $carModel->get_datatables($status, null, $keyword);
                 $data = [];
                 foreach ($cars as $car) {
                     // Row Table
