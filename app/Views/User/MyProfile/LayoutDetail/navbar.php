@@ -78,20 +78,12 @@
         <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold">
             <!--begin::Nav item-->
             <li class="nav-item mt-2">
-                <?php if(url_is('/pengguna/detail*')) : ?>
-                    <a class="nav-link text-active-primary ms-0 me-10 py-5 <?=($navDetail) ? 'active' : '' ?>" href="<?= base_url(); ?>/pengguna/detail/<?= $user->username; ?>">Detail</a>
-                <?php else : ?>
-                    <a class="nav-link text-active-primary ms-0 me-10 py-5 <?=($navDetail) ? 'active' : '' ?>" href="<?= base_url(); ?>/profile">Detail</a>
-                <?php endif; ?>
+                <a class="nav-link text-active-primary ms-0 me-10 py-5 <?=($navDetail) ? 'active' : '' ?>" href="<?= base_url(); ?>/profile">Detail</a>
             </li>
             <!--end::Nav item-->
             <!--begin::Nav item-->
             <li class="nav-item mt-2">
-            <?php if(url_is('/pengguna/setting*')) : ?>
-                <a class="nav-link text-active-primary ms-0 me-10 py-5 <?=($navPengaturan) ? 'active' : '' ?>" href="<?= base_url(); ?>/pengguna/setting/<?= $user->username; ?>">Pengaturan</a>
-            <?php else : ?>
                 <a class="nav-link text-active-primary ms-0 me-10 py-5 <?=($navPengaturan) ? 'active' : '' ?>" href="<?= base_url(); ?>/profile/setting">Pengaturan</a>
-            <?php endif; ?>
             </li>
             <!--end::Nav item-->
         </ul>

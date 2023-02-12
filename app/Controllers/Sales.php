@@ -67,8 +67,8 @@ class Sales extends BaseController
      */
     protected function removeImage($imageName)
     {
-        if (file_exists('assets/images/cars/' . $imageName)) {
-            unlink('assets/images/cars/' . $imageName); //Hapus image lama
+        if (file_exists('assets/images/sales/' . $imageName)) {
+            unlink('assets/images/sales/' . $imageName); //Hapus image lama
         }
     }
 

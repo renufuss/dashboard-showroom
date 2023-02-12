@@ -6,7 +6,7 @@
             <div class="col-lg-3 col-xxl-2 col-md-3 col-12 mb-3" id="picDetailPengguna">
                 <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
                     <?php if($user->image_profile != null) : ?>
-                        <img src="<?= base_url(); ?>/assets/images/users/<?= $user->image_profile; ?>" class="" alt="" />
+                        <img src="data:image/png;base64,<?= $user->image_profile; ?>" class="" alt="" />
                     <?php else : ?>
                         <div class="symbol symbol-50px">
                             <div class="symbol-label fs-3x fw-semibold bg-<?= $user->badge; ?> text-inverse-danger"><?= strtoupper(substr($user->first_name, 0, 1)); ?><?= strtoupper(substr($user->last_name, 0, 1)); ?></div>
@@ -75,7 +75,7 @@
         <!--end::Details-->
         <!--begin::Navs-->
         <!-- desktop -->
-        <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold desktop-only">
+        <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold">
             <!--begin::Nav item-->
             <li class="nav-item mt-2">
                 <a class="nav-link text-active-primary ms-0 me-10 py-5 <?=($navDetail) ? 'active' : '' ?>" href="<?= base_url(); ?>/pengguna/detail/<?= $user->username; ?>">Detail</a>

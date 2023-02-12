@@ -1,9 +1,4 @@
-<!-- begin :: DataTable CSS -->
-<link href="<?= base_url(); ?>/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet"
-    type="text/css" />
-<!-- end :: DataTable CSS -->
-
-<table class="table align-middle gs-0 gy-4" id="userDataTable">
+<table class="table align-middle table-row-dashed fs-6 gy-5" width="100%" id="userDataTable">
     <!--begin::Table head-->
     <thead>
         <tr class="fw-bold text-muted bg-light">
@@ -19,8 +14,8 @@
     <!--begin::Table body-->
     <tbody>
         <?php $i = 1;
-foreach($users as $user) :
-    ?>
+        foreach($users as $user) :
+            ?>
         <tr>
             <td class="text-center">
                 <?= $i++; ?>
@@ -29,7 +24,7 @@ foreach($users as $user) :
                 <div class="d-flex align-items-center">
                     <div class="symbol symbol-50px me-5">
                         <?php if($user->image_profile != null) : ?>
-                        <img src="<?= base_url(); ?>/assets/images/users/<?= $user->image_profile; ?>" class="" alt="" />
+                        <img src="data:image/png;base64,<?= $user->image_profile; ?>" class="" alt="" />
                         <?php else : ?>
                         <div class="symbol symbol-50px">
                             <div class="symbol-label fs-2 fw-semibold bg-<?= $user->badge; ?> text-inverse-danger"><?= strtoupper(substr($user->first_name, 0, 1)); ?><?= strtoupper(substr($user->last_name, 0, 1)); ?></div>
@@ -90,15 +85,22 @@ foreach($users as $user) :
     <!--end::Table body-->
 </table>
 
-<!-- begin :: DataTable Js -->
-<script src="<?= base_url(); ?>/assets/plugins/custom/datatables/datatables.bundle.js"></script>
-<!-- end :: End DataTable Js -->
 
 <script>
     $(document).ready(function () {
         const table = $('#userDataTable').DataTable({
             "aaSorting": [],
-            "scrollX": true
+            "scrollX": true,
+            "responsive" : true,
+            'columnDefs': [{
+                    'responsivePriority': 1,
+                    'targets': 1
+                },
+                {
+                    'responsivePriority': 2,
+                    'targets': -1
+                }
+            ],
         });
 
         $('#search').on('keyup', function () {

@@ -1,4 +1,4 @@
-<?= $this->extend('User/Detail/LayoutDetail/index'); ?>
+<?= $this->extend('User/MyProfile/LayoutDetail/index'); ?>
 
 <?= $this->section('boxBawah'); ?>
 
@@ -110,15 +110,7 @@
                 <div class="row mb-7">
                     <label class="col-lg-4 fw-semibold fs-6 required">Role</label>
                     <div class="col-lg-8 fv-row fv-plugins-icon-container">
-                        <select class="form-select form-select-solid" name="role" id="role" data-control="select2"
-                            data-hide-search="true" data-placeholder="Pilih Role...">
-                            <option value="">Pilih Role...</option>
-                            <?php foreach($role as $row): ?>
-                            <option value="<?= $row->name; ?>" <?= ($row->name == $user->role) ? 'selected' : ''; ?>>
-                                <?= $row->name; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <div class="invalid-feedback" id="role-feedback"></div>
+                        <span class="fw-bold fs-6 text-gray-800"><?= ucwords(strtolower($user->role)); ?></span>
                     </div>
                 </div>
                 <!--end::Input group-->
@@ -128,6 +120,7 @@
             <div class="card-footer d-flex justify-content-end py-6 px-9">
                 <button type="button" class="btn btn-primary" id="btnSaveProfile">Simpan</button>
             </div>
+            <div class="role" id="role"><span id="role-feedback"></span></div>
             <!--end::Actions-->
             <div></div>
         </form>
@@ -216,18 +209,15 @@
                     </div>
                     <div class="form-text mb-5">Password minimal 8 karakter kombinasi huruf dan angka</div>
                     <div class="d-flex">
-                        <button id="btnSavePassword" type="button" class="btn btn-primary me-2 px-6">Simpan
-                            Password</button>
-                        <button id="btnCancelPass" type="button"
-                            class="btn btn-color-gray-400 btn-active-light-primary px-6">Cancel</button>
+                        <button id="btnSavePassword" type="button" class="btn btn-primary me-2 px-6">Simpan Password</button>
+                        <button id="btnCancelPass" type="button" class="btn btn-color-gray-400 btn-active-light-primary px-6">Cancel</button>
                     </div>
                     <!--end::Form-->
                 </div>
                 <!--end::Edit-->
                 <!--begin::Action-->
                 <div id="kt_signin_password_button" class="ms-auto">
-                    <button class="btn btn-light btn-active-light-primary" id="btnChangePassword">Ganti
-                        Password</button>
+                    <button class="btn btn-light btn-active-light-primary" id="btnChangePassword">Ganti Password</button>
                 </div>
                 <!--end::Action-->
             </div>
@@ -242,7 +232,6 @@
 
 <!-- begin::Script -->
 <script type="text/javascript">
-    let username = <?= json_encode($user-> username); ?>
 
     function toastConfig() {
         toastr.options = {
@@ -285,9 +274,10 @@
     function updateProfile() {
         var form = $("#formDetailProfil")[0]; // You need to use standard javascript object here
         var formData = new FormData(form);
+
         $.ajax({
             type: "post",
-            url: `/pengguna/setting/${username}`,
+            url: `/profile/setting`,
             data: formData,
             dataType: "json",
             contentType: false,
@@ -336,14 +326,14 @@
         });
     }
 
-    function savePassword() {
+    function savePassword(){
         $.ajax({
             type: "post",
-            url: `/pengguna/setting/${username}/password`,
+            url: `/profile/setting/password`,
             data: {
-                oldPassword: $('#oldPassword').val(),
-                newPassword: $('#newPassword').val(),
-                confirmPassword: $('#confirmPassword').val(),
+                oldPassword : $('#oldPassword').val(),
+                newPassword : $('#newPassword').val(),
+                confirmPassword : $('#confirmPassword').val(),
             },
             dataType: "json",
             beforeSend: function () {
@@ -390,24 +380,24 @@
         });
     }
 
-    function showChangePassword() {
+    function showChangePassword(){
         $('#passwordShow').addClass('d-none');
         $('#formChangePassword').removeClass('d-none');
         $('#btnChangePassword').addClass('d-none');
     }
 
-    function closeChangePassword() {
+    function closeChangePassword(){
         $('#passwordShow').removeClass('d-none');
         $('#formChangePassword').addClass('d-none');
         $('#btnChangePassword').removeClass('d-none');
     }
 
-    $('#btnChangePassword').click(function (e) {
+    $('#btnChangePassword').click(function (e) { 
         e.preventDefault();
         showChangePassword();
     });
 
-    $('#btnCancelPass').click(function (e) {
+    $('#btnCancelPass').click(function (e) { 
         e.preventDefault();
         closeChangePassword();
     });
@@ -417,7 +407,7 @@
         updateProfile();
     });
 
-    $('#btnSavePassword').click(function (e) {
+    $('#btnSavePassword').click(function (e) { 
         e.preventDefault();
         savePassword();
     });

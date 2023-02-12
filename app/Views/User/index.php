@@ -54,7 +54,7 @@
                 <!--begin::Card Body-->
                 <div class="card-body py-3">
                     <!--begin::Table container-->
-                    <div class="table-responsive" id="tableUser"></div>
+                    <div class="table-responsive" id="userTable"></div>
                     <!--end::Table container-->
                 </div>
                 <!--end::Card Body-->
@@ -74,7 +74,7 @@
             data: "",
             dataType: "json",
             beforeSend: function () {
-                $("#tableUser").html(`
+                $("#userTable").html(`
                 <svg class="pl" width="240" height="240" viewBox="0 0 240 240">
 	                <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
 	                <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
@@ -84,7 +84,7 @@
                 `);
             },
             success: function (response) {
-                $('#tableUser').html(response.tableUser);
+                $('#userTable').html(response.userTable);
             },
             error: function (xhr, thrownError) {
                 alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);

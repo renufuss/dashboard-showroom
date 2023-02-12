@@ -37,7 +37,7 @@ class User extends BaseController
                 'users' => $this->UserModel->showUser(),
             ];
             $response = [
-                'tableUser' => view('User/Tables/tableUser', $data),
+                'userTable' => view('User/Tables/userTable', $data),
             ];
             return json_encode($response);
         }
@@ -55,10 +55,10 @@ class User extends BaseController
                     'errormsg'=> 'Gagal menambahkan pengguna',
                 ];
             } else {
-                $data['username'] = strtolower($this->request->getPost('username'));
-                $data['email'] = strtolower($this->request->getPost('email'));
-                $data['first_name'] = ucwords(strtolower($this->request->getPost('first_name')));
-                $data['last_name'] = ucwords(strtolower($this->request->getPost('last_name')));
+                $data['username'] = strtolower($this->request->getVar('username'));
+                $data['email'] = strtolower($this->request->getVar('email'));
+                $data['first_name'] = ucwords(strtolower($this->request->getVar('first_name')));
+                $data['last_name'] = ucwords(strtolower($this->request->getVar('last_name')));
                 $this->UserModel->withGroup($data['role'])->save($data);
                 $msg = [
                     'sukses' => 'Berhasil menambahkan pengguna'
@@ -101,48 +101,57 @@ class User extends BaseController
         }
     }
 
-    public function myProfile()
-    {
-        $user = $this->UserModel->showUser(user()->username);
-        $data = [
-            'title' => 'Akun Saya',
-            'heading' => 'Akun Saya',
-            'breadcrumb' => 'Akun Saya',
-            'navDetail' => true,
-            'navPengaturan' => false,
-            'user' => $user,
-        ];
-
-        return view('MyProfile/index', $data);
-    }
-
-    public function setMyProfile()
-    {
-        $user = $this->UserModel->showUser(user()->username);
-        if ($user == null) {
-            return redirect()->to('/profil');
-        }
-        $data = [
-            'title' => 'Pengaturan Akun',
-            'heading' => 'Pengaturan Akun',
-            'breadcrumb' => 'Pengaturan Akun',
-            'navDetail' => false,
-            'navPengaturan' => true,
-            'user' => $user,
-            'role' => $this->GroupModel->orderBy('name', 'ASC')->findAll(),
-        ];
-
-        return view('MyProfile/Setting/index', $data);
-    }
-
     public function totalUser()
     {
         return $this->UserModel->countAllResults();
     }
 
-    public function pageDetailProfile($username)
+        /**
+     * Delete images from the application folder.
+     *
+     * @param string $imageName Image file name.
+     *
+     * @return void
+     */
+    protected function removeImage($imageName)
     {
+        if (file_exists('assets/images/users/' . $imageName)) {
+            unlink('assets/images/users/' . $imageName); //Hapus image lama
+        }
+    }
+
+    /**
+     * Convert image to base64.
+     *
+     * @param object $image Image file object.
+     *
+     * @return base64Image
+     */
+    protected function blobImage($image)
+    {
+        $image->move('assets/images/users');
+        $pathInfo = 'assets/images/users/' . $image->getName();
+        $fileContent = file_get_contents($pathInfo);
+        $base64 = rtrim(base64_encode($fileContent));
+        $this->removeImage($image->getName()); //Delete images from the application
+
+        return $base64;
+    }
+
+    public function pageDetailProfile($username = null)
+    {
+        if ($username == null) {
+            $username = user()->username;
+            $view = 'User/MyProfile/index';
+        } else {
+            $view = 'User/Detail/index';
+        }
+
         $user = $this->UserModel->showUser($username);
+        if ($user == null) {
+            return redirect()->to('/pengguna');
+        }
+
         $data = [
             'title' => 'Profil User',
             'navDetail' => true,
@@ -150,19 +159,164 @@ class User extends BaseController
             'user' => $user,
         ];
 
-        return view('User/Detail/index', $data);
+        return view($view, $data);
     }
 
-    public function pageSettingProfile($username)
+    public function pageSettingProfile($username = null)
     {
+        if ($username == null) {
+            $username = user()->username;
+            $view = 'User/MyProfile/Setting/index';
+        } else {
+            $view = 'User/Detail/Setting/index';
+        }
+
         $user = $this->UserModel->showUser($username);
+        if ($user == null) {
+            return redirect()->to('/pengguna');
+        }
+
         $data = [
             'title' => 'Profil User',
             'navDetail' => false,
             'navPengaturan' => true,
+            'role' => $this->GroupModel->orderBy('name', 'ASC')->findAll(),
             'user' => $user,
         ];
 
-        return view('User/Detail/Setting/index', $data);
+        return view($view, $data);
+    }
+
+    public function updateProfile($username = null)
+    {
+        if ($this->request->isAJAX()) {
+            $role = $this->request->getPost('role');
+            if ($username == null) {
+                $username = user()->username;
+                $role = user()->getRole()['name'];
+            }
+
+            $user = $this->UserModel->showUser($username);
+            if ($user == null) {
+                return redirect()->to('/pengguna');
+            }
+
+            $input = [
+                'id' => $user->id,
+                'first_name' => ucwords(strtolower($this->request->getVar('first_name'))),
+                'last_name' => ucwords(strtolower($this->request->getVar('last_name'))),
+                'image_profile' => $this->request->getFile('image_profile'),
+                'role' => $role,
+                'avatar_remove' => $this->request->getPost('avatar_remove'),
+            ];
+
+
+
+            // Validation
+            $isValid = $this->validateData($input, $this->UserModel->getValidationRules(['only' => ['first_name','last_name', 'image_profile', 'role']]), $this->UserModel->getValidationMessages());
+
+            if (!$isValid) {
+                $response = [
+                    'error' => $this->validator->getErrors(),
+                    'errorMsg' => 'Gagal menyimpan profil pengguna',
+                ];
+                return json_encode($response);
+            }
+
+            // Image Profile
+            if ($input['image_profile']->getError() != 4) {
+                $input['image_profile'] = $this->blobImage($input['image_profile']);
+            } elseif ($input['avatar_remove'] == 1) {
+                $input['image_profile'] = null;
+            } else {
+                unset($input['image_profile']);
+            }
+            unset($input['avatar_remove']);
+
+            $this->UserModel->save($input);
+
+            // Role
+
+            //Clear All Role
+            $this->GroupModel->removeUserFromAllGroups($user->id);
+
+            //Selected Role Id
+            $roleId = $this->GroupModel->where('name', $input['role'])->first()->id;
+
+            // Assign Role
+            $this->GroupModel->addUserToGroup($user->id, $roleId);
+
+            $response['success'] = 'Berhasil menyimpan profil pengguna';
+
+            return json_encode($response);
+        }
+    }
+
+    public function changePassword($username = null)
+    {
+        if ($this->request->isAJAX()) {
+            if ($username == null) {
+                $username = user()->username;
+            }
+
+            $user = $this->UserModel->showUser($username);
+            if ($user == null) {
+                return redirect()->to('/pengguna');
+            }
+
+            $input = [
+                'oldPassword' => $this->request->getVar('oldPassword'),
+                'newPassword' => $this->request->getVar('newPassword'),
+                'confirmPassword' => $this->request->getVar('confirmPassword'),
+            ];
+
+            $validationRules = [
+                'oldPassword' => 'required',
+                'newPassword' => 'required|min_length[8]',
+                'confirmPassword' => 'required|matches[newPassword]',
+            ];
+
+            $validationMessages = [
+                'oldPassword' => [
+                    'required' => 'Password lama tidak boleh kosong',
+                ],
+                'newPassword' => [
+                    'required' => 'Password baru tidak boleh kosong',
+                    'min_length' => 'Password baru minimal berjumlah 8 karakter',
+                ],
+                'confirmPassword' => [
+                    'required' => 'Silakan konfirmasi password anda dengan benar',
+                    'matches' => 'Silakan konfirmasi password anda dengan benar'
+                ],
+            ];
+
+            // Validation
+            $isValid = $this->validateData($input, $validationRules, $validationMessages);
+
+            $isOldPasswordValid = Password::verify($input['oldPassword'], $user->password_hash) == true;
+            if (!$isValid || !$isOldPasswordValid) {
+                $error = $this->validator->getErrors();
+
+                if (!$isOldPasswordValid) {
+                    $errorOldPassword = ['oldPassword' => 'Password lama anda salah'];
+                    $error = array_merge($error, $errorOldPassword);
+                }
+
+                $response = [
+                    'error' => $error,
+                    'errorMsg' => 'Gagal menyimpan password',
+                ];
+
+                return json_encode($response);
+            }
+            $data = [
+                'id' => $user->id,
+                'password_hash' => Password::hash($input['newPassword']),
+            ];
+            $this->UserModel->save($data);
+
+            $response['success'] = 'Berhasil menyimpan password';
+            return json_encode($response);
+        }
     }
 }

@@ -55,9 +55,6 @@ class Car extends BaseController
      */
     public function index()
     {
-        // dd($this->formatLicenseNumber('DA 123'));
-        dd($this->findCarReady('DA 123'));
-
         $data['title'] = 'Mobil';
         $data['brands'] = $this->CarModel->getBrands();
         return view('Car/index', $data);

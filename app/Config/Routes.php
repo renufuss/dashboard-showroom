@@ -98,9 +98,13 @@ $routes->post('/pengguna/confirm', 'User::confirmDelete');
 $routes->post('/pengguna/delete', 'User::deleteUser');
 $routes->get('/pengguna/detail/(:alphanum)', 'User::pageDetailProfile/$1');
 $routes->get('/pengguna/setting/(:alphanum)', 'User::pageSettingProfile/$1');
+$routes->post('/pengguna/setting/(:alphanum)', 'User::updateProfile/$1');
+$routes->post('/pengguna/setting/(:alphanum)/password', 'User::changePassword/$1');
 
-$routes->get('/profile', 'User::myProfile');
-$routes->get('/profile/setting', 'User::setMyProfile');
+$routes->get('/profile', 'User::pageDetailProfile');
+$routes->get('/profile/setting', 'User::pageSettingProfile');
+$routes->post('/profile/setting', 'User::updateProfile');
+$routes->post('/profile/setting/password', 'User::changePassword');
 
 
 
