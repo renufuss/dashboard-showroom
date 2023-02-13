@@ -464,7 +464,7 @@ class Sales extends BaseController
             $transaction = new Transaction();
             $data = [
                'payment_sales_id' => $paymentId,
-               'status' => 0,
+               'transaction_status' => 0,
             ];
 
             $transaction->setTransaction($data);
@@ -720,7 +720,7 @@ class Sales extends BaseController
             $transaction = new Transaction();
             $data = [
                 'payment_sales_id' => $paymentId,
-                'status' => 0,
+                'transaction_status' => 0,
             ];
 
             $transaction->setTransaction($data);

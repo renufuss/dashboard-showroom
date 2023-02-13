@@ -12,7 +12,7 @@
             <!--end::Title-->
             <!--begin::Text-->
             <div class="text-gray-400 fw-semibold fs-7">
-                Dashboard Kebab Turkiyem
+                Dashboard Showroom 
             </div>
             <!--end::Link-->
         </div>

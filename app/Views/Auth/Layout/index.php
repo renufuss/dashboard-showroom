@@ -5,7 +5,7 @@
 <head>
     <base href="../../../" />
     <title>
-        Kebab Turkiyem - Dashboard
+        Renufus - Dashboard Showroom
     </title>
     <link rel="icon" type="image/x-icon" href="<?= base_url(); ?>/assets/media/logo/favicon.ico">
     <meta charset="utf-8" />

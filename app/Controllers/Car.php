@@ -185,7 +185,7 @@ class Car extends BaseController
             $transaction = new Transaction();
             $data = [
                 'car_id' => $carId,
-                'status' => 1,
+                'transaction_status' => 1,
             ];
 
             $transaction->setTransaction($data);
@@ -205,7 +205,7 @@ class Car extends BaseController
                     $data = [
                         'car_id' => $carId,
                         'car_additional_cost_id' => $additionalCost->id,
-                        'status' => 1,
+                        'transaction_status' => 1,
                     ];
 
                     $transaction->setTransaction($data);
