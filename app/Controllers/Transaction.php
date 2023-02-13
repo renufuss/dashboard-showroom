@@ -73,7 +73,7 @@ class Transaction extends BaseController
             foreach ($transactions as $transaction) {
                 // Amount of money
                 $transactionAmountOfMoney = 'Rp ' . number_format($transaction->transactionAmountOfMoney, '0', ',', '.');
-                $carPrice = 'Rp ' . number_format($transaction->carPrice, '0', ',', '.');
+                $carCapitalPrice = 'Rp ' . number_format($transaction->carCapitalPrice, '0', ',', '.');
                 $carAdditionalCostAmountOfMoney = 'Rp ' . number_format($transaction->carAdditionalCostAmountOfMoney, '0', ',', '.');
                 $paymentSalesAmountOfMoney = 'Rp ' . number_format($transaction->paymentSalesAmountOfMoney, '0', ',', '.');
 
@@ -174,7 +174,7 @@ class Transaction extends BaseController
 
                     $row[] = "<span class=\"badge badge-light-$statusBadge fs-7 fw-bold\">$statusDescription</span>";
                     $row[] = "-";
-                    $row[] = "<div class=\"text-end\">$carPrice</div>";
+                    $row[] = "<div class=\"text-end\">$carCapitalPrice</div>";
                     $row[] = "<div class=\"text-end\">-</div>";
                 } elseif ($transaction->carId != null && $transaction->car_additional_cost_id != null) {
                     $row[] = $transaction->transactionDate;
