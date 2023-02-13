@@ -592,7 +592,7 @@ class Sales extends BaseController
                 'paid' => $paid,
                 'payments' => $payments,
             ];
-            return view('Sales/History/Detail/tab/payment', $data);
+            return view('Sales/History/Detail/Tab/payment', $data);
         }
         return redirect()->to(base_url('penjualan/riwayat'));
     }
