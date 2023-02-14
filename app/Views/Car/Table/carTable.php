@@ -58,7 +58,7 @@
 
 <script>
     function getCar() {
-        if(DataTable.isDataTable('#carTable')){
+        if (DataTable.isDataTable('#carTable')) {
             $('#carTable').DataTable().destroy();
             // Loading
             $('#tbody').html(`<i class='fa fa-refresh fa-spin'></i>`);
@@ -70,21 +70,12 @@
             "ajax": {
                 "url": "/mobil/getcar",
                 "type": "POST",
-                "data" : {
-                    "status" : $('#status').val(),
-                    "brandId" : $('#car_brand').val(),
-                    "keyword" : null,
+                "data": {
+                    "status": $('#status').val(),
+                    "brandId": $('#car_brand').val(),
+                    "keyword": null,
                 }
             },
-            'columnDefs': [{
-                    'responsivePriority': 1,
-                    'targets': 0
-                },
-                {
-                    'responsivePriority': 2,
-                    'targets': -1
-                }
-            ],
             "scrollX": true, // enables horizontal scrolling      
             "filter": true,
             "responsive": true,
@@ -95,14 +86,19 @@
             },
             // optional
             "columnDefs": [{
-                "target": 4,
-                "orderable": false,
-            },
-            {
-                "target": -1,
-                "orderable": false,
-            },
-        ],
+                    'responsivePriority': 1,
+                    'targets': 0
+                },
+                {
+                    "target": 4,
+                    "orderable": false,
+                },
+                {
+                    'responsivePriority': 2,
+                    "target": -1,
+                    "orderable": false,
+                },
+            ],
         })
         // removeLoading
         $('#tbody').html('');
@@ -127,7 +123,7 @@
 
                 if (response.success) {
                     toastr.success(response.success, "Sukses");
-                  getCar();
+                    getCar();
                 }
             }
         });
