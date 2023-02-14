@@ -1123,7 +1123,7 @@ class Car extends BaseController
                 $data = [
                     'car_id' => $carId,
                     'car_additional_cost_id' => $additionalCostId,
-                    'status' => 1,
+                    'transaction_status' => 1,
                 ];
 
                 $transaction->setTransaction($data);
