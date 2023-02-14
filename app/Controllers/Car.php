@@ -181,16 +181,16 @@ class Car extends BaseController
             $this->CarModel->save($data);
             $carId = $this->CarModel->getInsertID();
 
-            // Save Car Transaction
-            $transaction = new Transaction();
-            $data = [
-                'car_id' => $carId,
-                'transaction_status' => 1,
-            ];
-
-            $transaction->setTransaction($data);
-
             if ($input['id'] == null) {
+                // Save Car Transaction
+                $transaction = new Transaction();
+                $data = [
+                    'car_id' => $carId,
+                    'transaction_status' => 1,
+                ];
+
+                $transaction->setTransaction($data);
+
                 // Insert Temp Additional Cost
                 $tempSession = $this->request->getPost('temp_session');
                 $tempAdditionalCost = $this->CarModel->getTempAdditionalCost(user()->id, null, $tempSession);
