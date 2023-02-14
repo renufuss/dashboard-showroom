@@ -472,41 +472,81 @@ class Car extends BaseController
                     $row[] = "<div class=\"text-end\">$carPrice</div>";
                     if (in_groups('Super Admin') || in_groups('Keuangan')) {
                         $urlEditGeneral = base_url() . '/mobil/' . $car->id . '/umum';
-                        $row[] = "<div class=\"d-flex justify-content-end flex-shrink-0\">
-                    <a href=\"$urlEditGeneral\" target=_blank class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
-                        <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
-                        <span class=\"svg-icon svg-icon-3\">
-                            <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
-                                xmlns=\"http://www.w3.org/2000/svg\">
-                                <path
-                                    d=\"M17.5 11H6.5C4 11 2 9 2 6.5C2 4 4 2 6.5 2H17.5C20 2 22 4 22 6.5C22 9 20 11 17.5 11ZM15 6.5C15 7.9 16.1 9 17.5 9C18.9 9 20 7.9 20 6.5C20 5.1 18.9 4 17.5 4C16.1 4 15 5.1 15 6.5Z\"
-                                    fill=\"currentColor\"></path>
-                                <path opacity=\"0.3\"
-                                    d=\"M17.5 22H6.5C4 22 2 20 2 17.5C2 15 4 13 6.5 13H17.5C20 13 22 15 22 17.5C22 20 20 22 17.5 22ZM4 17.5C4 18.9 5.1 20 6.5 20C7.9 20 9 18.9 9 17.5C9 16.1 7.9 15 6.5 15C5.1 15 4 16.1 4 17.5Z\"
-                                    fill=\"currentColor\"></path>
-                            </svg>
-                        </span>
-                        <!--end::Svg Icon-->
-                    </a>
-                    <button class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm\" onclick=\"alertCarDelete('$car->id')\">
-                        <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
-                        <span class=\"svg-icon svg-icon-3\">
-                            <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
-                                xmlns=\"http://www.w3.org/2000/svg\">
-                                <path
-                                    d=\"M5 9C5 8.44772 5.44772 8 6 8H18C18.5523 8 19 8.44772 19 9V18C19 19.6569 17.6569 21 16 21H8C6.34315 21 5 19.6569 5 18V9Z\"
-                                    fill=\"currentColor\"></path>
-                                <path opacity=\"0.5\"
-                                    d=\"M5 5C5 4.44772 5.44772 4 6 4H18C18.5523 4 19 4.44772 19 5V5C19 5.55228 18.5523 6 18 6H6C5.44772 6 5 5.55228 5 5V5Z\"
-                                    fill=\"currentColor\"></path>
-                                <path opacity=\"0.5\"
-                                    d=\"M9 4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4V4H9V4Z\"
-                                    fill=\"currentColor\"></path>
-                            </svg>
-                        </span>
-                        <!--end::Svg Icon-->
-                    </button>
-                </div>";
+
+                        $isCarReady = ($car->status == 0);
+                        $isCarSold = ($car->status == 1);
+                        if ($isCarReady) {
+                            $row[] = "<div class=\"d-flex justify-content-end flex-shrink-0\">
+                        <a href=\"$urlEditGeneral\" target=_blank class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
+                            <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
+                            <span class=\"svg-icon svg-icon-3\">
+                                <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
+                                    xmlns=\"http://www.w3.org/2000/svg\">
+                                    <path
+                                        d=\"M17.5 11H6.5C4 11 2 9 2 6.5C2 4 4 2 6.5 2H17.5C20 2 22 4 22 6.5C22 9 20 11 17.5 11ZM15 6.5C15 7.9 16.1 9 17.5 9C18.9 9 20 7.9 20 6.5C20 5.1 18.9 4 17.5 4C16.1 4 15 5.1 15 6.5Z\"
+                                        fill=\"currentColor\"></path>
+                                    <path opacity=\"0.3\"
+                                        d=\"M17.5 22H6.5C4 22 2 20 2 17.5C2 15 4 13 6.5 13H17.5C20 13 22 15 22 17.5C22 20 20 22 17.5 22ZM4 17.5C4 18.9 5.1 20 6.5 20C7.9 20 9 18.9 9 17.5C9 16.1 7.9 15 6.5 15C5.1 15 4 16.1 4 17.5Z\"
+                                        fill=\"currentColor\"></path>
+                                </svg>
+                            </span>
+                            <!--end::Svg Icon-->
+                        </a>
+                        <button class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm\" onclick=\"alertCarDelete('$car->id')\">
+                            <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
+                            <span class=\"svg-icon svg-icon-3\">
+                                <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
+                                    xmlns=\"http://www.w3.org/2000/svg\">
+                                    <path
+                                        d=\"M5 9C5 8.44772 5.44772 8 6 8H18C18.5523 8 19 8.44772 19 9V18C19 19.6569 17.6569 21 16 21H8C6.34315 21 5 19.6569 5 18V9Z\"
+                                        fill=\"currentColor\"></path>
+                                    <path opacity=\"0.5\"
+                                        d=\"M5 5C5 4.44772 5.44772 4 6 4H18C18.5523 4 19 4.44772 19 5V5C19 5.55228 18.5523 6 18 6H6C5.44772 6 5 5.55228 5 5V5Z\"
+                                        fill=\"currentColor\"></path>
+                                    <path opacity=\"0.5\"
+                                        d=\"M9 4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4V4H9V4Z\"
+                                        fill=\"currentColor\"></path>
+                                </svg>
+                            </span>
+                            <!--end::Svg Icon-->
+                        </button>
+                    </div>";
+                        } elseif ($isCarSold) {
+                            $urlTransactionDetail = base_url().'/penjualan/riwayat/'.$car->receipt_number;
+
+                            $row[] = "<div class=\"d-flex justify-content-end flex-shrink-0\">
+                            <a href=\"$urlEditGeneral\" target=_blank class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
+                                <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
+                                <span class=\"svg-icon svg-icon-3\">
+                                    <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"
+                                        xmlns=\"http://www.w3.org/2000/svg\">
+                                        <path
+                                            d=\"M17.5 11H6.5C4 11 2 9 2 6.5C2 4 4 2 6.5 2H17.5C20 2 22 4 22 6.5C22 9 20 11 17.5 11ZM15 6.5C15 7.9 16.1 9 17.5 9C18.9 9 20 7.9 20 6.5C20 5.1 18.9 4 17.5 4C16.1 4 15 5.1 15 6.5Z\"
+                                            fill=\"currentColor\"></path>
+                                        <path opacity=\"0.3\"
+                                            d=\"M17.5 22H6.5C4 22 2 20 2 17.5C2 15 4 13 6.5 13H17.5C20 13 22 15 22 17.5C22 20 20 22 17.5 22ZM4 17.5C4 18.9 5.1 20 6.5 20C7.9 20 9 18.9 9 17.5C9 16.1 7.9 15 6.5 15C5.1 15 4 16.1 4 17.5Z\"
+                                            fill=\"currentColor\"></path>
+                                    </svg>
+                                </span>
+                                <!--end::Svg Icon-->
+                            </a>
+                            <a href=\"$urlTransactionDetail\" target=_blank class=\"btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1\">
+                            <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
+                            <span class=\"svg-icon svg-icon-3\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"
+                        fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">
+                        <path opacity=\"0.3\"
+                            d=\"M19 22H5C4.4 22 4 21.6 4 21V3C4 2.4 4.4 2 5 2H14L20 8V21C20 21.6 19.6 22 19 22ZM12.5 18C12.5 17.4 12.6 17.5 12 17.5H8.5C7.9 17.5 8 17.4 8 18C8 18.6 7.9 18.5 8.5 18.5L12 18C12.6 18 12.5 18.6 12.5 18ZM16.5 13C16.5 12.4 16.6 12.5 16 12.5H8.5C7.9 12.5 8 12.4 8 13C8 13.6 7.9 13.5 8.5 13.5H15.5C16.1 13.5 16.5 13.6 16.5 13ZM12.5 8C12.5 7.4 12.6 7.5 12 7.5H8C7.4 7.5 7.5 7.4 7.5 8C7.5 8.6 7.4 8.5 8 8.5H12C12.6 8.5 12.5 8.6 12.5 8Z\"
+                            fill=\"currentColor\" />
+                        <rect x=\"7\" y=\"17\" width=\"6\" height=\"2\" rx=\"1\" fill=\"currentColor\" />
+                        <rect x=\"7\" y=\"12\" width=\"10\" height=\"2\" rx=\"1\" fill=\"currentColor\" />
+                        <rect x=\"7\" y=\"7\" width=\"6\" height=\"2\" rx=\"1\" fill=\"currentColor\" />
+                        <path d=\"M15 8H20L14 2V7C14 7.6 14.4 8 15 8Z\" fill=\"currentColor\" />
+                    </svg>
+                </span>
+                            <!--end::Svg Icon-->
+                        </a>
+                        </div>";
+                        }
                     }
                     $data[] = $row;
                 }
@@ -661,8 +701,9 @@ class Car extends BaseController
             $carId = $this->request->getPost('carId');
             $car = $this->CarModel->find($carId);
 
+            $isReady = ($car->status == 0);
             $isEmpty = ($car == null);
-            if ($isEmpty) {
+            if ($isEmpty || !$isReady) {
                 $response = [
                     'error' => 'Data tidak ditemukan',
                 ];

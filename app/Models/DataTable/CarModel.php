@@ -23,7 +23,11 @@ class CarModel extends Model
     }
     private function _get_datatables_query($status = null, $brandId = null, $keyword = [])
     {
-        $this->dt = $this->db->table($this->table)->select('car.*, brand_name')->join('car_brand', 'car.brand_id=car_brand.id')->where('car.deleted_at', null);
+        $this->dt = $this->db->table($this->table)->select('car.*, brand_name, receipt_number')
+        ->join('car_brand', 'car.brand_id=car_brand.id', 'left')
+        ->join('car_sales', 'car.id=car_sales.car_id', 'left')
+        ->join('sales', 'car_sales.sales_id=sales.id', 'left')
+        ->where('car.deleted_at', null);
 
 
         if ($brandId != null) {
