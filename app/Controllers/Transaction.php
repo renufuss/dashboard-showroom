@@ -51,7 +51,6 @@ class Transaction extends BaseController
      */
     public function index()
     {
-        // dd($this->TransactionModel->selectTest());
         $data['title'] = 'Transaksi';
         return view('Transaction/index', $data);
     }
@@ -173,7 +172,7 @@ class Transaction extends BaseController
                     }
 
                     $row[] = "<span class=\"badge badge-light-$statusBadge fs-7 fw-bold\">$statusDescription</span>";
-                    $row[] = "-";
+                    $row[] = "Hereansyah";
                     $row[] = "<div class=\"text-end\">$carCapitalPrice</div>";
                     $row[] = "<div class=\"text-end\">-</div>";
                 } elseif ($transaction->carId != null && $transaction->car_additional_cost_id != null) {
@@ -202,7 +201,7 @@ class Transaction extends BaseController
                     }
 
                     $row[] = "<span class=\"badge badge-light-$statusBadge fs-7 fw-bold\">$statusDescription</span>";
-                    $row[] = "-";
+                    $row[] = "$transaction->additionalCostPaidBy";
                     $row[] = "<div class=\"text-end\">$carAdditionalCostAmountOfMoney</div>";
                     $row[] = "<div class=\"text-end\">-</div>";
                 } elseif ($transaction->payment_sales_id != null) {
@@ -356,6 +355,24 @@ class Transaction extends BaseController
 
             $response['success'] = 'Berhasil menambahkan transaksi';
 
+            return json_encode($response);
+        }
+    }
+
+    /**
+     * get total transaction.
+     *
+     * @return jsonResponse
+     */
+    public function getTotalTransaction()
+    {
+        if ($this->request->isAJAX()) {
+            $response = [
+                'incomeCar' => 'Rp ' . number_format($this->TransactionModel->getTotalIncomeCar(), '0', ',', '.'),
+                'outcomeCar' => 'Rp ' . number_format($this->TransactionModel->getTotalOutcomeCar(), '0', ',', '.'),
+                'generalIncome' => 'Rp ' . number_format($this->TransactionModel->getGeneralCost(2), '0', ',', '.'),
+                'generalOutcome' => 'Rp ' . number_format($this->TransactionModel->getGeneralCost(3), '0', ',', '.'),
+            ];
             return json_encode($response);
         }
     }

@@ -11,6 +11,78 @@
     <div id="kt_app_content" class="app-content flex-column-fluid">
         <!--begin::Content container-->
         <div id="kt_app_content_container" class="app-container container-xxl">
+            <!-- Content Row -->
+            <div class="row">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs fw-bold text-success text-uppercase mb-1">
+                                        Masuk :: Mobil + Refund</div>
+                                    <div class="h5 mb-0 fw-bold text-gray-800" id="incomeCar">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fa-solid fa-rupiah-sign fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs fw-bold text-danger text-uppercase mb-1">
+                                        Keluar::Mobil</div>
+                                    <div class="h5 mb-0 fw-bold text-gray-800" id="outcomeCar">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fa-solid fa-rupiah-sign fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs fw-bold text-primary text-uppercase mb-1">
+                                        Masuk :: Umum</div>
+                                    <div class="h5 mb-0 fw-bold text-gray-800" id="generalIncome">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fa-solid fa-rupiah-sign fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs fw-bold text-warning text-uppercase mb-1">
+                                        Keluar :: Umum</div>
+                                    <div class="h5 mb-0 fw-bold text-gray-800" id="generalOutcome">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fa-solid fa-rupiah-sign fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!--begin::Products-->
             <div class="card card-flush">
                 <!--begin::Card header-->
@@ -32,7 +104,8 @@
                             </span>
                             <!--end::Svg Icon-->
                             <input type="text" id="search"
-                                class="form-control form-control-solid w-xl-250px w-150px ps-14" placeholder="Cari Transaksi" />
+                                class="form-control form-control-solid w-xl-250px w-150px ps-14"
+                                placeholder="Cari Transaksi" />
                         </div>
                         <!--end::Search-->
                     </div>
@@ -40,7 +113,8 @@
                     <!--begin::Card toolbar-->
                     <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
                         <!--begin::Add product-->
-                        <button type="button" class="btn btn-primary btn-sm" id="btnAddTransaction">Tambah Transaksi</button>
+                        <button type="button" class="btn btn-primary btn-sm" id="btnAddTransaction">Tambah
+                            Transaksi</button>
                         <!--end::Add product-->
                     </div>
                     <!--end::Card toolbar-->
@@ -62,9 +136,14 @@
     <!--end::Content-->
 </div>
 
+
 <div class="transactionModal"></div>
 
 <script>
+    $(document).ready(function () {
+        getTotal();
+    });
+
     function toastConfig() {
         toastr.options = {
             "closeButton": true,
@@ -85,7 +164,7 @@
         };
     }
 
-    function openTransactionModal(){
+    function openTransactionModal() {
         $.ajax({
             type: "post",
             url: "/transaksi/modal",
@@ -102,7 +181,56 @@
         });
     }
 
-    $('#btnAddTransaction').click(function (e) { 
+    function getTotal() {
+        $.ajax({
+            type: "post",
+            url: "/transaksi/total",
+            data: {},
+            dataType: "json",
+            beforeSend: function () {
+                $("#incomeCar").html(`
+                <svg class="pl" width="240" height="240" viewBox="0 0 240 240">
+	                <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+	                <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+	                <circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+	                <circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+                </svg>
+                `);
+                $("#outcomeCar").html(`
+                <svg class="pl" width="240" height="240" viewBox="0 0 240 240">
+	                <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+	                <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+	                <circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+	                <circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+                </svg>
+                `);
+                $("#generalIncome").html(`
+                <svg class="pl" width="240" height="240" viewBox="0 0 240 240">
+	                <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+	                <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+	                <circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+	                <circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+                </svg>
+                `);
+                $("#generalOutcome").html(`
+                <svg class="pl" width="240" height="240" viewBox="0 0 240 240">
+	                <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+	                <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+	                <circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+	                <circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+                </svg>
+                `);
+            },
+            success: function (response) {
+                $("#incomeCar").html(response.incomeCar);
+                $("#outcomeCar").html(response.outcomeCar);
+                $("#generalIncome").html(response.generalIncome);
+                $("#generalOutcome").html(response.generalOutcome);
+            }
+        });
+    }
+
+    $('#btnAddTransaction').click(function (e) {
         e.preventDefault();
         openTransactionModal();
     });

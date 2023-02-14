@@ -73,4 +73,107 @@ class TransactionModel extends Model
 
         return $data;
     }
+
+    public function getTotalIncomeCar($month = null)
+    {
+        $table = $this->db->table($this->table);
+        $query = $table->select('sum(payment_sales.amount_of_money) as paymentSales')
+        ->join('car', 'transaction.car_id=car.id', 'left')
+        ->join('car_additional_cost', 'transaction.car_additional_cost_id=car_additional_cost.id', 'left')
+        ->join('payment_sales', 'transaction.payment_sales_id=payment_sales.id', 'left')
+        ->join('sales', 'payment_sales.sales_id=sales.id', 'left')
+        ->where('transaction_status', 0)
+        ->where('transaction.deleted_at', null)
+        ->where('car.deleted_at', null)
+        ->where('car_additional_cost.deleted_at', null)
+        ->where('transaction.car_id', null)
+        ->where('transaction.car_additional_cost_id', null)
+        ->where('transaction.payment_sales_id !=', null);
+
+        if ($month != null) {
+            $query->where("DATE_FORMAT(transaction_date,'%Y-%m')", $month);
+        }
+
+        $paymentSales = $query->get()->getFirstRow()->paymentSales;
+
+        $refund = $this->getGeneralCost(4, $month);
+
+        return $paymentSales + $refund;
+    }
+
+    public function getTotalOutcomeCar($month = null)
+    {
+        // Capital Price
+        $table = $this->db->table($this->table);
+        $capitalPrice = $table->select('sum(car.capital_price) as carCapitalPrice')
+        ->join('car', 'transaction.car_id=car.id', 'left')
+        ->join('car_additional_cost', 'transaction.car_additional_cost_id=car_additional_cost.id', 'left')
+        ->join('payment_sales', 'transaction.payment_sales_id=payment_sales.id', 'left')
+        ->join('sales', 'payment_sales.sales_id=sales.id', 'left')
+        ->where('transaction_status', 1)
+        ->where('transaction.deleted_at', null)
+        ->where('car.deleted_at', null)
+        ->where('car_additional_cost.deleted_at', null)
+        ->where('transaction.car_id !=', null)
+        ->where('transaction.car_additional_cost_id', null)
+        ->where('transaction.payment_sales_id', null);
+
+        if ($month != null) {
+            $capitalPrice->where("DATE_FORMAT(transaction_date,'%Y-%m')", $month);
+        }
+
+        $capitalPrice = $capitalPrice->get()->getFirstRow()->carCapitalPrice;
+
+        // additional Cost
+        $additionalCost = $table->select('sum(car_additional_cost.amount_of_money) as additionalCost')
+        ->join('car', 'transaction.car_id=car.id', 'left')
+        ->join('car_additional_cost', 'transaction.car_additional_cost_id=car_additional_cost.id', 'left')
+        ->join('payment_sales', 'transaction.payment_sales_id=payment_sales.id', 'left')
+        ->join('sales', 'payment_sales.sales_id=sales.id', 'left')
+        ->where('transaction.deleted_at', null)
+        ->where('car.deleted_at', null)
+        ->where('car_additional_cost.deleted_at', null)
+        ->where('transaction.car_id !=', null)
+        ->where('transaction.car_additional_cost_id !=', null)
+        ->where('transaction.payment_sales_id', null);
+
+        if ($month != null) {
+            $additionalCost->where("DATE_FORMAT(transaction_date,'%Y-%m')", $month);
+        }
+
+        $additionalCost = $additionalCost->get()->getFirstRow()->additionalCost;
+
+        return $capitalPrice + $additionalCost;
+    }
+
+    /**
+     * getGeneralCost.
+     *
+     * @param int    $status, 2 = general income | 3 = general outcome | 4 = general refund
+     * @param string $month Month in transaction date (optional)
+     *
+     * @return int $generalCost
+     */
+    public function getGeneralCost($status, $month = null)
+    {
+        $table = $this->db->table($this->table);
+        $query = $table->select('sum(transaction.amount_of_money) as totalGeneralCost')
+        ->join('car', 'transaction.car_id=car.id', 'left')
+        ->join('car_additional_cost', 'transaction.car_additional_cost_id=car_additional_cost.id', 'left')
+        ->join('payment_sales', 'transaction.payment_sales_id=payment_sales.id', 'left')
+        ->join('sales', 'payment_sales.sales_id=sales.id', 'left')
+        ->where('transaction_status', $status)
+        ->where('transaction.deleted_at', null)
+        ->where('car.deleted_at', null)
+        ->where('car_additional_cost.deleted_at', null)
+        ->where('transaction.car_id', null)
+        ->where('transaction.car_additional_cost_id', null)
+        ->where('transaction.payment_sales_id', null);
+
+        if ($month != null) {
+            $query->where("DATE_FORMAT(transaction_date,'%Y-%m')", $month);
+        }
+
+        return $query->get()->getFirstRow()->totalGeneralCost;
+    }
 }

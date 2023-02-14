@@ -88,6 +88,7 @@ $routes->post('/penjualan/riwayat/(:alphanum)/paymentReceipt', 'Sales::downloadP
 
 $routes->get('/transaksi', 'Transaction::index', ['filter' => 'role:Super Admin, Keuangan']);
 $routes->post('/transaksi', 'Transaction::getTransaction', ['filter' => 'role:Super Admin, Keuangan']);
+$routes->post('/transaksi/total', 'Transaction::getTotalTransaction', ['filter' => 'role:Super Admin, Keuangan']);
 $routes->post('/transaksi/modal', 'Transaction::openTransactionModal', ['filter' => 'role:Super Admin, Keuangan']);
 $routes->post('/transaksi/save', 'Transaction::saveTransaction', ['filter' => 'role:Super Admin, Keuangan']);
 
