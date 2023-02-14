@@ -144,6 +144,30 @@ class Car extends BaseController
                 'car_image' => $this->request->getFile('car_image'),
             ];
 
+            $isUpdate = ($input['id'] != null);
+
+            if ($isUpdate) {
+                $car = $this->CarModel->find($input['id']);
+
+                $isCar = ($car != null);
+                if (!$isCar) {
+                    $response = [
+                        'error' => 'Data tidak ditemukan',
+                        'errorMsg' => 'Data tidak ditemukan',
+                    ];
+                    return json_encode($response);
+                }
+
+                $isCarSold = ($car->status == 1);
+                if ($isCarSold) {
+                    $response = [
+                        'error' => 'Mobil sudah terjual',
+                        'errorMsg' => 'Mobil sudah terjual',
+                    ];
+                    return json_encode($response);
+                }
+            }
+
             // Validation
             $validationRules = $this->CarModel->getValidationRules();
             $validationMessages = $this->CarModel->getValidationMessages();
@@ -174,14 +198,14 @@ class Car extends BaseController
                 'receipt' => $receipt,
                 'car_image' => $carImage,
             ];
-            if ($input['id'] != null) {
+            if ($isUpdate) {
                 $data['id'] = $input['id'];
             }
 
             $this->CarModel->save($data);
             $carId = $this->CarModel->getInsertID();
 
-            if ($input['id'] == null) {
+            if (!$isUpdate) {
                 // Save Car Transaction
                 $transaction = new Transaction();
                 $data = [
@@ -1076,6 +1100,16 @@ class Car extends BaseController
             if (!$isCar) {
                 $response = [
                     'error' => 'Data tidak ditemukan',
+                    'errorMsg' => 'Data tidak ditemukan',
+                ];
+                return json_encode($response);
+            }
+
+            $isCarSold = ($car->status == 1);
+            if ($isCarSold) {
+                $response = [
+                    'error' => 'Mobil sudah terjual',
+                    'errorMsg' => 'Mobil sudah terjual',
                 ];
                 return json_encode($response);
             }
@@ -1224,9 +1258,20 @@ class Car extends BaseController
             if (!$isCar) {
                 $response = [
                     'error' => 'Data tidak ditemukan',
+                    'errorMsg' => 'Data tidak ditemukan',
                 ];
                 return json_encode($response);
             }
+
+            $isCarSold = ($car->status == 1);
+            if ($isCarSold) {
+                $response = [
+                    'error' => 'Mobil sudah terjual',
+                    'errorMsg' => 'Mobil sudah terjual',
+                ];
+                return json_encode($response);
+            }
+
 
             $additionalCost = $this->CarModel->getAdditionalCost($car->id, $additionalCostId);
 
