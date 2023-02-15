@@ -32,6 +32,7 @@ class SalesModel extends Model
         'discount' => 'required|numeric|greater_than_equal_to[0]',
         'total_price' => 'required|numeric|greater_than_equal_to[0]',
         'sales_date' => 'required',
+        'payment_receipt' => 'max_size[payment_receipt,5120]|is_image[payment_receipt]|mime_in[payment_receipt,image/jpg,image/jpeg,image/png]|uploaded[payment_receipt]',
     ];
     protected $validationMessages = [
         'receipt_number' => [
@@ -78,6 +79,12 @@ class SalesModel extends Model
         ],
         'sales_date' => [
             'required' => 'Tanggal pembayaran tidak boleh kosong',
+        ],
+        'payment_receipt' => [
+            'max_size' => 'Ukuran gambar tidak boleh melebihi 5 MB',
+            'is_image' => 'Yang anda pilih bukan gambar',
+            'mime_in' => 'Yang anda pilih bukan gambar',
+            'uploaded' => 'Bukti pembayaran harus diupload',
         ],
     ];
     protected $skipValidation     = true;

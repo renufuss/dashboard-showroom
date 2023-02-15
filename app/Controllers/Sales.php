@@ -399,6 +399,8 @@ class Sales extends BaseController
             $sales['total_price'] = ($sales['real_price'] - $sales['discount']);
             $payment['amount_of_money'] = str_replace([',', '.', 'Rp', ' '], '', $this->request->getPost('amount_of_money'));
             $sales['sales_date'] = date('Y-m-d H:i:s');
+            $payment['payment_receipt'] = $this->request->getFile('payment_receipt');
+            $sales['payment_receipt'] = $payment['payment_receipt']; //CHECK PHOTO
 
             $isDiscountValid = ($sales['discount'] <= $sales['real_price']);
             $isAmountOfMoneyValid = ($payment['amount_of_money'] <= $sales['total_price']);
@@ -429,6 +431,10 @@ class Sales extends BaseController
                 return json_encode($response);
             }
 
+            //Remove from array after check
+            unset($sales['payment_receipt']);
+
+            $payment['payment_receipt'] = $this->blobImage($payment['payment_receipt']);
             $sales['identity_card'] = $this->blobImage($sales['identity_card']);
 
             $this->SalesModel->save($sales);
@@ -456,6 +462,7 @@ class Sales extends BaseController
                 'amount_of_money' => $payment['amount_of_money'],
                 'description' => 'Pembayaran Awal',
                 'payment_date' => date('Y-m-d H:i:s'),
+                'payment_receipt' => $payment['payment_receipt'],
             ];
 
             $paymentId = $this->SalesModel->savePayment($payment);

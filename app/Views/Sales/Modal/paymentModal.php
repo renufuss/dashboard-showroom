@@ -128,6 +128,21 @@
                         <!-- end::col -->
                     </div>
                     <!--end::Input group-->
+                       <!--begin::Input group-->
+                       <div class="row g-9 mb-2">
+                        <!-- begin::col -->
+                        <div class="col-md-12 fv-row">
+                            <!--begin::Label-->
+                            <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                <span class="required">Bukti Pembayaran</span>
+                            </label>
+                            <!--end::Label-->
+                            <input type="file" id="payment_receipt" name="payment_receipt" class="form-control mb-2" />
+                            <div class="invalid-feedback" id="payment_receipt-feedback"></div>
+                        </div>
+                        <!-- end::col -->
+                    </div>
+                    <!--end::Input group-->
                     <!--begin::Input group-->
                     <div class="row g-9 mb-2">
                         <!-- begin::col -->
@@ -275,6 +290,7 @@
                     discount,
                     total_price,
                     amount_of_money,
+                    payment_receipt
                 };
                 removeFeedback(form);
 
