@@ -35,6 +35,7 @@ class Sales extends BaseController
 {
     protected $TempSalesModel;
     protected $SalesModel;
+    protected $salesCarLimit;
 
     /**
      * Construct.
@@ -45,6 +46,7 @@ class Sales extends BaseController
     {
         $this->SalesModel = new SalesModel();
         $this->TempSalesModel = new TempSalesModel();
+        $this->salesCarLimit = 1;
     }
 
     /**
@@ -126,6 +128,13 @@ class Sales extends BaseController
                 return json_encode($response);
             }
 
+            $isOverCarLimit = count($selectedCar) > $this->salesCarLimit;
+            if ($isOverCarLimit) {
+                $response['error'] = 'Maaf, hanya boleh memilih 1 mobil';
+                $response['errorMsg'] = 'Maaf, hanya boleh memilih 1 mobil';
+                return json_encode($response);
+            }
+
             $totalTempPrice = 'Rp ' . number_format($this->TempSalesModel->getTotalTempPrice(), '0', ',', '.');
             $data = [
                 'totalPrice' => $totalTempPrice,
@@ -200,6 +209,15 @@ class Sales extends BaseController
         if ($this->request->isAJAX()) {
             $keyword = $this->request->getPost('keyword');
             $car = new Car();
+
+            // Car Limit
+            $selectedCar = $this->TempSalesModel->where('user_id', user()->id)->findAll();
+            $isOverCarLimit = count($selectedCar) >= $this->salesCarLimit;
+            if ($isOverCarLimit) {
+                $response['error'] = 'Maaf, hanya boleh memilih 1 mobil';
+                $response['errorMsg'] = 'Maaf, hanya boleh memilih 1 mobil';
+                return json_encode($response);
+            }
 
             $data = $car->findCarReady($keyword);
 
@@ -381,6 +399,13 @@ class Sales extends BaseController
             if ($isEmptyCar) {
                 $response['error'] = 'Maaf, anda belum memilih mobil manapun...';
                 $response['errorMsg'] = 'Maaf, anda belum memilih mobil manapun...';
+                return json_encode($response);
+            }
+
+            $isOverCarLimit = count($cars) > $this->salesCarLimit;
+            if ($isOverCarLimit) {
+                $response['error'] = 'Maaf, hanya boleh memilih 1 mobil';
+                $response['errorMsg'] = 'Maaf, hanya boleh memilih 1 mobil';
                 return json_encode($response);
             }
 
