@@ -108,6 +108,10 @@ $routes->post('/profile/setting', 'User::updateProfile');
 $routes->post('/profile/setting/password', 'User::changePassword');
 
 
+$routes->get('/laporan', 'Report::index', ['filter' => 'role:Super Admin']);
+$routes->post('/laporan/table', 'Report::profitTable', ['filter' => 'role:Super Admin']);
+
+
 
 /*
  * --------------------------------------------------------------------

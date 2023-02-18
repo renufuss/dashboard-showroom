@@ -14,7 +14,7 @@ class TransactionModel extends Model
     protected $returnType     = 'object';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['transaction_date', 'description', 'transaction_status', 'transaction_receipt', 'amount_of_money', 'paid_by', 'car_id', 'car_additional_cost_id','payment_sales_id', 'deleted_at'];
+    protected $allowedFields = ['transaction_date', 'description', 'transaction_status', 'transaction_receipt', 'amount_of_money', 'paid_by', 'car_id', 'car_additional_cost_id','payment_sales_id', 'reported_date', 'deleted_at'];
 
     protected $useTimestamps = true;
     protected $createdField  = 'transaction_date';
@@ -53,21 +53,32 @@ class TransactionModel extends Model
     ];
     protected $skipValidation     = true;
 
-    public function selectTest()
+    public function getTransaction($carStatus, $transactionStatus, $carId = [])
     {
         $selectTransaction = "transaction.id as transactionId, transaction.transaction_date as transactionDate, transaction.description as transactionDescription, transaction.amount_of_money as transactionAmountOfMoney, transaction.transaction_status as transactionStatus, transaction.car_id as carId, transaction.payment_sales_id as payment_sales_id, transaction.car_additional_cost_id as car_additional_cost_id, transaction.transaction_receipt as transaction_receipt, transaction.paid_by as transactionPaidBy,";
         $selectCarAdditionalCost = "car_additional_cost.description as carAdditionalCostDescription, car_additional_cost.amount_of_money as carAdditionalCostAmountOfMoney, car_additional_cost.additional_receipt as carAdditionalCostAdditionalReceipt, car_additional_cost.additional_date as carAdditionalCostAdditionalDate, car_additional_cost.id as carAdditionalCostId, car_additional_cost.additional_receipt as additional_receipt,";
-        $selectCar = "car.license_number as carLicenseNumber, car.created_at as carDate, car.car_price as carPrice, car.receipt as car_receipt, car.capital_price as carCapitalPrice,";
+        $selectCar = "tc.license_number as carLicenseNumber, tc.created_at as carDate, tc.car_price as carPrice, tc.receipt as car_receipt, tc.capital_price as carCapitalPrice,";
         $selectPaymentSales = "payment_sales.amount_of_money as paymentSalesAmountOfMoney, payment_sales.description as paymentSalesDescription, payment_sales.payment_date as paymentSalesPaymentDate, payment_sales.payment_receipt as payment_receipt,";
-        $selectSales = "sales.receipt_number as salesReceiptNumber";
+        $selectSales = "sales.receipt_number as salesReceiptNumber, cs.id as salesCarId, cs.license_number as salesLicenseNumber";
         $select = $selectTransaction.$selectCarAdditionalCost.$selectCar.$selectPaymentSales.$selectSales;
         $table = $this->db->table($this->table);
         $query = $table->select($select)
-        ->join('car', 'transaction.car_id=car.id', 'left')
+        ->join('car as tc', 'transaction.car_id=tc.id', 'left')
         ->join('car_additional_cost', 'transaction.car_additional_cost_id=car_additional_cost.id', 'left')
         ->join('payment_sales', 'transaction.payment_sales_id=payment_sales.id', 'left')
         ->join('sales', 'payment_sales.sales_id=sales.id', 'left')
-        ->where('transaction.deleted_at', null);
+        ->join('car_sales', 'sales.id=car_sales.sales_id', 'left')
+        ->join('car as cs', 'car_sales.car_id=cs.id', 'left')
+        ->where('transaction.deleted_at', null)
+        ->groupStart()
+        ->where('tc.status', $carStatus)
+        ->orWhere('cs.status', $carStatus)
+        ->groupEnd()
+        ->groupStart()
+        ->WhereIn('tc.id', $carId)
+        ->orWhereIn('cs.id', $carId)
+        ->groupEnd()
+        ->where('transaction.transaction_status', $transactionStatus);
 
         $data = $query->get()->getResultObject();
 

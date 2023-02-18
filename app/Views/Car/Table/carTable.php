@@ -105,7 +105,6 @@
         $('#search').on('keyup', function () {
             table.search(this.value).draw();
         });
-
     }
 
     function deleteCar(carId) {
@@ -128,7 +127,7 @@
             }
         });
     }
-
+    
     function alertCarDelete(carId) {
         $.ajax({
             type: "POST",
