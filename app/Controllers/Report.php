@@ -26,7 +26,7 @@ class Report extends BaseController
      *
      * @return jsonResponse
      */
-    public function getTransaction()
+    public function getProfit()
     {
         // Take All Car Sold
         $carSoldId = [];
@@ -36,7 +36,7 @@ class Report extends BaseController
             array_push($carSoldId, $car->id);
         }
 
-        $inCars = $this->TransactionModel->getTransaction(1, 0, $carSoldId);
+        $inCars = $this->TransactionModel->getTransaction(1, 0, $carSoldId, false);
         $results = [];
 
         if ($inCars != null) {
@@ -44,7 +44,7 @@ class Report extends BaseController
                 $carCapitalPrice = 0;
                 $additionalCost = 0;
                 $carId = [$inCar->salesCarId];
-                $outCars = $this->TransactionModel->getTransaction(1, 1, $carId);
+                $outCars = $this->TransactionModel->getTransaction(1, 1, $carId, false);
                 $isAlreadyAdded = false;
 
                 // Check result
@@ -87,14 +87,72 @@ class Report extends BaseController
         return $results;
     }
 
-    public function profitTable()
+    public function getTotalProfit()
     {
         $totalProfit = 0;
-        $transactions = $this->getTransaction();
+        $transactions = $this->getProfit();
 
         foreach ($transactions as $transaction) {
             $totalProfit += $transaction['profit'];
         }
+        return $totalProfit;
+    }
+
+    public function getRefund()
+    {
+        return $this->TransactionModel->getGeneralCost(4, null, false);
+    }
+
+    public function getTotalRefund()
+    {
+        $totalRefund = 0;
+        $refunds = $this->getRefund();
+
+        foreach ($refunds as $refund) {
+            $totalRefund += $refund->amount_of_money;
+        }
+
+        return $totalRefund;
+    }
+
+    public function getGeneralIncome()
+    {
+        return $this->TransactionModel->getGeneralCost(2, null, false);
+    }
+
+    public function getTotalGeneralIncome()
+    {
+        $totalGeneralIncome = 0;
+        $generalIncomes = $this->getGeneralIncome();
+
+        foreach ($generalIncomes as $income) {
+            $totalGeneralIncome += $income->amount_of_money;
+        }
+
+        return $totalGeneralIncome;
+    }
+
+    public function getGeneralOutcome()
+    {
+        return $this->TransactionModel->getGeneralCost(3, null, false);
+    }
+
+    public function getTotalGeneralOutcome()
+    {
+        $totalGeneralOutcome = 0;
+        $generalOutcomes = $this->getGeneralOutcome();
+
+        foreach ($generalOutcomes as $outcome) {
+            $totalGeneralOutcome += $outcome->amount_of_money;
+        }
+
+        return $totalGeneralOutcome;
+    }
+
+    public function profitTable()
+    {
+        $totalProfit = $this->getTotalProfit();
+        $transactions = $this->getProfit();
 
         $data = [
             'transactions' => $transactions,
@@ -102,6 +160,48 @@ class Report extends BaseController
         ];
 
         $response['profitTable'] = view('Report/Table/profitTable', $data);
+        return json_encode($response);
+    }
+
+    public function refundTable()
+    {
+        $refunds = $this->getRefund();
+        $totalRefund = $this->getTotalRefund();
+
+        $data = [
+            'refunds' => $refunds,
+            'totalRefund' => $totalRefund,
+        ];
+
+        $response['refundTable'] = view('Report/Table/refundTable', $data);
+        return json_encode($response);
+    }
+
+    public function generalIncomeTable()
+    {
+        $generalIncomes = $this->getGeneralIncome();
+        $totalGeneralIncome = $this->getTotalGeneralIncome();
+
+        $data = [
+            'generalIncomes' => $generalIncomes,
+            'totalGeneralIncome' => $totalGeneralIncome,
+        ];
+
+        $response['generalIncomeTable'] = view('Report/Table/generalIncomeTable', $data);
+        return json_encode($response);
+    }
+
+    public function generalOutcomeTable()
+    {
+        $generalOutcomes = $this->getGeneralOutcome();
+        $totalGeneralOutcome = $this->getTotalGeneralOutcome();
+
+        $data = [
+            'generalOutcomes' => $generalOutcomes,
+            'totalGeneralOutcome' => $totalGeneralOutcome,
+        ];
+
+        $response['generalOutcomeTable'] = view('Report/Table/generalOutcomeTable', $data);
         return json_encode($response);
     }
 }

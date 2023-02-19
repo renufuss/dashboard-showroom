@@ -109,7 +109,12 @@ $routes->post('/profile/setting/password', 'User::changePassword');
 
 
 $routes->get('/laporan', 'Report::index', ['filter' => 'role:Super Admin']);
-$routes->post('/laporan/table', 'Report::profitTable', ['filter' => 'role:Super Admin']);
+$routes->post('/laporan/profitTable', 'Report::profitTable', ['filter' => 'role:Super Admin']);
+$routes->post('/laporan/refundTable', 'Report::refundTable', ['filter' => 'role:Super Admin']);
+$routes->post('/laporan/generalIncomeTable', 'Report::generalIncomeTable', ['filter' => 'role:Super Admin']);
+$routes->post('/laporan/generalOutcomeTable', 'Report::generalOutcomeTable', ['filter' => 'role:Super Admin']);
+
+
 
 
 

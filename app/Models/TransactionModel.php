@@ -14,7 +14,7 @@ class TransactionModel extends Model
     protected $returnType     = 'object';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['transaction_date', 'description', 'transaction_status', 'transaction_receipt', 'amount_of_money', 'paid_by', 'car_id', 'car_additional_cost_id','payment_sales_id', 'reported_date', 'deleted_at'];
+    protected $allowedFields = ['transaction_date', 'description', 'transaction_status', 'transaction_receipt', 'amount_of_money', 'paid_by', 'car_id', 'car_additional_cost_id','payment_sales_id', 'reported_date', 'deleted_at', 'claim_date'];
 
     protected $useTimestamps = true;
     protected $createdField  = 'transaction_date';
@@ -53,7 +53,7 @@ class TransactionModel extends Model
     ];
     protected $skipValidation     = true;
 
-    public function getTransaction($carStatus, $transactionStatus, $carId = [])
+    public function getTransaction($carStatus, $transactionStatus, $carId = [], $withClaimed = true)
     {
         $selectTransaction = "transaction.id as transactionId, transaction.transaction_date as transactionDate, transaction.description as transactionDescription, transaction.amount_of_money as transactionAmountOfMoney, transaction.transaction_status as transactionStatus, transaction.car_id as carId, transaction.payment_sales_id as payment_sales_id, transaction.car_additional_cost_id as car_additional_cost_id, transaction.transaction_receipt as transaction_receipt, transaction.paid_by as transactionPaidBy,";
         $selectCarAdditionalCost = "car_additional_cost.description as carAdditionalCostDescription, car_additional_cost.amount_of_money as carAdditionalCostAmountOfMoney, car_additional_cost.additional_receipt as carAdditionalCostAdditionalReceipt, car_additional_cost.additional_date as carAdditionalCostAdditionalDate, car_additional_cost.id as carAdditionalCostId, car_additional_cost.additional_receipt as additional_receipt,";
@@ -79,6 +79,9 @@ class TransactionModel extends Model
         ->orWhereIn('cs.id', $carId)
         ->groupEnd()
         ->where('transaction.transaction_status', $transactionStatus);
+        if ($withClaimed != true) {
+            $query->where('transaction.claim_date', null);
+        }
 
         $data = $query->get()->getResultObject();
 
@@ -107,7 +110,7 @@ class TransactionModel extends Model
 
         $paymentSales = $query->get()->getFirstRow()->paymentSales;
 
-        $refund = $this->getGeneralCost(4, $month);
+        $refund = $this->getTotalGeneralCost(4, $month);
 
         return $paymentSales + $refund;
     }
@@ -162,10 +165,11 @@ class TransactionModel extends Model
      *
      * @param int    $status, 2 = general income | 3 = general outcome | 4 = general refund
      * @param string $month Month in transaction date (optional)
+     * @param boolean $withClaimed if true, will show all data
      *
      * @return int $generalCost
      */
-    public function getGeneralCost($status, $month = null)
+    public function getTotalGeneralCost($status, $month = null, $withClaimed = true)
     {
         $table = $this->db->table($this->table);
         $query = $table->select('sum(transaction.amount_of_money) as totalGeneralCost')
@@ -181,10 +185,42 @@ class TransactionModel extends Model
         ->where('transaction.car_additional_cost_id', null)
         ->where('transaction.payment_sales_id', null);
 
+        if ($withClaimed != true) {
+            $query->where('transaction.claim_date', null);
+        }
+
         if ($month != null) {
             $query->where("DATE_FORMAT(transaction_date,'%Y-%m')", $month);
         }
 
         return $query->get()->getFirstRow()->totalGeneralCost;
+    }
+
+
+    public function getGeneralCost($status, $month = null, $withClaimed = true)
+    {
+        $table = $this->db->table($this->table);
+        $query = $table->select('transaction_date, transaction.description as description, transaction_receipt, transaction.amount_of_money as amount_of_money')
+        ->join('car', 'transaction.car_id=car.id', 'left')
+        ->join('car_additional_cost', 'transaction.car_additional_cost_id=car_additional_cost.id', 'left')
+        ->join('payment_sales', 'transaction.payment_sales_id=payment_sales.id', 'left')
+        ->join('sales', 'payment_sales.sales_id=sales.id', 'left')
+        ->where('transaction_status', $status)
+        ->where('transaction.deleted_at', null)
+        ->where('car.deleted_at', null)
+        ->where('car_additional_cost.deleted_at', null)
+        ->where('transaction.car_id', null)
+        ->where('transaction.car_additional_cost_id', null)
+        ->where('transaction.payment_sales_id', null);
+
+        if ($withClaimed != true) {
+            $query->where('transaction.claim_date', null);
+        }
+
+        if ($month != null) {
+            $query->where("DATE_FORMAT(transaction_date,'%Y-%m')", $month);
+        }
+
+        return $query->get()->getResultObject();
     }
 }

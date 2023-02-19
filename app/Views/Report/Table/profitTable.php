@@ -79,6 +79,7 @@
             "aaSorting": [],
             "scrollX": true,
             "responsive" : true,
+            "destroy" : true,
             'columnDefs': [{
                     'responsivePriority': 1,
                     'targets': 1

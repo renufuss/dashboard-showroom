@@ -370,9 +370,10 @@ class Transaction extends BaseController
             $response = [
                 'incomeCar' => 'Rp ' . number_format($this->TransactionModel->getTotalIncomeCar(), '0', ',', '.'),
                 'outcomeCar' => 'Rp ' . number_format($this->TransactionModel->getTotalOutcomeCar(), '0', ',', '.'),
-                'generalIncome' => 'Rp ' . number_format($this->TransactionModel->getGeneralCost(2), '0', ',', '.'),
-                'generalOutcome' => 'Rp ' . number_format($this->TransactionModel->getGeneralCost(3), '0', ',', '.'),
+                'generalIncome' => 'Rp ' . number_format($this->TransactionModel->getTotalGeneralCost(2), '0', ',', '.'),
+                'generalOutcome' => 'Rp ' . number_format($this->TransactionModel->getTotalGeneralCost(3), '0', ',', '.'),
             ];
+
             return json_encode($response);
         }
     }
