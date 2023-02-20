@@ -21,6 +21,11 @@
             <button class="nav-link text-active-primary pb-4" id="navGeneralOutcome">Keluar Umum</button>
         </li>
         <!--end:::Tab item-->
+        <!--begin:::Tab item-->
+        <li class="nav-item">
+            <button class="nav-link text-active-primary pb-4" id="navCalculation">Perhitungan</button>
+        </li>
+        <!--end:::Tab item-->
     </ul>
     <!--end:::Tabs-->
 </div>
@@ -44,5 +49,12 @@
     $('#navGeneralOutcome').click(function (e) { 
         e.preventDefault();
         openTable('generalOutcomeTableContainer','navGeneralOutcome', 'generalOutcomeTable', 'searchGeneralOutcome');
+    });
+
+    $('#navCalculation').click(function (e) { 
+        e.preventDefault();
+        hideAllTable();
+        $('#generalCalculationContainer').removeClass('d-none');
+        $('#navCalculation').addClass('active');
     });
 </script>

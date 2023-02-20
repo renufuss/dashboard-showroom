@@ -9,10 +9,16 @@ class Report extends BaseController
 {
     protected $TransactionModel;
     protected $CarModel;
+    protected $percentHereansyah;
+    protected $percentSamun;
+
     public function __construct()
     {
         $this->TransactionModel = new TransactionModel();
         $this->CarModel = new CarModel();
+
+        $this->percentHereansyah = 0.6;
+        $this->percentSamun = 0.4;
     }
 
     public function index()
@@ -202,6 +208,39 @@ class Report extends BaseController
         ];
 
         $response['generalOutcomeTable'] = view('Report/Table/generalOutcomeTable', $data);
+        return json_encode($response);
+    }
+
+
+    public function getCalculation()
+    {
+        $totalProfit = $this->getTotalProfit();
+        $totalRefund = $this->getTotalRefund();
+        $totalGeneralIncome = $this->getTotalGeneralIncome();
+        $totalGeneralOutcome = $this->getTotalGeneralOutcome();
+
+        $totalGeneral = ($totalGeneralOutcome - $totalGeneralIncome);
+        $totalGeneralResult = $totalGeneral / 2;
+
+        $totalCar = ($totalProfit + $totalRefund);
+
+        $hereansyah = (($totalCar * $this->percentHereansyah) - $totalGeneralResult);
+        $samun = (($totalCar * $this->percentSamun) - $totalGeneralResult);
+
+        $response = [
+            'percentHereansyah' => $this->percentHereansyah,
+            'percentSamun' => $this->percentSamun,
+            'totalProfit' =>  "Rp " . number_format($totalProfit, '0', ',', '.'),
+            'totalRefund' =>  "Rp " . number_format($totalRefund, '0', ',', '.'),
+            'totalCar' => "Rp " . number_format($totalCar, '0', ',', '.'),
+            'totalGeneralIncome' => "Rp " . number_format($totalGeneralIncome, '0', ',', '.'),
+            'totalGeneralOutcome' => "Rp " . number_format($totalGeneralOutcome, '0', ',', '.'),
+            'totalGeneral' => "Rp " . number_format($totalGeneral, '0', ',', '.'),
+            'totalGeneralResult' => "Rp " . number_format($totalGeneralResult, '0', ',', '.'),
+            'hereansyah' => "Rp " . number_format($hereansyah, '0', ',', '.'),
+            'samun' => "Rp " . number_format($samun, '0', ',', '.'),
+        ];
+
         return json_encode($response);
     }
 }

@@ -212,7 +212,84 @@
         <!--end::Content container-->
     </div>
     <!--end::Content-->
+
+    <!--begin::Content-->
+    <div id="generalCalculationContainer" class="app-content flex-column-fluid d-none">
+        <!--begin::Content container-->
+        <div id="kt_app_content_container" class="app-container container-xxl">
+            <!--begin::Products-->
+            <div class="card card-flush">
+                <!--begin::Card header-->
+                <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                    <!--begin::Card title-->
+                    <div class="card-title">
+                        Perhitungan
+                    </div>
+                    <!--end::Card title-->
+                </div>
+                <!--end::Card header-->
+                <!--begin::Card body-->
+                <div class="card-body pt-0">
+                    <!--begin::Table-->
+                    <span>Profit Mobil : <span class="calculationProfit"></span></span><br>
+                    <span>Refund : <span class="calculationRefund"></span></span><br>
+                    <span>Pemasukan Umum : <span class="calculationGeneralIncome"></span></span><br>
+                    <span>Pengeluaran Umum : <span class="calculationGeneralOutcome"></span></span><br>
+                    <br>
+                    <span>Profit = Profit Mobil + Refund </span><br>
+                    <span>Profit = <span class="calculationProfit"></span> + <span
+                            class="calculationRefund"></span></span></span><br>
+                    <span>Profit = <span class="calculationTotalCar"></span></span><br>
+                    <br>
+                    <span>Pengeluaran = Pengeluaran Umum - Pemasukan Umum</span><br>
+                    <span>Pengeluaran = <span class="calculationGeneralOutcome"></span> - <span
+                            class="calculationGeneralIncome"></span><br>
+                        <span>Pengeluaran = <span class="calculationGeneral"></span></span><br>
+                        <br>
+                        <hr>
+                        <span>Hasil Pembagian</span><br>
+                        <br>
+                        <span>Profit</span><br>
+                        <span>Persentasi Hereansyah = <span class="calculationPercentHereansyah"></span></span><br>
+                        <span>Persentasi Samun = <span class="calculationPercentSamun"></span></span><br>
+                        <br>
+                        <span>Pengeluaran = Pengeluaran / 2</span><br>
+                        <span>Pengeluaran = <span class="calculationGeneral"></span> / 2</span><br>
+                        <span>Pengeluaran = <span class="calculationGeneralResult"></span></span><br>
+                        <br>
+                        <span>Perhitungan</span><br>
+                        <span>Hereansyah = (Profit x Persentasi Hereansyah) - Pengeluaran </span><br>
+                        <span>Hereansyah = (<span class="calculationProfit"></span> x <span
+                                class="calculationPercentHereansyah"></span>) - <span
+                                class="calculationGeneralResult"></span> </span><br>
+                        <span>Hereansyah = <span class="hereansyah" style="color:orange"></span></span><br>
+                        <br>
+                        <span>Samun = (Profit x Persentasi Samunn) - Pengeluaran </span><br>
+                        <span>Samun = (<span class="calculationProfit"></span> x <span
+                                class="calculationPercentSamun"></span>) - <span
+                                class="calculationGeneralResult"></span> </span><br>
+                        <span>Samun = <span class="samun" style="color:orange"></span></span><br>
+
+
+
+                        <!--end::Table-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Products-->
+        </div>
+        <!--end::Content container-->
+    </div>
+    <!--end::Content-->
+
+    <div id="buttonContainer" class="app-content flex-column-fluid">
+        <!--begin::Content container-->
+        <div id="kt_app_content_container" class="app-container container-xxl text-end">
+            <button class="btn btn-primary">Claim</button>
+        </div>
+    </div>
 </div>
+
 
 <script>
     $(document).ready(function () {
@@ -220,6 +297,7 @@
         refundTable();
         generalIncomeTable();
         generalOutcomeTable();
+        calculationReport();
     });
 
     function profitTable() {
@@ -275,27 +353,29 @@
         $('#refundTableContainer').addClass('d-none');
         $('#generalIncomeTableContainer').addClass('d-none');
         $('#generalOutcomeTableContainer').addClass('d-none');
+        $('#generalCalculationContainer').addClass('d-none');
 
         $('#navCar').removeClass('active');
         $('#navRefund').removeClass('active');
         $('#navGeneralIncome').removeClass('active');
         $('#navGeneralOutcome').removeClass('active');
+        $('#navCalculation').removeClass('active');
     }
 
     function openTable(tableContainer, buttonName, tableId, searchBoxId) {
         hideAllTable();
-        
+
         $(`#${tableContainer}`).removeClass('d-none');
         $(`#${buttonName}`).addClass('active');
-        
+
         dataTable(tableId, searchBoxId)
     }
 
-    function dataTable(tableId, searchBoxId){
+    function dataTable(tableId, searchBoxId) {
         const table = $(`#${tableId}`).DataTable({
             "aaSorting": [],
             "scrollX": true,
-            "destroy" : true,
+            "destroy": true,
             "responsive": true,
             'columnDefs': [{
                     'responsivePriority': 1,
@@ -310,6 +390,33 @@
 
         $(`#${searchBoxId}`).on('keyup', function () {
             table.search(this.value).draw();
+        });
+    }
+
+    function calculationReport() {
+        $.ajax({
+            type: "post",
+            url: "/laporan/calculation",
+            data: {},
+            dataType: "json",
+            success: function (response) {
+                $('#carBox').html(response.totalCar);
+                $('#generalBox').html(response.totalGeneral);
+                $('#hereansyahBox').html(response.hereansyah);
+                $('#samunBox').html(response.samun);
+
+                $('.calculationProfit').html(response.totalProfit);
+                $('.calculationRefund').html(response.totalRefund);
+                $('.calculationTotalCar').html(response.totalCar);
+                $('.calculationGeneralIncome').html(response.totalGeneralIncome);
+                $('.calculationGeneralOutcome').html(response.totalGeneralOutcome);
+                $('.calculationGeneral').html(response.totalGeneral);
+                $('.calculationPercentHereansyah').html(response.percentHereansyah);
+                $('.calculationPercentSamun').html(response.percentSamun);
+                $('.calculationGeneralResult').html(response.totalGeneralResult);
+                $('.hereansyah').html(response.hereansyah);
+                $('.samun').html(response.samun);
+            }
         });
     }
 </script>

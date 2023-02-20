@@ -113,6 +113,7 @@ $routes->post('/laporan/profitTable', 'Report::profitTable', ['filter' => 'role:
 $routes->post('/laporan/refundTable', 'Report::refundTable', ['filter' => 'role:Super Admin']);
 $routes->post('/laporan/generalIncomeTable', 'Report::generalIncomeTable', ['filter' => 'role:Super Admin']);
 $routes->post('/laporan/generalOutcomeTable', 'Report::generalOutcomeTable', ['filter' => 'role:Super Admin']);
+$routes->post('/laporan/calculation', 'Report::getCalculation', ['filter' => 'role:Super Admin']);
 
 
 
