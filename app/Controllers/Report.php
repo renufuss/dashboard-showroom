@@ -17,8 +17,8 @@ class Report extends BaseController
         $this->TransactionModel = new TransactionModel();
         $this->CarModel = new CarModel();
 
-        $this->percentHereansyah = 0.6;
-        $this->percentSamun = 0.4;
+        $this->percentHereansyah = 60/100;
+        $this->percentSamun = 40/100;
     }
 
     public function index()
@@ -224,8 +224,11 @@ class Report extends BaseController
 
         $totalCar = ($totalProfit + $totalRefund);
 
-        $hereansyah = (($totalCar * $this->percentHereansyah) - $totalGeneralResult);
-        $samun = (($totalCar * $this->percentSamun) - $totalGeneralResult);
+        $percentHereansyahResult = $totalCar * $this->percentHereansyah;
+        $percentSamunResult = $totalCar * $this->percentSamun;
+
+        $hereansyah = ($percentHereansyahResult - $totalGeneralResult);
+        $samun = ($percentSamunResult - $totalGeneralResult);
 
         $response = [
             'percentHereansyah' => $this->percentHereansyah,
@@ -237,6 +240,8 @@ class Report extends BaseController
             'totalGeneralOutcome' => "Rp " . number_format($totalGeneralOutcome, '0', ',', '.'),
             'totalGeneral' => "Rp " . number_format($totalGeneral, '0', ',', '.'),
             'totalGeneralResult' => "Rp " . number_format($totalGeneralResult, '0', ',', '.'),
+            'percentHereansyahResult' => "Rp " . number_format($percentHereansyahResult, '0', ',', '.'),
+            'percentSamunResult' => "Rp " . number_format($percentSamunResult, '0', ',', '.'),
             'hereansyah' => "Rp " . number_format($hereansyah, '0', ',', '.'),
             'samun' => "Rp " . number_format($samun, '0', ',', '.'),
         ];

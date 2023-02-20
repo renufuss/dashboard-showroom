@@ -259,15 +259,13 @@
                         <br>
                         <span>Perhitungan</span><br>
                         <span>Hereansyah = (Profit x Persentasi Hereansyah) - Pengeluaran </span><br>
-                        <span>Hereansyah = (<span class="calculationProfit"></span> x <span
-                                class="calculationPercentHereansyah"></span>) - <span
-                                class="calculationGeneralResult"></span> </span><br>
+                        <span>Hereansyah = (<span class="calculationTotalCar"></span> x <span class="calculationPercentHereansyah"></span>) - <span class="calculationGeneralResult"></span></span><br>
+                        <span>Hereansyah = <span class="calculationPercentHereansyahResult"></span> - <span class="calculationGeneralResult"></span><br>
                         <span>Hereansyah = <span class="hereansyah" style="color:orange"></span></span><br>
                         <br>
-                        <span>Samun = (Profit x Persentasi Samunn) - Pengeluaran </span><br>
-                        <span>Samun = (<span class="calculationProfit"></span> x <span
-                                class="calculationPercentSamun"></span>) - <span
-                                class="calculationGeneralResult"></span> </span><br>
+                        <span>Samun = (Profit x Persentasi Samun) - Pengeluaran </span><br>
+                        <span>Samun = (<span class="calculationTotalCar"></span> x <span class="calculationPercentSamun"></span>) - <span class="calculationGeneralResult"></span> </span><br>
+                        <span>Samun = <span class="calculationPercentSamunResult"></span> - <span class="calculationGeneralResult"></span><br>
                         <span>Samun = <span class="samun" style="color:orange"></span></span><br>
 
 
@@ -416,6 +414,8 @@
                 $('.calculationGeneralResult').html(response.totalGeneralResult);
                 $('.hereansyah').html(response.hereansyah);
                 $('.samun').html(response.samun);
+                $('.calculationPercentHereansyahResult').html(response.percentHereansyahResult);
+                $('.calculationPercentSamunResult').html(response.percentSamunResult);
             }
         });
     }
