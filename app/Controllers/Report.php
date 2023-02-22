@@ -3,12 +3,14 @@
 namespace App\Controllers;
 
 use App\Models\CarModel;
+use App\Models\ReportModel;
 use App\Models\TransactionModel;
 
 class Report extends BaseController
 {
     protected $TransactionModel;
     protected $CarModel;
+    protected $ReportModel;
     protected $percentHereansyah;
     protected $percentSamun;
 
@@ -16,6 +18,7 @@ class Report extends BaseController
     {
         $this->TransactionModel = new TransactionModel();
         $this->CarModel = new CarModel();
+        $this->ReportModel = new ReportModel();
 
         $this->percentHereansyah = 60/100;
         $this->percentSamun = 40/100;
@@ -74,6 +77,7 @@ class Report extends BaseController
                 }
 
                 $array = [
+                    'transaction_id' => $inCar->transactionId,
                     'car_id' => $inCar->salesCarId,
                     'description' => $inCar->paymentSalesDescription,
                     'license_number' =>  $inCar->salesLicenseNumber,
@@ -246,6 +250,71 @@ class Report extends BaseController
             'samun' => "Rp " . number_format($samun, '0', ',', '.'),
         ];
 
+        return json_encode($response);
+    }
+
+    /**
+     * Create receipt numbers.
+     *
+     * @return string $reportReceipt
+     */
+    public function getReportReceipt()
+    {
+        $lastTransaction = $this->ReportModel->lastReport(date('Y-m-d'));
+
+        $lastNumber = 0;
+        if ($lastTransaction != null) {
+            $lastNumber = substr($lastTransaction, -4); //4 Character dari belakang
+        }
+        $nextNumber = intval($lastNumber) + 1;
+        $reportReceipt = 'RM' . date('dmy') . sprintf('%04s', $nextNumber);
+        return $reportReceipt;
+    }
+
+    public function saveReport()
+    {
+        $reportReceipt = $this->getReportReceipt();
+        $reportDate = date('Y-m-d');
+
+        $data = [
+            'report_receipt' => $reportReceipt,
+            'report_date' => $reportDate,
+        ];
+        $this->ReportModel->save($data);
+
+        return $this->ReportModel->getInsertID();
+    }
+
+    public function claimTransaction()
+    {
+        $transactionIds = [];
+        $reportData = [];
+        $reportId = $this->saveReport();
+        $transactions = $this->TransactionModel->where('claim_date', null)->findAll();
+
+        if ($transactions != null) {
+            foreach ($transactions as $transaction) {
+                array_push($transactionIds, $transaction->id);
+
+                $data = [
+                    'id' => $transaction->id,
+                    'claim_date' => date('Y-m-d H:i:s'),
+                ];
+                $this->TransactionModel->save($data);
+            }
+
+            foreach ($transactionIds as $transactionId) {
+                $data = [
+                    'report_id' => $reportId,
+                    'transaction_id' => $transactionId,
+                ];
+                array_push($reportData, $data);
+            }
+        }
+
+        $this->ReportModel->saveClaimedTransaction($reportData);
+
+        $response['success'] = 'Berhasil claim';
         return json_encode($response);
     }
 }

@@ -377,12 +377,12 @@ class Sales extends BaseController
     {
         $lastTransaction = $this->SalesModel->lastTransaction(date('Y-m-d'));
 
-        $lastNoUrut = 0;
+        $lastNumber = 0;
         if ($lastTransaction != null) {
-            $lastNoUrut = substr($lastTransaction, -4); //4 Character dari belakang
+            $lastNumber = substr($lastTransaction, -4); //4 Character dari belakang
         }
-        $nextNoUrut = intval($lastNoUrut) + 1;
-        $receiptNumber = 'NND' . date('dmy') . sprintf('%04s', $nextNoUrut);
+        $nextNumber = intval($lastNumber) + 1;
+        $receiptNumber = 'NND' . date('dmy') . sprintf('%04s', $nextNumber);
         return $receiptNumber;
     }
 

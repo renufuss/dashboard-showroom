@@ -91,8 +91,8 @@ class SalesModel extends Model
 
     public function lastTransaction($date)
     {
-        $transaksi = $this->db->table('sales');
-        $query = $transaksi->select('max(receipt_number) as receipt_number')->like('sales_date', $date);
+        $transaction = $this->db->table('sales');
+        $query = $transaction->select('max(receipt_number) as receipt_number')->like('sales_date', $date);
         $lastTransaction = $query->get()->getFirstRow()->receipt_number;
 
         return $lastTransaction;

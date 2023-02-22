@@ -283,7 +283,7 @@
     <div id="buttonContainer" class="app-content flex-column-fluid">
         <!--begin::Content container-->
         <div id="kt_app_content_container" class="app-container container-xxl text-end">
-            <button class="btn btn-primary">Claim</button>
+            <button class="btn btn-primary" id="btnClaim">Claim</button>
         </div>
     </div>
 </div>
@@ -297,6 +297,26 @@
         generalOutcomeTable();
         calculationReport();
     });
+
+    function toastConfig() {
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toastr-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "1500",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+    }
 
     function profitTable() {
         $.ajax({
@@ -419,6 +439,49 @@
             }
         });
     }
+
+    function claimTransaction() {
+        $.ajax({
+            type: "post",
+            url: "/laporan/claim",
+            data: {},
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            cache: false,
+            beforeSend: function () {
+                $("#btnClaim").prop("disabled", true);
+                $("#btnClaim").html(`
+                <div class="loader">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                </div>`);
+            },
+            complete: function () {
+                $("#btnClaim").prop("disabled", false);
+                $("#btnClaim").html("Simpan");
+            },
+            success: function (response) {
+                toastConfig();
+
+                if (response.success) {
+                    toastr.success(response.success, "Sukses");
+                    setTimeout(function () {
+                        window.location = "/laporan";
+                    }, 1200);
+                }
+            },
+            error: function (xhr, thrownError) {
+                alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+            },
+        });
+    }
+
+    $('#btnClaim').click(function (e) { 
+        e.preventDefault();
+        claimTransaction();
+    });
 </script>
 
 

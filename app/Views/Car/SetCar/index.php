@@ -585,7 +585,6 @@
                 alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
             },
         });
-
     }
 
     function getTempAdditionalCost() {

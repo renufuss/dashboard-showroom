@@ -200,7 +200,7 @@ class TransactionModel extends Model
     public function getGeneralCost($status, $month = null, $withClaimed = true)
     {
         $table = $this->db->table($this->table);
-        $query = $table->select('transaction_date, transaction.description as description, transaction_receipt, transaction.amount_of_money as amount_of_money')
+        $query = $table->select('transaction.id as transactionId, transaction_date, transaction.description as description, transaction_receipt, transaction.amount_of_money as amount_of_money')
         ->join('car', 'transaction.car_id=car.id', 'left')
         ->join('car_additional_cost', 'transaction.car_additional_cost_id=car_additional_cost.id', 'left')
         ->join('payment_sales', 'transaction.payment_sales_id=payment_sales.id', 'left')

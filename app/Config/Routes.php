@@ -115,6 +115,7 @@ $routes->post('/laporan/generalIncomeTable', 'Report::generalIncomeTable', ['fil
 $routes->post('/laporan/generalOutcomeTable', 'Report::generalOutcomeTable', ['filter' => 'role:Super Admin']);
 $routes->post('/laporan/calculation', 'Report::getCalculation', ['filter' => 'role:Super Admin']);
 $routes->get('/laporan/calculation', 'Report::getCalculation', ['filter' => 'role:Super Admin']);
+$routes->post('/laporan/claim', 'Report::claimTransaction', ['filter' => 'role:Super Admin']);
 
 
 
