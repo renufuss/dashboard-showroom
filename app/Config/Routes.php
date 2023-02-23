@@ -108,16 +108,18 @@ $routes->post('/profile/setting', 'User::updateProfile');
 $routes->post('/profile/setting/password', 'User::changePassword');
 
 
+$routes->get('/claim', 'ClaimReport::index', ['filter' => 'role:Super Admin']);
+$routes->post('/claim', 'ClaimReport::claimTransaction', ['filter' => 'role:Super Admin']);
+$routes->post('/claim/profitTable', 'ClaimReport::profitTable', ['filter' => 'role:Super Admin']);
+$routes->post('/claim/refundTable', 'ClaimReport::refundTable', ['filter' => 'role:Super Admin']);
+$routes->post('/claim/generalIncomeTable', 'ClaimReport::generalIncomeTable', ['filter' => 'role:Super Admin']);
+$routes->post('/claim/generalOutcomeTable', 'ClaimReport::generalOutcomeTable', ['filter' => 'role:Super Admin']);
+$routes->post('/claim/calculation', 'ClaimReport::getCalculation', ['filter' => 'role:Super Admin']);
+$routes->get('/claim/calculation', 'ClaimReport::getCalculation', ['filter' => 'role:Super Admin']);
+
 $routes->get('/laporan', 'Report::index', ['filter' => 'role:Super Admin']);
-$routes->post('/laporan/profitTable', 'Report::profitTable', ['filter' => 'role:Super Admin']);
-$routes->post('/laporan/refundTable', 'Report::refundTable', ['filter' => 'role:Super Admin']);
-$routes->post('/laporan/generalIncomeTable', 'Report::generalIncomeTable', ['filter' => 'role:Super Admin']);
-$routes->post('/laporan/generalOutcomeTable', 'Report::generalOutcomeTable', ['filter' => 'role:Super Admin']);
-$routes->post('/laporan/calculation', 'Report::getCalculation', ['filter' => 'role:Super Admin']);
-$routes->get('/laporan/calculation', 'Report::getCalculation', ['filter' => 'role:Super Admin']);
-$routes->post('/laporan/claim', 'Report::claimTransaction', ['filter' => 'role:Super Admin']);
-
-
+$routes->get('/laporan/(:alphanum)', 'Report::detail/$1', ['filter' => 'role:Super Admin']);
+$routes->post('/laporan/(:alphanum)/profitTable', 'Report::profitTable/$1', ['filter' => 'role:Super Admin']);
 
 
 

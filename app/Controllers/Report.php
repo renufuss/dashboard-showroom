@@ -8,34 +8,25 @@ use App\Models\TransactionModel;
 
 class Report extends BaseController
 {
-    protected $TransactionModel;
-    protected $CarModel;
     protected $ReportModel;
-    protected $percentHereansyah;
-    protected $percentSamun;
+    protected $CarModel;
+    protected $TransactionModel;
 
     public function __construct()
     {
-        $this->TransactionModel = new TransactionModel();
-        $this->CarModel = new CarModel();
         $this->ReportModel = new ReportModel();
-
-        $this->percentHereansyah = 60/100;
-        $this->percentSamun = 40/100;
+        $this->CarModel = new CarModel();
+        // $this->TransactionModel = new TransactionModel();
     }
 
     public function index()
     {
         $data['title'] = 'Laporan';
+        $data['reports'] = $this->ReportModel->orderBy('report_date', 'desc')->orderBy('report_receipt', 'desc')->findAll();
         return view('Report/index', $data);
     }
 
-    /**
-     * get total transaction car.
-     *
-     * @return jsonResponse
-     */
-    public function getProfit()
+    public function getProfit($transactionId = [])
     {
         // Take All Car Sold
         $carSoldId = [];
@@ -45,7 +36,7 @@ class Report extends BaseController
             array_push($carSoldId, $car->id);
         }
 
-        $inCars = $this->TransactionModel->getTransaction(1, 0, $carSoldId, false);
+        $inCars = $this->ReportModel->getProfit(1, 0, $carSoldId, $transactionId);
         $results = [];
 
         if ($inCars != null) {
@@ -53,7 +44,7 @@ class Report extends BaseController
                 $carCapitalPrice = 0;
                 $additionalCost = 0;
                 $carId = [$inCar->salesCarId];
-                $outCars = $this->TransactionModel->getTransaction(1, 1, $carId, false);
+                $outCars = $this->ReportModel->getProfit(1, 1, $carId, $transactionId);
                 $isAlreadyAdded = false;
 
                 // Check result
@@ -97,224 +88,82 @@ class Report extends BaseController
         return $results;
     }
 
-    public function getTotalProfit()
+    public function getTotalProfit($transactionId = [])
     {
         $totalProfit = 0;
-        $transactions = $this->getProfit();
+        $transactions = $this->getProfit($transactionId);
 
-        foreach ($transactions as $transaction) {
-            $totalProfit += $transaction['profit'];
+        if ($transactions != null) {
+            foreach ($transactions as $transaction) {
+                $totalProfit += $transaction['profit'];
+            }
         }
         return $totalProfit;
     }
 
-    public function getRefund()
+    public function getRefund($transactionId)
     {
-        return $this->TransactionModel->getGeneralCost(4, null, false);
+        return $this->ReportModel->getGeneralCost(4, null, false, $transactionId);
     }
 
-    public function getTotalRefund()
+    public function getTotalRefund($transactionId)
     {
         $totalRefund = 0;
-        $refunds = $this->getRefund();
+        $refunds = $this->getRefund($transactionId);
 
-        foreach ($refunds as $refund) {
-            $totalRefund += $refund->amount_of_money;
+        if ($refunds != null) {
+            foreach ($refunds as $refund) {
+                $totalRefund += $refund->amount_of_money;
+            }
         }
 
         return $totalRefund;
     }
 
-    public function getGeneralIncome()
+    public function detail($reportReceipt)
     {
-        return $this->TransactionModel->getGeneralCost(2, null, false);
+        $data =[
+            'title' => 'Detail | '.$reportReceipt,
+            'reportReceipt' => $reportReceipt,
+        ];
+        return view('Report/Detail/index', $data);
     }
 
-    public function getTotalGeneralIncome()
+    public function profitTable($reportReceipt)
     {
-        $totalGeneralIncome = 0;
-        $generalIncomes = $this->getGeneralIncome();
+        $reportId = $this->ReportModel->where('report_receipt', $reportReceipt)->first()?->id;
 
-        foreach ($generalIncomes as $income) {
-            $totalGeneralIncome += $income->amount_of_money;
+        $transactionId = $this->ReportModel->getClaimedTransactionId($reportId);
+
+        $transactions = [];
+
+        if ($transactionId != null) {
+            $transactions = $this->getProfit($transactionId);
         }
-
-        return $totalGeneralIncome;
-    }
-
-    public function getGeneralOutcome()
-    {
-        return $this->TransactionModel->getGeneralCost(3, null, false);
-    }
-
-    public function getTotalGeneralOutcome()
-    {
-        $totalGeneralOutcome = 0;
-        $generalOutcomes = $this->getGeneralOutcome();
-
-        foreach ($generalOutcomes as $outcome) {
-            $totalGeneralOutcome += $outcome->amount_of_money;
-        }
-
-        return $totalGeneralOutcome;
-    }
-
-    public function profitTable()
-    {
-        $totalProfit = $this->getTotalProfit();
-        $transactions = $this->getProfit();
+        $totalProfit = $this->getTotalProfit($transactionId);
 
         $data = [
             'transactions' => $transactions,
             'totalProfit' => $totalProfit,
         ];
 
-        $response['profitTable'] = view('Report/Table/profitTable', $data);
+
+        // return $transactions;
+        $response['profitTable'] = view('Report/Detail/Table/profitTable', $data);
         return json_encode($response);
     }
 
-    public function refundTable()
+    public function refundTable($reportReceipt)
     {
-        $refunds = $this->getRefund();
-        $totalRefund = $this->getTotalRefund();
+        $refunds = $this->getRefund($reportReceipt);
+        $totalRefund = $this->getTotalRefund($reportReceipt);
 
         $data = [
             'refunds' => $refunds,
             'totalRefund' => $totalRefund,
         ];
 
-        $response['refundTable'] = view('Report/Table/refundTable', $data);
-        return json_encode($response);
-    }
-
-    public function generalIncomeTable()
-    {
-        $generalIncomes = $this->getGeneralIncome();
-        $totalGeneralIncome = $this->getTotalGeneralIncome();
-
-        $data = [
-            'generalIncomes' => $generalIncomes,
-            'totalGeneralIncome' => $totalGeneralIncome,
-        ];
-
-        $response['generalIncomeTable'] = view('Report/Table/generalIncomeTable', $data);
-        return json_encode($response);
-    }
-
-    public function generalOutcomeTable()
-    {
-        $generalOutcomes = $this->getGeneralOutcome();
-        $totalGeneralOutcome = $this->getTotalGeneralOutcome();
-
-        $data = [
-            'generalOutcomes' => $generalOutcomes,
-            'totalGeneralOutcome' => $totalGeneralOutcome,
-        ];
-
-        $response['generalOutcomeTable'] = view('Report/Table/generalOutcomeTable', $data);
-        return json_encode($response);
-    }
-
-
-    public function getCalculation()
-    {
-        $totalProfit = $this->getTotalProfit();
-        $totalRefund = $this->getTotalRefund();
-        $totalGeneralIncome = $this->getTotalGeneralIncome();
-        $totalGeneralOutcome = $this->getTotalGeneralOutcome();
-
-        $totalGeneral = ($totalGeneralOutcome - $totalGeneralIncome);
-        $totalGeneralResult = $totalGeneral / 2;
-
-        $totalCar = ($totalProfit + $totalRefund);
-
-        $percentHereansyahResult = $totalCar * $this->percentHereansyah;
-        $percentSamunResult = $totalCar * $this->percentSamun;
-
-        $hereansyah = ($percentHereansyahResult - $totalGeneralResult);
-        $samun = ($percentSamunResult - $totalGeneralResult);
-
-        $response = [
-            'percentHereansyah' => $this->percentHereansyah,
-            'percentSamun' => $this->percentSamun,
-            'totalProfit' =>  "Rp " . number_format($totalProfit, '0', ',', '.'),
-            'totalRefund' =>  "Rp " . number_format($totalRefund, '0', ',', '.'),
-            'totalCar' => "Rp " . number_format($totalCar, '0', ',', '.'),
-            'totalGeneralIncome' => "Rp " . number_format($totalGeneralIncome, '0', ',', '.'),
-            'totalGeneralOutcome' => "Rp " . number_format($totalGeneralOutcome, '0', ',', '.'),
-            'totalGeneral' => "Rp " . number_format($totalGeneral, '0', ',', '.'),
-            'totalGeneralResult' => "Rp " . number_format($totalGeneralResult, '0', ',', '.'),
-            'percentHereansyahResult' => "Rp " . number_format($percentHereansyahResult, '0', ',', '.'),
-            'percentSamunResult' => "Rp " . number_format($percentSamunResult, '0', ',', '.'),
-            'hereansyah' => "Rp " . number_format($hereansyah, '0', ',', '.'),
-            'samun' => "Rp " . number_format($samun, '0', ',', '.'),
-        ];
-
-        return json_encode($response);
-    }
-
-    /**
-     * Create receipt numbers.
-     *
-     * @return string $reportReceipt
-     */
-    public function getReportReceipt()
-    {
-        $lastTransaction = $this->ReportModel->lastReport(date('Y-m-d'));
-
-        $lastNumber = 0;
-        if ($lastTransaction != null) {
-            $lastNumber = substr($lastTransaction, -4); //4 Character dari belakang
-        }
-        $nextNumber = intval($lastNumber) + 1;
-        $reportReceipt = 'RM' . date('dmy') . sprintf('%04s', $nextNumber);
-        return $reportReceipt;
-    }
-
-    public function saveReport()
-    {
-        $reportReceipt = $this->getReportReceipt();
-        $reportDate = date('Y-m-d');
-
-        $data = [
-            'report_receipt' => $reportReceipt,
-            'report_date' => $reportDate,
-        ];
-        $this->ReportModel->save($data);
-
-        return $this->ReportModel->getInsertID();
-    }
-
-    public function claimTransaction()
-    {
-        $transactionIds = [];
-        $reportData = [];
-        $reportId = $this->saveReport();
-        $transactions = $this->TransactionModel->where('claim_date', null)->findAll();
-
-        if ($transactions != null) {
-            foreach ($transactions as $transaction) {
-                array_push($transactionIds, $transaction->id);
-
-                $data = [
-                    'id' => $transaction->id,
-                    'claim_date' => date('Y-m-d H:i:s'),
-                ];
-                $this->TransactionModel->save($data);
-            }
-
-            foreach ($transactionIds as $transactionId) {
-                $data = [
-                    'report_id' => $reportId,
-                    'transaction_id' => $transactionId,
-                ];
-                array_push($reportData, $data);
-            }
-        }
-
-        $this->ReportModel->saveClaimedTransaction($reportData);
-
-        $response['success'] = 'Berhasil claim';
+        $response['refundTable'] = view('Report/Detail/Table/refundTable', $data);
         return json_encode($response);
     }
 }
