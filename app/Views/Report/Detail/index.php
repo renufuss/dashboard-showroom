@@ -268,8 +268,6 @@
                         <span>Samun = <span class="calculationPercentSamunResult"></span> - (<span class="calculationGeneralResult"></span>)<br>
                         <span>Samun = <span class="samun" style="color:orange"></span></span><br>
 
-
-
                         <!--end::Table-->
                 </div>
                 <!--end::Card body-->
@@ -284,6 +282,10 @@
 <script>
     $(document).ready(function () {
         profitTable();
+        refundTable();
+        generalIncomeTable();
+        generalOutcomeTable();
+        calculationReport();
     });
 
     function profitTable() {
@@ -294,6 +296,42 @@
             dataType: "json",
             success: function (response) {
                 $('.profitTable').html(response.profitTable);
+            }
+        });
+    }
+
+    function refundTable() {
+        $.ajax({
+            type: "POST",
+            url: "/laporan/<?= $reportReceipt; ?>/refundTable",
+            data: {},
+            dataType: "json",
+            success: function (response) {
+                $('.refundTable').html(response.refundTable);
+            }
+        });
+    }
+
+    function generalIncomeTable() {
+        $.ajax({
+            type: "POST",
+            url: "/laporan/<?= $reportReceipt; ?>/generalIncomeTable",
+            data: {},
+            dataType: "json",
+            success: function (response) {
+                $('.generalIncomeTable').html(response.generalIncomeTable);
+            }
+        });
+    }
+
+    function generalOutcomeTable() {
+        $.ajax({
+            type: "POST",
+            url: "/laporan/<?= $reportReceipt; ?>/generalOutcomeTable",
+            data: {},
+            dataType: "json",
+            success: function (response) {
+                $('.generalOutcomeTable').html(response.generalOutcomeTable);
             }
         });
     }
@@ -340,6 +378,35 @@
 
         $(`#${searchBoxId}`).on('keyup', function () {
             table.search(this.value).draw();
+        });
+    }
+
+    function calculationReport() {
+        $.ajax({
+            type: "post",
+            url: "/laporan/<?= $reportReceipt; ?>/calculation",
+            data: {},
+            dataType: "json",
+            success: function (response) {
+                $('#carBox').html(response.totalCar);
+                $('#generalBox').html(response.totalGeneral);
+                $('#hereansyahBox').html(response.hereansyah);
+                $('#samunBox').html(response.samun);
+
+                $('.calculationProfit').html(response.totalProfit);
+                $('.calculationRefund').html(response.totalRefund);
+                $('.calculationTotalCar').html(response.totalCar);
+                $('.calculationGeneralIncome').html(response.totalGeneralIncome);
+                $('.calculationGeneralOutcome').html(response.totalGeneralOutcome);
+                $('.calculationGeneral').html(response.totalGeneral);
+                $('.calculationPercentHereansyah').html(response.percentHereansyah);
+                $('.calculationPercentSamun').html(response.percentSamun);
+                $('.calculationGeneralResult').html(response.totalGeneralResult);
+                $('.hereansyah').html(response.hereansyah);
+                $('.samun').html(response.samun);
+                $('.calculationPercentHereansyahResult').html(response.percentHereansyahResult);
+                $('.calculationPercentSamunResult').html(response.percentSamunResult);
+            }
         });
     }
 

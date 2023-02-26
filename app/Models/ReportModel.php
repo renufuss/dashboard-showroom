@@ -10,7 +10,7 @@ class ReportModel extends Model
     protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
     protected $returnType     = 'object';
-    protected $allowedFields = ['report_receipt', 'report_date'];
+    protected $allowedFields = ['report_receipt', 'report_date', 'percent_hereansyah', 'percent_samun'];
 
     public function lastReport($date)
     {
@@ -94,10 +94,10 @@ class ReportModel extends Model
      *
      * @return int $generalCost
      */
-    public function getTotalGeneralCost($status, $month = null, $transactionId = [])
+    public function getGeneralCost($status, $month = null, $transactionId = [])
     {
         $table = $this->db->table('transaction');
-        $query = $table->select('sum(transaction.amount_of_money) as totalGeneralCost')
+        $query = $table->select('transaction.id as transactionId, transaction_date, transaction.description as description, transaction_receipt, transaction.amount_of_money as amount_of_money')
         ->join('car', 'transaction.car_id=car.id', 'left')
         ->join('car_additional_cost', 'transaction.car_additional_cost_id=car_additional_cost.id', 'left')
         ->join('payment_sales', 'transaction.payment_sales_id=payment_sales.id', 'left')
@@ -116,8 +116,10 @@ class ReportModel extends Model
 
         if ($transactionId != null) {
             $query->whereIn('transaction.id', $transactionId);
+        } else {
+            return null;
         }
 
-        return $query->get()->getFirstRow()->totalGeneralCost;
+        return $query->get()->getResultObject();
     }
 }

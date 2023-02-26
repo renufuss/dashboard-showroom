@@ -89,10 +89,7 @@ class ClaimReport extends BaseController
 
                 array_push($results, $array);
             }
-        } else {
-            return null;
         }
-
 
         return $results;
     }
@@ -177,7 +174,7 @@ class ClaimReport extends BaseController
             'totalProfit' => $totalProfit,
         ];
 
-        $response['profitTable'] = view('Report/ClaimReportTable/profitTable', $data);
+        $response['profitTable'] = view('Report/ClaimReport/Table/profitTable', $data);
         return json_encode($response);
     }
 
@@ -191,7 +188,7 @@ class ClaimReport extends BaseController
             'totalRefund' => $totalRefund,
         ];
 
-        $response['refundTable'] = view('Report/ClaimReportTable/refundTable', $data);
+        $response['refundTable'] = view('Report/ClaimReport/Table/refundTable', $data);
         return json_encode($response);
     }
 
@@ -205,7 +202,7 @@ class ClaimReport extends BaseController
             'totalGeneralIncome' => $totalGeneralIncome,
         ];
 
-        $response['generalIncomeTable'] = view('Report/ClaimReportTable/generalIncomeTable', $data);
+        $response['generalIncomeTable'] = view('Report/ClaimReport/Table/generalIncomeTable', $data);
         return json_encode($response);
     }
 
@@ -219,7 +216,7 @@ class ClaimReport extends BaseController
             'totalGeneralOutcome' => $totalGeneralOutcome,
         ];
 
-        $response['generalOutcomeTable'] = view('Report/ClaimReportTable/generalOutcomeTable', $data);
+        $response['generalOutcomeTable'] = view('Report/ClaimReport/Table/generalOutcomeTable', $data);
         return json_encode($response);
     }
 
@@ -285,6 +282,8 @@ class ClaimReport extends BaseController
         $reportDate = date('Y-m-d');
 
         $data = [
+            'percent_hereansyah' => $this->percentHereansyah,
+            'percent_samun' => $this->percentSamun,
             'report_receipt' => $reportReceipt,
             'report_date' => $reportDate,
         ];

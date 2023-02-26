@@ -80,15 +80,12 @@ class Report extends BaseController
 
                 array_push($results, $array);
             }
-        } else {
-            return null;
         }
-
 
         return $results;
     }
 
-    public function getTotalProfit($transactionId = [])
+    public function getTotalProfit($transactionId)
     {
         $totalProfit = 0;
         $transactions = $this->getProfit($transactionId);
@@ -103,7 +100,7 @@ class Report extends BaseController
 
     public function getRefund($transactionId)
     {
-        return $this->ReportModel->getGeneralCost(4, null, false, $transactionId);
+        return $this->ReportModel->getGeneralCost(4, null, $transactionId);
     }
 
     public function getTotalRefund($transactionId)
@@ -118,6 +115,44 @@ class Report extends BaseController
         }
 
         return $totalRefund;
+    }
+
+    public function getGeneralIncome($transactionId)
+    {
+        return $this->ReportModel->getGeneralCost(2, null, $transactionId);
+    }
+
+    public function getTotalGeneralIncome($transactionId)
+    {
+        $totalGeneralIncome = 0;
+        $generalIncomes = $this->getGeneralIncome($transactionId);
+
+        if ($generalIncomes != null) {
+            foreach ($generalIncomes as $income) {
+                $totalGeneralIncome += $income->amount_of_money;
+            }
+        }
+
+        return $totalGeneralIncome;
+    }
+
+    public function getGeneralOutcome($transactionId)
+    {
+        return $this->ReportModel->getGeneralCost(3, null, $transactionId);
+    }
+
+    public function getTotalGeneralOutcome($transactionId)
+    {
+        $totalGeneralOutcome = 0;
+        $generalOutcomes = $this->getGeneralOutcome($transactionId);
+
+        if ($generalOutcomes != null) {
+            foreach ($generalOutcomes as $outcome) {
+                $totalGeneralOutcome += $outcome->amount_of_money;
+            }
+        }
+
+        return $totalGeneralOutcome;
     }
 
     public function detail($reportReceipt)
@@ -142,6 +177,7 @@ class Report extends BaseController
         }
         $totalProfit = $this->getTotalProfit($transactionId);
 
+
         $data = [
             'transactions' => $transactions,
             'totalProfit' => $totalProfit,
@@ -155,8 +191,16 @@ class Report extends BaseController
 
     public function refundTable($reportReceipt)
     {
-        $refunds = $this->getRefund($reportReceipt);
-        $totalRefund = $this->getTotalRefund($reportReceipt);
+        $reportId = $this->ReportModel->where('report_receipt', $reportReceipt)->first()?->id;
+
+        $transactionId = $this->ReportModel->getClaimedTransactionId($reportId);
+
+        $refunds = [];
+
+        if ($transactionId != null) {
+            $refunds = $this->getRefund($transactionId);
+        }
+        $totalRefund = $this->getTotalRefund($transactionId);
 
         $data = [
             'refunds' => $refunds,
@@ -164,6 +208,93 @@ class Report extends BaseController
         ];
 
         $response['refundTable'] = view('Report/Detail/Table/refundTable', $data);
+        return json_encode($response);
+    }
+
+    public function generalIncomeTable($reportReceipt)
+    {
+        $reportId = $this->ReportModel->where('report_receipt', $reportReceipt)->first()?->id;
+
+        $transactionId = $this->ReportModel->getClaimedTransactionId($reportId);
+
+        $generalIncomes = [];
+
+        if ($transactionId != null) {
+            $generalIncomes = $this->getGeneralIncome($transactionId);
+        }
+        $totalGeneralIncome = $this->getTotalGeneralIncome($transactionId);
+
+        $data = [
+            'generalIncomes' => $generalIncomes,
+            'totalGeneralIncome' => $totalGeneralIncome,
+        ];
+
+        $response['generalIncomeTable'] = view('Report/Detail/Table/generalIncomeTable', $data);
+        return json_encode($response);
+    }
+
+    public function generalOutcomeTable($reportReceipt)
+    {
+        $reportId = $this->ReportModel->where('report_receipt', $reportReceipt)->first()?->id;
+
+        $transactionId = $this->ReportModel->getClaimedTransactionId($reportId);
+
+        $generalOutcomes = [];
+
+        if ($transactionId != null) {
+            $generalOutcomes = $this->getGeneralOutcome($transactionId);
+        }
+        $totalGeneralOutcome = $this->getTotalGeneralOutcome($transactionId);
+
+        $data = [
+            'generalOutcomes' => $generalOutcomes,
+            'totalGeneralOutcome' => $totalGeneralOutcome,
+        ];
+
+        $response['generalOutcomeTable'] = view('Report/Detail/Table/generalOutcomeTable', $data);
+        return json_encode($response);
+    }
+
+    public function getCalculation($reportReceipt)
+    {
+        $report = $this->ReportModel->where('report_receipt', $reportReceipt)->first();
+
+        $reportId = $report?->id;
+
+        $transactionId = $this->ReportModel->getClaimedTransactionId($reportId);
+
+        $totalProfit = $this->getTotalProfit($transactionId);
+        $totalRefund = $this->getTotalRefund($transactionId);
+        $totalGeneralIncome = $this->getTotalGeneralIncome($transactionId);
+        $totalGeneralOutcome = $this->getTotalGeneralOutcome($transactionId);
+
+        $totalGeneral = ($totalGeneralOutcome - $totalGeneralIncome);
+        $totalGeneralResult = $totalGeneral / 2;
+
+        $totalCar = ($totalProfit + $totalRefund);
+
+        $percentHereansyahResult = $totalCar * $report->percent_hereansyah;
+        $percentSamunResult = $totalCar * $report->percent_samun;
+
+        $hereansyah = ($percentHereansyahResult - $totalGeneralResult);
+        $samun = ($percentSamunResult - $totalGeneralResult);
+
+        $response = [
+            'percentHereansyah' => $report->percent_hereansyah,
+            'percentSamun' => $report->percent_samun,
+            'totalProfit' =>  "Rp " . number_format($totalProfit, '0', ',', '.'),
+            'totalRefund' =>  "Rp " . number_format($totalRefund, '0', ',', '.'),
+            'totalCar' => "Rp " . number_format($totalCar, '0', ',', '.'),
+            'totalGeneralIncome' => "Rp " . number_format($totalGeneralIncome, '0', ',', '.'),
+            'totalGeneralOutcome' => "Rp " . number_format($totalGeneralOutcome, '0', ',', '.'),
+            'totalGeneral' => "Rp " . number_format($totalGeneral, '0', ',', '.'),
+            'totalGeneralResult' => "Rp " . number_format($totalGeneralResult, '0', ',', '.'),
+            'percentHereansyahResult' => "Rp " . number_format($percentHereansyahResult, '0', ',', '.'),
+            'percentSamunResult' => "Rp " . number_format($percentSamunResult, '0', ',', '.'),
+            'hereansyah' => "Rp " . number_format($hereansyah, '0', ',', '.'),
+            'samun' => "Rp " . number_format($samun, '0', ',', '.'),
+        ];
+
         return json_encode($response);
     }
 }

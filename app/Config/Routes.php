@@ -115,11 +115,14 @@ $routes->post('/claim/refundTable', 'ClaimReport::refundTable', ['filter' => 'ro
 $routes->post('/claim/generalIncomeTable', 'ClaimReport::generalIncomeTable', ['filter' => 'role:Super Admin']);
 $routes->post('/claim/generalOutcomeTable', 'ClaimReport::generalOutcomeTable', ['filter' => 'role:Super Admin']);
 $routes->post('/claim/calculation', 'ClaimReport::getCalculation', ['filter' => 'role:Super Admin']);
-$routes->get('/claim/calculation', 'ClaimReport::getCalculation', ['filter' => 'role:Super Admin']);
 
 $routes->get('/laporan', 'Report::index', ['filter' => 'role:Super Admin']);
 $routes->get('/laporan/(:alphanum)', 'Report::detail/$1', ['filter' => 'role:Super Admin']);
 $routes->post('/laporan/(:alphanum)/profitTable', 'Report::profitTable/$1', ['filter' => 'role:Super Admin']);
+$routes->post('/laporan/(:alphanum)/refundTable', 'Report::refundTable/$1', ['filter' => 'role:Super Admin']);
+$routes->post('/laporan/(:alphanum)/generalIncomeTable', 'Report::generalIncomeTable/$1', ['filter' => 'role:Super Admin']);
+$routes->post('/laporan/(:alphanum)/generalOutcomeTable', 'Report::generalOutcomeTable/$1', ['filter' => 'role:Super Admin']);
+$routes->post('/laporan/(:alphanum)/calculation', 'Report::getCalculation/$1', ['filter' => 'role:Super Admin']);
 
 
 
