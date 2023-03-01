@@ -45,7 +45,7 @@ class ClaimReport extends BaseController
             array_push($carSoldId, $car->id);
         }
 
-        $inCars = $this->TransactionModel->getTransaction(1, 0, $carSoldId, false);
+        $inCars = $this->TransactionModel->getTransaction(1, 0, $carSoldId);
         $results = [];
 
         if ($inCars != null) {
@@ -53,7 +53,7 @@ class ClaimReport extends BaseController
                 $carCapitalPrice = 0;
                 $additionalCost = 0;
                 $carId = [$inCar->salesCarId];
-                $outCars = $this->TransactionModel->getTransaction(1, 1, $carId, false);
+                $outCars = $this->TransactionModel->getTransaction(1, 1, $carId);
                 $isAlreadyAdded = false;
 
                 // Check result
@@ -109,7 +109,7 @@ class ClaimReport extends BaseController
 
     public function getRefund()
     {
-        return $this->TransactionModel->getGeneralCost(4, null, false);
+        return $this->TransactionModel->getGeneralCost(4);
     }
 
     public function getTotalRefund()
@@ -128,7 +128,7 @@ class ClaimReport extends BaseController
 
     public function getGeneralIncome()
     {
-        return $this->TransactionModel->getGeneralCost(2, null, false);
+        return $this->TransactionModel->getGeneralCost(2);
     }
 
     public function getTotalGeneralIncome()
@@ -147,7 +147,7 @@ class ClaimReport extends BaseController
 
     public function getGeneralOutcome()
     {
-        return $this->TransactionModel->getGeneralCost(3, null, false);
+        return $this->TransactionModel->getGeneralCost(3);
     }
 
     public function getTotalGeneralOutcome()
@@ -162,6 +162,60 @@ class ClaimReport extends BaseController
         }
 
         return $totalGeneralOutcome;
+    }
+
+    public function getLoan($name)
+    {
+        $result = [];
+        // Take All Car Sold
+        $carSoldId = [];
+        $carSold = $this->CarModel->where('status', 1)->findAll();
+
+        foreach ($carSold as $car) {
+            array_push($carSoldId, $car->id);
+        }
+
+        $loanCars = $this->TransactionModel->getTransaction(1, 1, $carSoldId, $name);
+        $loanGenerals = $this->TransactionModel->getGeneralCost(3, $name);
+
+        if ($loanCars != null || $loanGenerals != null) {
+            foreach ($loanCars as $loanCar) {
+                $description = $loanCar->carAdditionalCostDescription ?: "Pembelian";
+                $array = [
+                    'transaction_date' => $loanCar->transactionDate,
+                    'description' => $loanCar->carLicenseNumber." :: ". $description,
+                    'amount_of_money' => $loanCar->carAdditionalCostAmountOfMoney ?: $loanCar->carCapitalPrice,
+                ];
+
+                array_push($result, $array);
+            }
+
+            foreach ($loanGenerals as $loanGeneral) {
+                $array = [
+                    'transaction_date' => $loanGeneral->transaction_date,
+                    'description' => $loanGeneral->description,
+                    'amount_of_money' => $loanGeneral->amount_of_money,
+                ];
+
+                array_push($result, $array);
+            }
+        }
+
+        return $result;
+    }
+
+    public function getTotalLoan($name)
+    {
+        $totalLoan = 0;
+        $loans = $this->getLoan($name);
+
+        if ($loans != null) {
+            foreach ($loans as $loan) {
+                $totalLoan += $loan['amount_of_money'];
+            }
+        }
+
+        return $totalLoan;
     }
 
     public function profitTable()
@@ -220,6 +274,25 @@ class ClaimReport extends BaseController
         return json_encode($response);
     }
 
+    public function loanTable()
+    {
+        $dataHereansyah = [
+            'loans' => $this->getLoan('Hereansyah'),
+            'totalLoan' => $this->getTotalLoan('Hereansyah'),
+        ];
+
+        $dataSamun = [
+            'loans' => $this->getLoan('Sam un'),
+            'totalLoan' => $this->getTotalLoan('Sam un'),
+        ];
+
+        $response = [
+            'hereansyahLoanTable' => view('Report/ClaimReport/Table/loanTable', $dataHereansyah),
+            'samunLoanTable' => view('Report/ClaimReport/Table/loanTable', $dataSamun),
+        ];
+
+        return json_encode($response);
+    }
 
     public function getCalculation()
     {
@@ -227,6 +300,8 @@ class ClaimReport extends BaseController
         $totalRefund = $this->getTotalRefund();
         $totalGeneralIncome = $this->getTotalGeneralIncome();
         $totalGeneralOutcome = $this->getTotalGeneralOutcome();
+        $hereansyahTotalLoan = $this->getTotalLoan('Hereansyah');
+        $samunTotalLoan = $this->getTotalLoan('Sam un');
 
         $totalGeneral = ($totalGeneralOutcome - $totalGeneralIncome);
         $totalGeneralResult = $totalGeneral / 2;
@@ -236,8 +311,11 @@ class ClaimReport extends BaseController
         $percentHereansyahResult = $totalCar * $this->percentHereansyah;
         $percentSamunResult = $totalCar * $this->percentSamun;
 
-        $hereansyah = ($percentHereansyahResult - $totalGeneralResult);
-        $samun = ($percentSamunResult - $totalGeneralResult);
+        $hereansyahResult = $percentHereansyahResult - $totalGeneralResult;
+        $samunResult = $percentSamunResult - $totalGeneralResult;
+
+        $hereansyah = $hereansyahResult + $hereansyahTotalLoan;
+        $samun = $samunResult + $samunTotalLoan;
 
         $response = [
             'percentHereansyah' => $this->percentHereansyah,
@@ -251,8 +329,12 @@ class ClaimReport extends BaseController
             'totalGeneralResult' => "Rp " . number_format($totalGeneralResult, '0', ',', '.'),
             'percentHereansyahResult' => "Rp " . number_format($percentHereansyahResult, '0', ',', '.'),
             'percentSamunResult' => "Rp " . number_format($percentSamunResult, '0', ',', '.'),
+            'hereansyahTotalLoan' => "Rp " . number_format($hereansyahTotalLoan, '0', ',', '.'),
+            'samunTotalLoan' => "Rp " . number_format($samunTotalLoan, '0', ',', '.'),
             'hereansyah' => "Rp " . number_format($hereansyah, '0', ',', '.'),
             'samun' => "Rp " . number_format($samun, '0', ',', '.'),
+            'hereansyahResult' => "Rp " . number_format($hereansyahResult, '0', ',', '.'),
+            'samunResult' => "Rp " . number_format($samunResult, '0', ',', '.'),
         ];
 
         return json_encode($response);

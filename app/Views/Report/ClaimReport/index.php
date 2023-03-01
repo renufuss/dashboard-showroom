@@ -214,6 +214,100 @@
     <!--end::Content-->
 
     <!--begin::Content-->
+    <div id="hereansyahLoanTableContainer" class="app-content flex-column-fluid d-none">
+        <!--begin::Content container-->
+        <div id="kt_app_content_container" class="app-container container-xxl">
+            <!--begin::Products-->
+            <div class="card card-flush">
+                <!--begin::Card header-->
+                <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                    <!--begin::Card title-->
+                    <div class="card-title">
+                        <!--begin::Search-->
+                        <div class="d-flex align-items-center position-relative my-1">
+                            <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
+                            <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1"
+                                        transform="rotate(45 17.0365 15.1223)" fill="currentColor" />
+                                    <path
+                                        d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+                                        fill="currentColor" />
+                                </svg>
+                            </span>
+                            <!--end::Svg Icon-->
+                            <input type="text" id="searchHereansyahLoan"
+                                class="form-control form-control-solid w-xl-250px w-150px ps-14"
+                                placeholder="Cari Transaksi" />
+                        </div>
+                        <!--end::Search-->
+                    </div>
+                    <!--end::Card title-->
+                </div>
+                <!--end::Card header-->
+                <!--begin::Card body-->
+                <div class="card-body pt-0">
+                    <!--begin::Table-->
+                    <div class="hereansyahLoanTable"></div>
+                    <!--end::Table-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Products-->
+        </div>
+        <!--end::Content container-->
+    </div>
+    <!--end::Content-->
+
+      <!--begin::Content-->
+      <div id="samunLoanTableContainer" class="app-content flex-column-fluid d-none">
+        <!--begin::Content container-->
+        <div id="kt_app_content_container" class="app-container container-xxl">
+            <!--begin::Products-->
+            <div class="card card-flush">
+                <!--begin::Card header-->
+                <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                    <!--begin::Card title-->
+                    <div class="card-title">
+                        <!--begin::Search-->
+                        <div class="d-flex align-items-center position-relative my-1">
+                            <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
+                            <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1"
+                                        transform="rotate(45 17.0365 15.1223)" fill="currentColor" />
+                                    <path
+                                        d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+                                        fill="currentColor" />
+                                </svg>
+                            </span>
+                            <!--end::Svg Icon-->
+                            <input type="text" id="searchSamunLoan"
+                                class="form-control form-control-solid w-xl-250px w-150px ps-14"
+                                placeholder="Cari Transaksi" />
+                        </div>
+                        <!--end::Search-->
+                    </div>
+                    <!--end::Card title-->
+                </div>
+                <!--end::Card header-->
+                <!--begin::Card body-->
+                <div class="card-body pt-0">
+                    <!--begin::Table-->
+                    <div class="samunLoanTable"></div>
+                    <!--end::Table-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Products-->
+        </div>
+        <!--end::Content container-->
+    </div>
+    <!--end::Content-->
+
+    <!--begin::Content-->
     <div id="generalCalculationContainer" class="app-content flex-column-fluid d-none">
         <!--begin::Content container-->
         <div id="kt_app_content_container" class="app-container container-xxl">
@@ -258,19 +352,19 @@
                         <span>Pengeluaran = <span class="calculationGeneralResult"></span></span><br>
                         <br>
                         <span><b>Perhitungan</b></span><br>
-                        <span>Hereansyah = (Profit x Persentasi Hereansyah) - Pengeluaran </span><br>
-                        <span>Hereansyah = (<span class="calculationTotalCar"></span> x <span class="calculationPercentHereansyah"></span>) - (<span class="calculationGeneralResult"></span>)</span><br>
-                        <span>Hereansyah = <span class="calculationPercentHereansyahResult"></span> - (<span class="calculationGeneralResult"></span>)<br>
+                        <span>Hereansyah = ((Profit x Persentasi Hereansyah) - Pengeluaran) + Utang Perusahaan)</span><br>
+                        <span>Hereansyah = ((<span class="calculationTotalCar"></span> x <span class="calculationPercentHereansyah"></span>) - <span class="calculationGeneralResult"></span>) + <span class="hereansyahTotalLoan"></span>)</span><br>
+                        <span>Hereansyah = (<span class="calculationPercentHereansyahResult"></span> - <span class="calculationGeneralResult"></span>) + (<span class="hereansyahTotalLoan"></span>)<br>
+                        <span>Hereansyah = <span class="hereansyahResult"></span> + <span class="hereansyahTotalLoan"></span></span><br>
                         <span>Hereansyah = <span class="hereansyah" style="color:orange"></span></span><br>
-                        <br>
-                        <span>Samun = (Profit x Persentasi Samun) - Pengeluaran </span><br>
-                        <span>Samun = (<span class="calculationTotalCar"></span> x <span class="calculationPercentSamun"></span>) - (<span class="calculationGeneralResult"></span>)</span><br>
-                        <span>Samun = <span class="calculationPercentSamunResult"></span> - (<span class="calculationGeneralResult"></span>)<br>
+                            <br>
+                        <span>Samun = ((Profit x Persentasi Samun) - Pengeluaran) + Utang Perusahaan)</span><br>
+                        <span>Samun = ((<span class="calculationTotalCar"></span> x <span class="calculationPercentSamun"></span>) - <span class="calculationGeneralResult"></span>) + <span class="samunTotalLoan"></span>)</span><br>
+                        <span>Samun = (<span class="calculationPercentSamunResult"></span> - <span class="calculationGeneralResult"></span>) + (<span class="samunTotalLoan"></span>)<br>
+                        <span>Samun = <span class="samunResult"></span> + <span class="samunTotalLoan"></span></span><br>
                         <span>Samun = <span class="samun" style="color:orange"></span></span><br>
 
-
-
-                        <!--end::Table-->
+                                <!--end::Table-->
                 </div>
                 <!--end::Card body-->
             </div>
@@ -296,6 +390,7 @@
         generalIncomeTable();
         generalOutcomeTable();
         calculationReport();
+        loanTable();
     });
 
     function toastConfig() {
@@ -366,18 +461,39 @@
         });
     }
 
+    function loanTable(){
+        $.ajax({
+            type: "POST",
+            url: "/claim/loanTable",
+            data: {},
+            dataType: "json",
+            success: function (response) {
+                $('.hereansyahLoanTable').html(response.hereansyahLoanTable);
+                $('.samunLoanTable').html(response.samunLoanTable);
+            },
+            error: function (xhr, thrownError) {
+                alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+            },
+        });
+    }
+    
+
     function hideAllTable() {
         $('#profitTableContainer').addClass('d-none');
         $('#refundTableContainer').addClass('d-none');
         $('#generalIncomeTableContainer').addClass('d-none');
         $('#generalOutcomeTableContainer').addClass('d-none');
         $('#generalCalculationContainer').addClass('d-none');
+        $('#hereansyahLoanTableContainer').addClass('d-none');
+        $('#samunLoanTableContainer').addClass('d-none');
 
         $('#navCar').removeClass('active');
         $('#navRefund').removeClass('active');
         $('#navGeneralIncome').removeClass('active');
         $('#navGeneralOutcome').removeClass('active');
         $('#navCalculation').removeClass('active');
+        $('#navHereansyahLoan').removeClass('active');
+        $('#navSamunLoan').removeClass('active');
     }
 
     function openTable(tableContainer, buttonName, tableId, searchBoxId) {
@@ -436,6 +552,10 @@
                 $('.samun').html(response.samun);
                 $('.calculationPercentHereansyahResult').html(response.percentHereansyahResult);
                 $('.calculationPercentSamunResult').html(response.percentSamunResult);
+                $('.hereansyahTotalLoan').html(response.hereansyahTotalLoan);
+                $('.samunTotalLoan').html(response.samunTotalLoan);
+                $('.hereansyahResult').html(response.hereansyahResult);
+                $('.samunResult').html(response.samunResult);
             }
         });
     }
@@ -482,7 +602,7 @@
         });
     }
 
-    $('#btnClaim').click(function (e) { 
+    $('#btnClaim').click(function (e) {
         e.preventDefault();
         claimTransaction();
     });
