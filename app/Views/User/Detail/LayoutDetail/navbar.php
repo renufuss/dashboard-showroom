@@ -86,6 +86,11 @@
                 <a class="nav-link text-active-primary ms-0 me-10 py-5 <?=($navPengaturan) ? 'active' : '' ?>" href="<?= base_url(); ?>/pengguna/setting/<?= $user->username; ?>">Pengaturan</a>
             </li>
             <!--end::Nav item-->
+            <!--begin::Nav item-->
+            <li class="nav-item mt-2">
+                <a class="nav-link text-active-primary ms-0 me-10 py-5 <?=($navPengaturan) ? 'active' : '' ?>" href="<?= base_url(); ?>/pengguna/saldo/<?= $user->username; ?>">Saldo</a>
+            </li>
+            <!--end::Nav item-->
         </ul>
         <!--begin::Navs-->
     </div>

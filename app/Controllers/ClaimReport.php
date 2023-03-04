@@ -5,12 +5,16 @@ namespace App\Controllers;
 use App\Models\CarModel;
 use App\Models\ReportModel;
 use App\Models\TransactionModel;
+use App\Models\WalletModel;
+use Myth\Auth\Models\UserModel;
 
 class ClaimReport extends BaseController
 {
     protected $TransactionModel;
     protected $CarModel;
     protected $ReportModel;
+    protected $WalletModel;
+    protected $UserModel;
     protected $percentHereansyah;
     protected $percentSamun;
 
@@ -19,13 +23,16 @@ class ClaimReport extends BaseController
         $this->TransactionModel = new TransactionModel();
         $this->CarModel = new CarModel();
         $this->ReportModel = new ReportModel();
-
+        $this->WalletModel = new WalletModel();
+        $this->UserModel = new UserModel();
         $this->percentHereansyah = 60/100;
         $this->percentSamun = 40/100;
     }
 
     public function index()
     {
+        $transactions = $this->TransactionModel->findAll();
+
         $data['title'] = 'Claim Laporan';
         return view('Report/ClaimReport/index', $data);
     }
@@ -335,6 +342,8 @@ class ClaimReport extends BaseController
             'samun' => "Rp " . number_format($samun, '0', ',', '.'),
             'hereansyahResult' => "Rp " . number_format($hereansyahResult, '0', ',', '.'),
             'samunResult' => "Rp " . number_format($samunResult, '0', ',', '.'),
+            'totalHereansyah' => $hereansyah,
+            'totalSamun' => $samun,
         ];
 
         return json_encode($response);
@@ -371,7 +380,11 @@ class ClaimReport extends BaseController
         ];
         $this->ReportModel->save($data);
 
-        return $this->ReportModel->getInsertID();
+        $data = [
+            'reportId' => $this->ReportModel->getInsertID(),
+            'reportReceipt' => $reportReceipt,
+        ];
+        return $data;
     }
 
     public function claimTransaction()
@@ -385,7 +398,21 @@ class ClaimReport extends BaseController
             return json_encode($response);
         }
 
-        $reportId = $this->saveReport();
+        $report = $this->saveReport();
+        $reportId = $report['reportId'];
+
+        // WALLET SAMUN DAN HEREANSYAH
+        $samunId = $this->UserModel->where('username', 'samun')->first()?->id;
+        $hereansyahId = $this->UserModel->where('username', 'hereansyah')->first()?->id;
+        $calculation = json_decode($this->getCalculation());
+        $description = 'CLAIM TRANSACTION :: '.$report['reportReceipt'];
+
+        if ($hereansyahId != null && $samunId != null) {
+            $this->WalletModel->walletTransaction($description, 0, $calculation->totalSamun, $samunId);
+            $this->WalletModel->walletTransaction($description, 0, $calculation->totalHereansyah, $hereansyahId);
+        }
+
+        // SAVE TRANSACTION
         if ($transactions != null) {
             foreach ($transactions as $transaction) {
                 array_push($transactionIds, $transaction->id);
@@ -407,6 +434,8 @@ class ClaimReport extends BaseController
         }
 
         $this->ReportModel->saveClaimedTransaction($reportData);
+
+
 
         $response['success'] = 'Berhasil claim';
         return json_encode($response);
