@@ -195,8 +195,7 @@ class TransactionModel extends Model
         ->where('car_additional_cost.deleted_at', null)
         ->where('transaction.car_id', null)
         ->where('transaction.car_additional_cost_id', null)
-        ->where('transaction.payment_sales_id', null)
-        ->where('transaction.claim_date', null);
+        ->where('transaction.payment_sales_id', null);
 
         if ($month != null) {
             $query->where("DATE_FORMAT(transaction_date,'%Y-%m')", $month);

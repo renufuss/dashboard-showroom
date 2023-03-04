@@ -47,7 +47,7 @@ class ReportModel extends Model
         return $id;
     }
 
-    public function getProfit($carStatus, $transactionStatus, $carId = [], $transactionId = [])
+    public function getProfit($carStatus, $transactionStatus, $carId = [], $transactionId = [], $name = null)
     {
         $selectTransaction = "transaction.id as transactionId, transaction.transaction_date as transactionDate, transaction.description as transactionDescription, transaction.amount_of_money as transactionAmountOfMoney, transaction.transaction_status as transactionStatus, transaction.car_id as carId, transaction.payment_sales_id as payment_sales_id, transaction.car_additional_cost_id as car_additional_cost_id, transaction.transaction_receipt as transaction_receipt, transaction.paid_by as transactionPaidBy,";
         $selectCarAdditionalCost = "car_additional_cost.description as carAdditionalCostDescription, car_additional_cost.amount_of_money as carAdditionalCostAmountOfMoney, car_additional_cost.additional_receipt as carAdditionalCostAdditionalReceipt, car_additional_cost.additional_date as carAdditionalCostAdditionalDate, car_additional_cost.id as carAdditionalCostId, car_additional_cost.additional_receipt as additional_receipt,";
@@ -80,6 +80,20 @@ class ReportModel extends Model
             return null;
         }
 
+        if ($name != null) {
+            if ($name == 'Hereansyah') {
+                $query->groupStart();
+                $query->orWhere('car_additional_cost.paid_by !=', 'Sam un');
+                $query->orWhere('car_additional_cost.paid_by', null);
+                $query->groupEnd();
+            } elseif ($name != 'Hereansyah') {
+                $query->groupStart();
+                $query->where('transaction.paid_by', $name);
+                $query->orWhere('car_additional_cost.paid_by', $name);
+                $query->groupEnd();
+            }
+        }
+
         $data = $query->get()->getResultObject();
 
         return $data;
@@ -94,7 +108,7 @@ class ReportModel extends Model
      *
      * @return int $generalCost
      */
-    public function getGeneralCost($status, $month = null, $transactionId = [])
+    public function getGeneralCost($status, $transactionId = [], $name = null, $month = null)
     {
         $table = $this->db->table('transaction');
         $query = $table->select('transaction.id as transactionId, transaction_date, transaction.description as description, transaction_receipt, transaction.amount_of_money as amount_of_money')
@@ -118,6 +132,10 @@ class ReportModel extends Model
             $query->whereIn('transaction.id', $transactionId);
         } else {
             return null;
+        }
+
+        if ($name != null) {
+            $query->where('transaction.paid_by', $name);
         }
 
         return $query->get()->getResultObject();

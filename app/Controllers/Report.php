@@ -4,19 +4,16 @@ namespace App\Controllers;
 
 use App\Models\CarModel;
 use App\Models\ReportModel;
-use App\Models\TransactionModel;
 
 class Report extends BaseController
 {
     protected $ReportModel;
     protected $CarModel;
-    protected $TransactionModel;
 
     public function __construct()
     {
         $this->ReportModel = new ReportModel();
         $this->CarModel = new CarModel();
-        // $this->TransactionModel = new TransactionModel();
     }
 
     public function index()
@@ -24,6 +21,14 @@ class Report extends BaseController
         $data['title'] = 'Laporan';
         $data['reports'] = $this->ReportModel->orderBy('report_date', 'desc')->orderBy('report_receipt', 'desc')->findAll();
         return view('Report/index', $data);
+    }
+
+    public function getTransactionId($reportReceipt)
+    {
+        $reportId = $this->ReportModel->where('report_receipt', $reportReceipt)->first()?->id;
+        $transactionId = $this->ReportModel->getClaimedTransactionId($reportId);
+
+        return $transactionId;
     }
 
     public function getProfit($transactionId = [])
@@ -100,7 +105,7 @@ class Report extends BaseController
 
     public function getRefund($transactionId)
     {
-        return $this->ReportModel->getGeneralCost(4, null, $transactionId);
+        return $this->ReportModel->getGeneralCost(4, $transactionId);
     }
 
     public function getTotalRefund($transactionId)
@@ -119,7 +124,7 @@ class Report extends BaseController
 
     public function getGeneralIncome($transactionId)
     {
-        return $this->ReportModel->getGeneralCost(2, null, $transactionId);
+        return $this->ReportModel->getGeneralCost(2, $transactionId);
     }
 
     public function getTotalGeneralIncome($transactionId)
@@ -138,7 +143,7 @@ class Report extends BaseController
 
     public function getGeneralOutcome($transactionId)
     {
-        return $this->ReportModel->getGeneralCost(3, null, $transactionId);
+        return $this->ReportModel->getGeneralCost(3, $transactionId);
     }
 
     public function getTotalGeneralOutcome($transactionId)
@@ -155,6 +160,60 @@ class Report extends BaseController
         return $totalGeneralOutcome;
     }
 
+    public function getLoan($transactionId, $name)
+    {
+        $result = [];
+        // Take All Car Sold
+        $carSoldId = [];
+        $carSold = $this->CarModel->where('status', 1)->findAll();
+
+        foreach ($carSold as $car) {
+            array_push($carSoldId, $car->id);
+        }
+
+        $loanCars = $this->ReportModel->getProfit(1, 1, $carSoldId, $transactionId, $name);
+        $loanGenerals = $this->ReportModel->getGeneralCost(3, $transactionId, $name);
+
+        if ($loanCars != null || $loanGenerals != null) {
+            foreach ($loanCars as $loanCar) {
+                $description = $loanCar->carAdditionalCostDescription ?: "Pembelian";
+                $array = [
+                    'transaction_date' => $loanCar->transactionDate,
+                    'description' => $loanCar->carLicenseNumber." :: ". $description,
+                    'amount_of_money' => $loanCar->carAdditionalCostAmountOfMoney ?: $loanCar->carCapitalPrice,
+                ];
+
+                array_push($result, $array);
+            }
+
+            foreach ($loanGenerals as $loanGeneral) {
+                $array = [
+                    'transaction_date' => $loanGeneral->transaction_date,
+                    'description' => $loanGeneral->description,
+                    'amount_of_money' => $loanGeneral->amount_of_money,
+                ];
+
+                array_push($result, $array);
+            }
+        }
+
+        return $result;
+    }
+
+    public function getTotalLoan($transactionId, $name)
+    {
+        $totalLoan = 0;
+        $loans = $this->getLoan($transactionId, $name);
+
+        if ($loans != null) {
+            foreach ($loans as $loan) {
+                $totalLoan += $loan['amount_of_money'];
+            }
+        }
+
+        return $totalLoan;
+    }
+
     public function detail($reportReceipt)
     {
         $data =[
@@ -166,9 +225,7 @@ class Report extends BaseController
 
     public function profitTable($reportReceipt)
     {
-        $reportId = $this->ReportModel->where('report_receipt', $reportReceipt)->first()?->id;
-
-        $transactionId = $this->ReportModel->getClaimedTransactionId($reportId);
+        $transactionId = $this->getTransactionId($reportReceipt);
 
         $transactions = [];
 
@@ -191,9 +248,7 @@ class Report extends BaseController
 
     public function refundTable($reportReceipt)
     {
-        $reportId = $this->ReportModel->where('report_receipt', $reportReceipt)->first()?->id;
-
-        $transactionId = $this->ReportModel->getClaimedTransactionId($reportId);
+        $transactionId = $this->getTransactionId($reportReceipt);
 
         $refunds = [];
 
@@ -213,9 +268,7 @@ class Report extends BaseController
 
     public function generalIncomeTable($reportReceipt)
     {
-        $reportId = $this->ReportModel->where('report_receipt', $reportReceipt)->first()?->id;
-
-        $transactionId = $this->ReportModel->getClaimedTransactionId($reportId);
+        $transactionId = $this->getTransactionId($reportReceipt);
 
         $generalIncomes = [];
 
@@ -235,9 +288,7 @@ class Report extends BaseController
 
     public function generalOutcomeTable($reportReceipt)
     {
-        $reportId = $this->ReportModel->where('report_receipt', $reportReceipt)->first()?->id;
-
-        $transactionId = $this->ReportModel->getClaimedTransactionId($reportId);
+        $transactionId = $this->getTransactionId($reportReceipt);
 
         $generalOutcomes = [];
 
@@ -255,6 +306,28 @@ class Report extends BaseController
         return json_encode($response);
     }
 
+    public function loanTable($reportReceipt)
+    {
+        $transactionId = $this->getTransactionId($reportReceipt);
+
+        $dataHereansyah = [
+            'loans' => $this->getLoan($transactionId, 'Hereansyah'),
+            'totalLoan' => $this->getTotalLoan($transactionId, 'Hereansyah'),
+        ];
+
+        $dataSamun = [
+            'loans' => $this->getLoan($transactionId, 'Sam un'),
+            'totalLoan' => $this->getTotalLoan($transactionId, 'Sam un'),
+        ];
+
+        $response = [
+            'hereansyahLoanTable' => view('Report/Detail/Table/loanTable', $dataHereansyah),
+            'samunLoanTable' => view('Report/Detail/Table/loanTable', $dataSamun),
+        ];
+
+        return json_encode($response);
+    }
+
     public function getCalculation($reportReceipt)
     {
         $report = $this->ReportModel->where('report_receipt', $reportReceipt)->first();
@@ -267,6 +340,8 @@ class Report extends BaseController
         $totalRefund = $this->getTotalRefund($transactionId);
         $totalGeneralIncome = $this->getTotalGeneralIncome($transactionId);
         $totalGeneralOutcome = $this->getTotalGeneralOutcome($transactionId);
+        $hereansyahTotalLoan = $this->getTotalLoan($transactionId, 'Hereansyah');
+        $samunTotalLoan = $this->getTotalLoan($transactionId, 'Sam un');
 
         $totalGeneral = ($totalGeneralOutcome - $totalGeneralIncome);
         $totalGeneralResult = $totalGeneral / 2;
@@ -276,8 +351,11 @@ class Report extends BaseController
         $percentHereansyahResult = $totalCar * $report->percent_hereansyah;
         $percentSamunResult = $totalCar * $report->percent_samun;
 
-        $hereansyah = ($percentHereansyahResult - $totalGeneralResult);
-        $samun = ($percentSamunResult - $totalGeneralResult);
+        $hereansyahResult = $percentHereansyahResult - $totalGeneralResult;
+        $samunResult = $percentSamunResult - $totalGeneralResult;
+
+        $hereansyah = $hereansyahResult + $hereansyahTotalLoan;
+        $samun = $samunResult + $samunTotalLoan;
 
         $response = [
             'percentHereansyah' => $report->percent_hereansyah,
@@ -291,8 +369,12 @@ class Report extends BaseController
             'totalGeneralResult' => "Rp " . number_format($totalGeneralResult, '0', ',', '.'),
             'percentHereansyahResult' => "Rp " . number_format($percentHereansyahResult, '0', ',', '.'),
             'percentSamunResult' => "Rp " . number_format($percentSamunResult, '0', ',', '.'),
+            'hereansyahTotalLoan' => "Rp " . number_format($hereansyahTotalLoan, '0', ',', '.'),
+            'samunTotalLoan' => "Rp " . number_format($samunTotalLoan, '0', ',', '.'),
             'hereansyah' => "Rp " . number_format($hereansyah, '0', ',', '.'),
             'samun' => "Rp " . number_format($samun, '0', ',', '.'),
+            'hereansyahResult' => "Rp " . number_format($hereansyahResult, '0', ',', '.'),
+            'samunResult' => "Rp " . number_format($samunResult, '0', ',', '.'),
         ];
 
         return json_encode($response);

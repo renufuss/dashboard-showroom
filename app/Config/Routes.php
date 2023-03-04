@@ -123,6 +123,7 @@ $routes->post('/laporan/(:alphanum)/profitTable', 'Report::profitTable/$1', ['fi
 $routes->post('/laporan/(:alphanum)/refundTable', 'Report::refundTable/$1', ['filter' => 'role:Super Admin']);
 $routes->post('/laporan/(:alphanum)/generalIncomeTable', 'Report::generalIncomeTable/$1', ['filter' => 'role:Super Admin']);
 $routes->post('/laporan/(:alphanum)/generalOutcomeTable', 'Report::generalOutcomeTable/$1', ['filter' => 'role:Super Admin']);
+$routes->post('/laporan/(:alphanum)/loanTable', 'Report::loanTable/$1', ['filter' => 'role:Super Admin']);
 $routes->post('/laporan/(:alphanum)/calculation', 'Report::getCalculation/$1', ['filter' => 'role:Super Admin']);
 
 
