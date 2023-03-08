@@ -101,6 +101,7 @@ $routes->get('/pengguna/detail/(:alphanum)', 'User::pageDetailProfile/$1', ['fil
 $routes->get('/pengguna/setting/(:alphanum)', 'User::pageSettingProfile/$1', ['filter' => 'role:Super Admin']);
 $routes->post('/pengguna/setting/(:alphanum)', 'User::updateProfile/$1', ['filter' => 'role:Super Admin']);
 $routes->post('/pengguna/setting/(:alphanum)/password', 'User::changePassword/$1', ['filter' => 'role:Super Admin']);
+$routes->get('/pengguna/saldo/(:alphanum)/', 'User::pageBalance/$1', ['filter' => 'role:Super Admin']);
 
 $routes->get('/profile', 'User::pageDetailProfile');
 $routes->get('/profile/setting', 'User::pageSettingProfile');

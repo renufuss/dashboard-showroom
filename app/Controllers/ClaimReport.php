@@ -31,8 +31,6 @@ class ClaimReport extends BaseController
 
     public function index()
     {
-        $transactions = $this->TransactionModel->findAll();
-
         $data['title'] = 'Claim Laporan';
         return view('Report/ClaimReport/index', $data);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\WalletModel;
 use Myth\Auth\Models\UserModel;
 use Myth\Auth\Models\GroupModel;
 use Myth\Auth\Password;
@@ -10,12 +11,14 @@ class User extends BaseController
 {
     protected $UserModel;
     protected $GroupModel;
+    protected $WalletModel;
     protected $DefaultPassword;
 
     public function __construct()
     {
         $this->UserModel = new UserModel();
         $this->GroupModel = new GroupModel();
+        $this->WalletModel = new WalletModel();
         $this->DefaultPassword = 'renufus123';
     }
 
@@ -156,6 +159,7 @@ class User extends BaseController
             'title' => 'Profil User',
             'navDetail' => true,
             'navPengaturan' => false,
+            'navBalance' => false,
             'user' => $user,
         ];
 
@@ -318,5 +322,30 @@ class User extends BaseController
             $response['success'] = 'Berhasil menyimpan password';
             return json_encode($response);
         }
+    }
+
+    public function pageBalance($username = null)
+    {
+        if ($username == null) {
+            $username = user()->username;
+            $view = 'User/MyProfile/index';
+        } else {
+            $view = 'User/Detail/LayoutDetail/Balance/index';
+        }
+
+        $user = $this->UserModel->showUser($username);
+        $userBalance = $this->WalletModel->showSaldo($username);
+        $userWallet = $this->WalletModel->showWallet($username);
+        $data = [
+            'title' => 'Profil User',
+            'navDetail' => false,
+            'navPengaturan' => false,
+            'navBalance' => true,
+            'user' => $user,
+            'wallets' => $userWallet,
+            'userBalance' => $userBalance,
+        ];
+
+        return view($view, $data);
     }
 }

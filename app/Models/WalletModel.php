@@ -32,4 +32,21 @@ class WalletModel extends Model
 
         return true;
     }
+
+    public function showSaldo($username)
+    {
+        $table = $this->db->table($this->table);
+        $inBalance = $table->select('SUM(amount_of_money) as inBalance')->where('wallet.status', 0)->where('users.username', $username)->join('users', 'user_id=users.id')->get()->getFirstRow()->inBalance ?: 0;
+        $outBalance = $table->select('SUM(amount_of_money) as outBalance')->where('wallet.status', 1)->where('users.username', $username)->join('users', 'user_id=users.id')->get()->getFirstRow()->outBalance ?: 0;
+
+        return $inBalance - $outBalance;
+    }
+
+    public function showWallet($username)
+    {
+        $table = $this->db->table($this->table);
+        $query = $table->select('wallet.*')->where('users.username', $username)->join('users', 'user_id=users.id')->get()->getResultObject();
+
+        return $query;
+    }
 }
