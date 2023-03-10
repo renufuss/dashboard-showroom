@@ -5,7 +5,7 @@
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
                                     <div class="text-xs fw-bold text-success text-uppercase mb-1">
-                                        Mobil + Refund</div>
+                                        Profit</div>
                                     <div class="h5 mb-0 fw-bold text-gray-800" id="carBox">0</div>
                                 </div>
                                 <div class="col-auto">
@@ -23,7 +23,7 @@
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
                                     <div class="text-xs fw-bold text-danger text-uppercase mb-1">
-                                        Pengeluaran Umum - Pemasukan Umum</div>
+                                        Total Pengeluaran</div>
                                     <div class="h5 mb-0 fw-bold text-gray-800" id="generalBox">0</div>
                                 </div>
                                 <div class="col-auto">

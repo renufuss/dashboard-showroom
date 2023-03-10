@@ -421,7 +421,9 @@
             dataType: "json",
             success: function (response) {
                 $('.profitTable').html(response.profitTable);
-            }
+            }, error: function (xhr, thrownError) {
+      alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    },
         });
     }
 
@@ -433,7 +435,9 @@
             dataType: "json",
             success: function (response) {
                 $('.refundTable').html(response.refundTable);
-            }
+            }, error: function (xhr, thrownError) {
+      alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    },
         });
     }
 
@@ -445,7 +449,9 @@
             dataType: "json",
             success: function (response) {
                 $('.generalIncomeTable').html(response.generalIncomeTable);
-            }
+            }, error: function (xhr, thrownError) {
+      alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    },
         });
     }
 
@@ -457,7 +463,9 @@
             dataType: "json",
             success: function (response) {
                 $('.generalOutcomeTable').html(response.generalOutcomeTable);
-            }
+            }, error: function (xhr, thrownError) {
+      alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    },
         });
     }
 

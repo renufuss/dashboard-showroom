@@ -389,9 +389,19 @@ class ClaimReport extends BaseController
     {
         $transactionIds = [];
         $reportData = [];
-        $transactions = $this->TransactionModel->where('claim_date', null)->findAll();
 
-        if ($transactions == null) {
+        $carSoldId = [];
+        $carSold = $this->CarModel->where('status', 1)->findAll();
+        foreach ($carSold as $car) {
+            array_push($carSoldId, $car->id);
+        }
+
+        $inCars = $this->TransactionModel->getTransaction(1, 0, $carSoldId);
+        $outCars = $this->TransactionModel->getTransaction(1, 1, $carSoldId);
+        $generalTransactions = $this->TransactionModel->where('claim_date', null)->where('car_id', null)->where('car_additional_cost_id', null)->where('payment_sales_id', null)->findAll();
+
+        $isEmpty = ($inCars == null && $outCars == null &&  $generalTransactions == null);
+        if ($isEmpty) {
             $response['error'] = 'Tidak ada data yang diclaim';
             return json_encode($response);
         }
@@ -410,25 +420,40 @@ class ClaimReport extends BaseController
             $this->WalletModel->walletTransaction($description, 0, $calculation->totalHereansyah, $hereansyahId);
         }
 
+        //Get Transaction ID
+        if ($inCars != null) {
+            foreach ($inCars as $inCar) {
+                array_push($transactionIds, $inCar->transactionId);
+            }
+        }
+
+        if ($outCars != null) {
+            foreach ($outCars as $outCar) {
+                array_push($transactionIds, $outCar->transactionId);
+            }
+        }
+
+        if ($generalTransactions != null) {
+            foreach ($generalTransactions as $generalTransaction) {
+                array_push($transactionIds, $generalTransaction->id);
+            }
+        }
+
+
         // SAVE TRANSACTION
-        if ($transactions != null) {
-            foreach ($transactions as $transaction) {
-                array_push($transactionIds, $transaction->id);
+        foreach ($transactionIds as $transactionId) {
+            $data = [
+                'report_id' => $reportId,
+                'transaction_id' => $transactionId,
+            ];
+            array_push($reportData, $data);
 
-                $data = [
-                    'id' => $transaction->id,
-                    'claim_date' => date('Y-m-d H:i:s'),
-                ];
-                $this->TransactionModel->save($data);
-            }
+            $setClaimed = [
+                'id' => $transactionId,
+                'claim_date' => date('Y-m-d'),
+            ];
 
-            foreach ($transactionIds as $transactionId) {
-                $data = [
-                    'report_id' => $reportId,
-                    'transaction_id' => $transactionId,
-                ];
-                array_push($reportData, $data);
-            }
+            $this->TransactionModel->save($setClaimed);
         }
 
         $this->ReportModel->saveClaimedTransaction($reportData);
